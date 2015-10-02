@@ -249,10 +249,10 @@ public class MonteCarloSimulator {
 	
 	//------------------------------------------------------------------------------------------------------
 	
-	public void generateSiumalations(int populationSize, int numberOfSamples, 
+	public void generateSimulations(int populationSize, int numberOfSamples, 
 			HashMap<String, Microtask> microtaskMap, String crowdName){
 
-		for(int i=1;i<=populationSize-1;i++){
+		for(int i=1;i<=populationSize;i++){
 
 			//how many answers per question
 			int sampleSize = i; 
@@ -286,7 +286,7 @@ public class MonteCarloSimulator {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
-		sim.generateSiumalations(populationSize, numberOfSamples, microtaskMap, "all workers");
+		sim.generateSimulations(populationSize, numberOfSamples, microtaskMap, "all workers");
 	}
 
 }
