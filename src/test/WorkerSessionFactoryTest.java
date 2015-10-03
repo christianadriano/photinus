@@ -81,7 +81,7 @@ public class WorkerSessionFactoryTest {
 			Assert.fail("Null list of snippets or file does not match test data, actual size is: "+list.size());
 		else{
 			QuestionFactory questionFactory = new QuestionFactory();
-			 questionFactory.generateMicrotasks(list, "Bug report message", 0);
+			 questionFactory.generateMicrotasks(list, "Bug report message", null, 0);
 			 Hashtable<Integer, Microtask> microtaskMap = questionFactory.getConcreteQuestions();
 
 			FileDebugSession fileDebuggingSession = new FileDebugSession("TinySample.java",fileContent, microtaskMap);
@@ -92,17 +92,17 @@ public class WorkerSessionFactoryTest {
 
 			//Generate the WorkerSession
 			WorkerSessionFactory sessionFactory = new WorkerSessionFactory(10);
-			HashMap<String,HashMap<String,ArrayList<Microtask>>> actualFileMethodMap = sessionFactory.getFileMethodMap();
+			Hashtable<String, Hashtable<String, Vector<Microtask>>> actualFileMethodMap = sessionFactory.getFileMethodMap();
 			
 
-			HashMap<String,ArrayList<Microtask>> methodMap = actualFileMethodMap.get("TinySample.java");
+			Hashtable<String, Vector<Microtask>> methodMap = actualFileMethodMap.get("TinySample.java");
 			Assert.assertNotNull(methodMap);
 
-			ArrayList<Microtask> method1List = methodMap.get("TinySample");
+			Vector<Microtask> method1List = methodMap.get("TinySample");
 			if(method1List==null || method1List.size()!=4)
 				Assert.fail("List of microtasks for method TinySample is wrong, actual size is: "+method1List.size());
 			else{
-				ArrayList<Microtask> method2List = methodMap.get("seedCounter");
+				Vector<Microtask> method2List = methodMap.get("seedCounter");
 				if(method2List==null || method2List.size()!=7)
 					Assert.fail("List of microtasks for method seedCounter is wrong, actual size is: "+method2List.size());
 				else{
@@ -167,7 +167,7 @@ public class WorkerSessionFactoryTest {
 			Assert.fail("Null list of snippets or file does not match test data, actual size is: "+list.size());
 		else{
 			QuestionFactory questionFactory = new QuestionFactory();
-			questionFactory.generateMicrotasks(list, "Bug report message", 0);
+			questionFactory.generateMicrotasks(list, "Bug report message", null, 0);
 			Hashtable<Integer, Microtask> microtaskMap = questionFactory.getConcreteQuestions(); 
 			FileDebugSession fileDebuggingSession = new FileDebugSession("TinySample.java",fileContent, microtaskMap);
 
@@ -177,9 +177,9 @@ public class WorkerSessionFactoryTest {
 
 			//Generate the WorkerSession
 			WorkerSessionFactory sessionFactory = new WorkerSessionFactory(10);
-			HashMap<String,HashMap<String,ArrayList<Microtask>>> actualFileMethodMap = sessionFactory.getFileMethodMap();
+			Hashtable<String, Hashtable<String, Vector<Microtask>>> actualFileMethodMap = sessionFactory.getFileMethodMap();
 
-			HashMap<String,ArrayList<Microtask>> methodMap = actualFileMethodMap.get("TinySample.java");
+			Hashtable<String, Vector<Microtask>> methodMap = actualFileMethodMap.get("TinySample.java");
 			Assert.assertNotNull(methodMap);
 
 			//Obtain a list of N microtasks from N different codesnippets (i.e., methods)
