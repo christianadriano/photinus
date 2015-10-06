@@ -1,10 +1,6 @@
 package edu.uci.ics.sdcl.firefly.report.predictive.spectra;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
 
 /**
@@ -21,30 +17,20 @@ public class VariableQuestionLines {
 	private String sourceFileName = "variableQuestionLines.txt";
 	
 	private String path = "C://firefly//SpectraAnalysis//";
-	
-	
-	/** fileName, Map of QuestionID with list of lines */
-	private HashMap<String, HashMap<String, ArrayList<Integer>>> questionLinesMap = new HashMap<String, HashMap<String, ArrayList<Integer>>>(); 
-	
-	public VariableQuestionLines(){
-		setupData();
-	}
-	
-	
-	
-	public void setupData(){
-		
+
+	/** 
+	 * The list is loaded from a text file 
+	 * @return list of QuestionLineData for the variables 
+	 */
+	public ArrayList<QuestionLinesData>  loadList(){
 		ArrayList<String> fileContentList = ReadWriteFile.readToBuffer(this.path, this.sourceFileName);
-		
-		
-			
+		return initializeMap(fileContentList);
 	}
 	
 	
-	private HashMap<String,HashMap<String,ArrayList<QuestionLinesData>>>  buildDataStructure(ArrayList<String> buffer){
+	private ArrayList<QuestionLinesData>  initializeMap(ArrayList<String> buffer){
 		
-		HashMap<String,HashMap<String,ArrayList<QuestionLinesData>>>  questionLineMap = 
-				new HashMap<String,HashMap<String,ArrayList<QuestionLinesData>>> ();
+		ArrayList<QuestionLinesData> questionLinesDataList = new ArrayList<QuestionLinesData>();
 		
 		for(String line : buffer){
 			
@@ -55,30 +41,15 @@ public class VariableQuestionLines {
 			
 			//Lines are 
 			String[] lineNumberTokens = lineNumberList.split(",");
-			ArrayList<QuestionLinesData> list = new ArrayList<QuestionLinesData>();
 			QuestionLinesData lineNumberData =  new QuestionLinesData(fileName,questionID);
 			
 			for(String lineNumber : lineNumberTokens){
 				lineNumberData.lineNumbers.add(lineNumber);
 			}
 			
-			list.add(lineNumberData);
-			questionLineMap = updateMap(questionLineMap, lineNumberData);
+			questionLinesDataList.add(lineNumberData);
 		}
+		return questionLinesDataList;
 	}
-	
-	
-	private HashMap<String,HashMap<String,ArrayList<QuestionLinesData>>> updateMap(
-			HashMap<String,HashMap<String,ArrayList<QuestionLinesData>>> map,
-			QuestionLinesData lineData){
-		
-		HashMap<String,ArrayList<QuestionLinesData>> fileNameMap = map.get(lineData.fileName);
-		
-		for(ArrayList<QuestionLinesData> lineNumberList : fileNameMap.values()){
-			
-		}
-	}
-	
-	
-	
+
 }
