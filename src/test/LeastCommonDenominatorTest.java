@@ -75,7 +75,7 @@ public class LeastCommonDenominatorTest {
 	public static void main(String[] args){
 		
 		//Bug 54
-		char char3='-';
+		char char3='_';
 		if(char3<'A' || char3> 'Z')
 			System.out.println("char3 out of range");
 		
@@ -83,6 +83,11 @@ public class LeastCommonDenominatorTest {
 		double x = -0.0;
 		long value = (long) x;
 		System.out.println("expected: "+String.valueOf(x) + ", actual:"+String.valueOf(value));
+		
+		//Bug 35
+		String[] array =null;
+		String element=null;
+		Class<?> type = array!=null ? array.getClass() : (element!=null ? element.getClass() : Object.class);
 	}
 
 }
