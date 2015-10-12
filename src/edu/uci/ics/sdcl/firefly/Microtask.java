@@ -10,7 +10,7 @@ import edu.uci.ics.sdcl.firefly.lite.MicrotaskLite;
 public class Microtask implements Serializable
 {	
 	private static final long serialVersionUID = 1L;
-	private String question;
+	protected String question;
 	private String failureDescription;
 	private String testCase;
 	private CodeSnippet method;
@@ -20,18 +20,18 @@ public class Microtask implements Serializable
 	private String callerHightlights;
 	private String calleeHightlights;
 
-	private Vector<Answer> answerList;
+	protected Vector<Answer> answerList;
 
 	private Integer startingLine;
 	private Integer startingColumn;
 	private Integer endingLine;
 	private Integer endingColumn;
-	private Integer ID;
+	protected Integer ID;
 	private String calleeFileContent;
 	private Integer calleeLOCS;
 	private String callerFileContent;
 	private Integer callerLOCS;
-	private String fileName;
+	protected String fileName;
 	
 	private String questionType;
 
