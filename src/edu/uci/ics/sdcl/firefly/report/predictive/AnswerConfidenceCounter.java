@@ -4,12 +4,16 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import edu.uci.ics.sdcl.firefly.Answer;
+import edu.uci.ics.sdcl.firefly.CodeElement;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLinesData;
+import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLOCs;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 public class AnswerConfidenceCounter {
@@ -35,12 +39,12 @@ public class AnswerConfidenceCounter {
 		public int correct;
 		public String filename;
 		public String questionID;
+		public String questionType;
+		public int size;
 
 		public String toString(){
 
-			
-
-			return (filename+","+questionID+","+confidence+","+difficulty+","+explanationSize+","+TP+","+TN+","+FN+","+FP+","+correct);
+			return (filename+","+questionID+","+confidence+","+difficulty+","+explanationSize+","+TP+","+TN+","+FN+","+FP+","+correct+","+questionType+","+size);
 		}
 	}
 
@@ -65,6 +69,7 @@ public class AnswerConfidenceCounter {
 	}
 
 
+
 	/** Builds the three maps of answer duration, which can be printed by 
 	 * method 
 	 * @param microtaskMap
@@ -80,6 +85,7 @@ public class AnswerConfidenceCounter {
 				output = checkCorrectness(microtask.getID().toString(),answer.getOption(),output);
 				output.filename = microtask.getFileName();
 				output.questionID = microtask.getID().toString();
+				output.questionType = microtask.getQuestionType();
 				output.explanationSize = answer.getExplanation().length();
 				this.correctnessList.add(output);
 			}
@@ -177,7 +183,7 @@ public class AnswerConfidenceCounter {
 		
 		HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 		
-		counter.buildMaps(filteredMicrotaskMap);
+			counter.buildMaps(filteredMicrotaskMap);
 		counter.printConfidenceMap();
 
 		//counter.printCombinationMap();

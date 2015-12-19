@@ -15,4 +15,10 @@ public class QuestionLinesData {
 		this.questionID = questionID;
 	}
 	
+	public int getLOCs(){
+		if(lineNumbers!=null)
+			return lineNumbers.size();
+		else 
+			return 0;
+	}
 }

@@ -32,6 +32,7 @@ public class Microtask implements Serializable
 	private String callerFileContent;
 	private Integer callerLOCS;
 	protected String fileName;
+	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
 	
 	private String questionType;
 
@@ -305,5 +306,15 @@ public class Microtask implements Serializable
 		}
 		return list;
 	}
+
+	public Integer getLOC_CoveredByQuestion() {
+		return LOC_CoveredByQuestion;
+	}
+
+	public void setLOC_CoveredByQuestion(Integer locs) {
+		this.LOC_CoveredByQuestion = locs;
+	}
+	
+	
 	
 }
