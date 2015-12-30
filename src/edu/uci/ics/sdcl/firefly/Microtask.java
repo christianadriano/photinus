@@ -257,6 +257,16 @@ public class Microtask implements Serializable
 		return foundAnswer;
 	}
 	
+	public int getAnswerCountByUserId(String workerId) {
+		int count = 0;
+		for(Answer answer: answerList){
+			if(answer!=null && answer.getWorkerId().matches(workerId)){
+				count++;
+			}
+		}
+		return count;
+	}
+	
 	public List<String> getWorkerIds(){
 		List<String> workerIDs = new ArrayList<String>();
 		for (Answer answer : answerList) {

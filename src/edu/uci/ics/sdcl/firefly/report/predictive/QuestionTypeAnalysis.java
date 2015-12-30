@@ -15,6 +15,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerConfidenceCounter.Output;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLOCs;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLinesData;
+import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 public class QuestionTypeAnalysis {
@@ -105,12 +106,7 @@ public class QuestionTypeAnalysis {
 		ArrayList<QuestionTypeOutput> list = new ArrayList<QuestionTypeOutput>();
 
 		//Obtain bug covering question list
-		PropertyManager manager = PropertyManager.initializeSingleton();
-		HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
-		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
-		for(String questionID:listOfBugPointingQuestions){
-			bugCoveringMap.put(questionID,questionID);
-		}
+		HashMap<String, String> bugCoveringMap = BugCoveringMap.initialize();
 
 		for(Microtask microtask: microtaskMap.values()){
 			Vector<Answer> answerList = microtask.getAnswerList();
