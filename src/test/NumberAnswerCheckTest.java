@@ -33,6 +33,8 @@ public class NumberAnswerCheckTest {
 	}
 
 
+	
+	
 	@Test
 	public void compareAnswers(){
 
@@ -123,4 +125,58 @@ public class NumberAnswerCheckTest {
 			}
 		}
 	}
+	
+	
+	
+	private void checkAnswersPerWorker(
+			HashMap<String, WorkerSession> workerSessionMap2) {
+		int count = 0;
+		Iterator<String> iter = workerSessionMap2.keySet().iterator();
+		while(iter.hasNext()){
+			String sessionID = iter.next();
+			WorkerSession session = workerSessionMap2.get(sessionID);
+			String workerID  = session.getWorkerId();
+			Vector<Microtask> taskList = session.getMicrotaskList();
+			for(Microtask task: taskList){
+				int answerCount = task.getAnswerCountByUserId(workerID);
+				if(answerCount>1 || answerCount ==0){
+					System.out.println("workeID:"+workerID+" has "+answerCount+" for task: "+task.getID().toString());
+				}
+				count = count + answerCount;
+			}
+		}
+		System.out.println("Total counted answers: "+count);
+	}
+
+	private void printAnswerCount(
+			HashMap<String, WorkerSession> workerSessionMap2) {
+		int count=0;
+		Iterator<String> iter = workerSessionMap2.keySet().iterator();
+		while(iter.hasNext()){
+			String sessionID = iter.next();
+			WorkerSession session = workerSessionMap2.get(sessionID);
+			String workerID  = session.getWorkerId();
+			Vector<Microtask> taskList = session.getMicrotaskList();
+			for(Microtask task: taskList){
+				if(task.getAnswerByUserId(workerID)!=null);{
+					count++;
+				}
+			}
+		}
+		System.out.println("Total answers: "+count);
+	}
+	
+	private void printAnswerCountFromMicrotasks(){
+		FileSessionDTO dto = new FileSessionDTO();
+		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
+		int count=0;
+		Iterator<String> iter = microtaskMap.keySet().iterator();
+		while(iter.hasNext()){
+			String microtaskID = iter.next();
+			Microtask task = microtaskMap.get(microtaskID);
+			count = count + task.getAnswerList().size();
+		}
+		System.out.println("Total microtask answers: "+count);		
+	}
+	
 }

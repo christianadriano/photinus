@@ -36,7 +36,7 @@ public class QuestionLOCs {
 			String[] tokens = line.split(",");
 			Integer questionID = new Integer(tokens[0]);
 			Integer LOCs = new Integer(tokens[4]);
-			System.out.println(questionID.toString()+":"+ LOCs.toString());
+			//System.out.println(questionID.toString()+":"+ LOCs.toString());
 			ID_LOCs_Map.put(questionID.toString(),LOCs);
 		}
 		return ID_LOCs_Map;

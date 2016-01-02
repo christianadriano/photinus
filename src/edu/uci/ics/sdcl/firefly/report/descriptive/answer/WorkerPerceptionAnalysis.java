@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
+import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.QuestionTypeAnalysis.QuestionTypeOutput;
@@ -27,87 +28,53 @@ public class WorkerPerceptionAnalysis {
 
 	HashMap<String, ArrayList<WorkerSessionTuple>> sessionByBugMap = new HashMap<String, ArrayList<WorkerSessionTuple>>();
 
-	public void loadWorkerSessions(){
+	/** Map used to control which worker was already sample for each bug. This is necessary to 
+	 * avoid that a worker participates in more than one bug. ANOVA analysis requires this for
+	 * the independence of samples assumption.
+	 */
+	HashMap<String, String> bugWorkerMap = new HashMap<String, String>();
+
+	public void loadWorkerSessions(boolean independentSamples){
 		FileSessionDTO dto = new FileSessionDTO();
 		this.workerSessionMap = (HashMap<String, WorkerSession>) dto.getSessions();
 
-	//	System.out.println("number of sessions:"+this.workerSessionMap.size());
-	//	printAnswerCount(workerSessionMap);
-	//	printAnswerCountFromMicrotasks();
-	//	checkAnswersPerWorker(workerSessionMap);
-		
 		Iterator<String> iter = workerSessionMap.keySet().iterator();
 		while(iter.hasNext()){
 			String sessionID = iter.next();
 			WorkerSession session = workerSessionMap.get(sessionID);
 
-			String bugID = session.getFileName();
 			HashMap<String,String> bugCoveringMap = BugCoveringMap.initialize();
 			WorkerSessionTuple tuple = new WorkerSessionTuple(session,bugCoveringMap);
-			addTuple(tuple);
+			addTuple(tuple, independentSamples);
 		}
 	}
-	
-	private void checkAnswersPerWorker(
-			HashMap<String, WorkerSession> workerSessionMap2) {
-		int count = 0;
-		Iterator<String> iter = workerSessionMap2.keySet().iterator();
-		while(iter.hasNext()){
-			String sessionID = iter.next();
-			WorkerSession session = workerSessionMap2.get(sessionID);
-			String workerID  = session.getWorkerId();
-			Vector<Microtask> taskList = session.getMicrotaskList();
-			for(Microtask task: taskList){
-				int answerCount = task.getAnswerCountByUserId(workerID);
-				if(answerCount>1 || answerCount ==0){
-					System.out.println("workeID:"+workerID+" has "+answerCount+" for task: "+task.getID().toString());
-				}
-				count = count + answerCount;
+
+
+	private void addTuple(WorkerSessionTuple tuple, boolean independentSamples){
+
+		if((!independentSamples) || (!isWorkerInSamples(tuple.workerID))){
+			//Either is not indepenentSamples or it is, then the worker should have not participated yet in the sampling
+
+			ArrayList<WorkerSessionTuple> tupleList = sessionByBugMap.get(tuple.bugID);
+			if(tupleList==null){
+				tupleList = new ArrayList<WorkerSessionTuple>();
 			}
+			tupleList.add(tuple);
+			sessionByBugMap.put(tuple.bugID,tupleList);
 		}
-		System.out.println("Total counted answers: "+count);
 	}
 
-	private void printAnswerCount(
-			HashMap<String, WorkerSession> workerSessionMap2) {
-		int count=0;
-		Iterator<String> iter = workerSessionMap2.keySet().iterator();
-		while(iter.hasNext()){
-			String sessionID = iter.next();
-			WorkerSession session = workerSessionMap2.get(sessionID);
-			String workerID  = session.getWorkerId();
-			Vector<Microtask> taskList = session.getMicrotaskList();
-			for(Microtask task: taskList){
-				if(task.getAnswerByUserId(workerID)!=null);{
-					count++;
-				}
-			}
-		}
-		System.out.println("Total answers: "+count);
-	}
-	
-	private void printAnswerCountFromMicrotasks(){
-		FileSessionDTO dto = new FileSessionDTO();
-		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
-		int count=0;
-		Iterator<String> iter = microtaskMap.keySet().iterator();
-		while(iter.hasNext()){
-			String microtaskID = iter.next();
-			Microtask task = microtaskMap.get(microtaskID);
-			count = count + task.getAnswerList().size();
-		}
-		System.out.println("Total microtask answers: "+count);		
-	}
 
-	private void addTuple(WorkerSessionTuple tuple){
-		ArrayList<WorkerSessionTuple> tupleList = sessionByBugMap.get(tuple.bugID);
-		if(tupleList==null){
-			tupleList = new ArrayList<WorkerSessionTuple>();
-		}
-		tupleList.add(tuple);
-		sessionByBugMap.put(tuple.bugID,tupleList);
-	}
+	private boolean isWorkerInSamples(String workerID){
 
+		if(this.bugWorkerMap.containsKey(workerID)){
+			return true;
+		}
+		else{
+			bugWorkerMap.put(workerID, workerID); 
+			return false;
+		}
+	}
 
 	/** Prints the counts of answers per worker that have identical difficulty or confidence levels 
 	 * output:
@@ -150,13 +117,14 @@ public class WorkerPerceptionAnalysis {
 		}
 	}
 
-	
+
 	/** Prints the difficulty levels for the answer for each Java method
 	 *  Header <bug1_difficulty, worker1-bug1_difficulty, worker2-bug1_difficulty, etc.
+	 *  @param answerIndex which answer per worker
 	 */
-	public void printDifficultyLevels(){
+	public void printDifficultyLevels(int[] answerIndex){
 
-		String destination = "C://firefly//AnswerCorrelationAnalysis//BugDifficultyLevels.csv";
+		String destination = "C://firefly//AnswerCorrelationAnalysis//BugDifficultyLevels_Independent_Transposed.csv";
 		BufferedWriter log;
 
 		try {
@@ -166,12 +134,15 @@ public class WorkerPerceptionAnalysis {
 			Iterator<String> iter = this.sessionByBugMap.keySet().iterator();
 			while(iter.hasNext()){
 				String bugID = iter.next();
-			
+
 				StringBuffer buffer = new StringBuffer(bugID+"_difficulty,");
 				ArrayList<WorkerSessionTuple> tupleList  = this.sessionByBugMap.get(bugID);
 				for(WorkerSessionTuple tuple : tupleList){
-					for(Integer difficulty: tuple.difficultyList){
-						buffer.append(difficulty.toString()+",");
+					for(int index : answerIndex){
+						if(index<tuple.difficultyList.size()){
+							Integer difficulty = tuple.difficultyList.get(index);
+							buffer.append(difficulty.toString()+",");
+						}
 					}
 				}
 				log.write(buffer.toString()+"\n");
@@ -186,13 +157,14 @@ public class WorkerPerceptionAnalysis {
 		}
 	}
 
-	
+
 	/** Prints the difficulty levels for the answer for each Java method
 	 *  Header <bug1_difficulty, worker1-bug1_difficulty, worker2-bug1_difficulty, etc.
+	 *  @param answerIndex which answer per worker
 	 */
-	public void printConfidenceLevels(){
+	public void printConfidenceLevels(int[] answerIndex){
 
-		String destination = "C://firefly//AnswerCorrelationAnalysis//BugConfidenceLevels.csv";
+		String destination = "C://firefly//AnswerCorrelationAnalysis//BugConfidenceLevels_All.csv";
 		BufferedWriter log;
 
 		try {
@@ -202,12 +174,15 @@ public class WorkerPerceptionAnalysis {
 			Iterator<String> iter = this.sessionByBugMap.keySet().iterator();
 			while(iter.hasNext()){
 				String bugID = iter.next();
-			
+
 				StringBuffer buffer = new StringBuffer(bugID+"_confidence,");
 				ArrayList<WorkerSessionTuple> tupleList  = this.sessionByBugMap.get(bugID);
 				for(WorkerSessionTuple tuple : tupleList){
-					for(Integer difficulty: tuple.confidenceList){
-						buffer.append(difficulty.toString()+",");
+					for(int index : answerIndex){
+						if(index<tuple.confidenceList.size()){
+							Integer confidence = tuple.confidenceList.get(index);
+							buffer.append(confidence.toString()+",");
+						}
 					}
 				}
 				log.write(buffer.toString()+"\n");
@@ -221,14 +196,16 @@ public class WorkerPerceptionAnalysis {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void main(String[] args){
-		WorkerPerceptionAnalysis analysis =  new WorkerPerceptionAnalysis();
-		analysis.loadWorkerSessions();
-		//analysis.printIdenticalCounts();
-		//analysis.printDifficultyLevels();
-		analysis.printConfidenceLevels();
 
+	public static void main(String[] args){
+
+		int answerIndex[] = {0,1,2}; //{0,1,2} ;
+
+		WorkerPerceptionAnalysis analysis =  new WorkerPerceptionAnalysis();
+		analysis.loadWorkerSessions(true);
+		//analysis.printIdenticalCounts();
+		analysis.printDifficultyLevels(answerIndex); //print only first answer for each worker.
+		//analysis.printConfidenceLevels(answerIndex);
 	}
 
 }

@@ -37,6 +37,8 @@ public class WorkerSessionTuple {
 	
 	public String bugID = "";
 	
+	public String workerID = "";
+	
 	/**
 	 * 
 	 * @param session the microtasks for a worker
@@ -44,7 +46,8 @@ public class WorkerSessionTuple {
 	 */
 	public WorkerSessionTuple(WorkerSession session, HashMap<String, String> bugCoveringMap){
 		
-		this.bugID = session.getFileName(); //Check this
+		this.bugID = session.getFileName(); 
+		this.workerID = session.getWorkerId();
 		
 		Vector<Microtask> microtaskList = session.getMicrotaskList();
 		
@@ -54,7 +57,7 @@ public class WorkerSessionTuple {
 			difficultyList.add(answer.getDifficulty());
 			confidenceList.add(answer.getConfidenceOption());
 			questionTypeList.add(task.getQuestionType());
-			sizeList.add(task.getLOC_CoveredByQuestion());//Check this.
+			//sizeList.add(task.getLOC_CoveredByQuestion());//Check this.
 	
 			correctnessList.add(bugCoveringMap.containsKey(task.getID().toString()));
 		}

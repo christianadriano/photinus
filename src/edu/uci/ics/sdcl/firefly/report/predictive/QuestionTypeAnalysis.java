@@ -20,7 +20,6 @@ import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 public class QuestionTypeAnalysis {
 
-
 	public class QuestionTypeOutput{
 
 		String questionID="";
@@ -79,7 +78,16 @@ public class QuestionTypeAnalysis {
 
 	}	
 
+	/** Map used to control which worker was already sample for each bug. This is necessary to 
+	 * avoid that a worker participates in more than one bug. ANOVA analysis requires this for
+	 * the independence of samples assumption.
+	 */
+	private HashMap<String, String> bugWorkerMap = new HashMap<String, String>();
 
+	/** Sets the  lines covered attribute of each microtask
+	 *  @param microtaskMap all microtasks with their respective answers
+	 *  @param ID_LOC_Map the lines covered by each microtask. These data come from a file.
+	 *  */
 	private HashMap<String, Microtask> addQuestionSizeData(HashMap<String, Microtask> microtaskMap, 
 			HashMap<String,Integer> ID_LOC_Map){
 
@@ -99,9 +107,10 @@ public class QuestionTypeAnalysis {
 
 	/** Builds the three maps of answer duration, which can be printed by 
 	 * method 
-	 * @param microtaskMap
+	 * @param microtaskMap all microtasks with their respective answers
+	 * @param independentSamples if true means that each worker can only participate in one question type list.
 	 */
-	public ArrayList<QuestionTypeOutput> buildOutputList(HashMap<String, Microtask> microtaskMap){
+	public ArrayList<QuestionTypeOutput> buildOutputList(HashMap<String, Microtask> microtaskMap, boolean independentSamples){
 
 		ArrayList<QuestionTypeOutput> list = new ArrayList<QuestionTypeOutput>();
 
@@ -121,28 +130,15 @@ public class QuestionTypeAnalysis {
 				output.bugCovering = false;
 
 			for(Answer answer : answerList){
-				output.confidenceList.add(answer.getConfidenceOption());
-				output.difficultyList.add(answer.getDifficulty());
-				output.durationList.add(new Double(answer.getElapsedTime()));
+				
+				if((!independentSamples) || (!isWorkerInSamples(answer.getWorkerId()))){
+					//Either is not indepenentSamples or it is, then the worker should have not participated yet in the sampling
+					output.confidenceList.add(answer.getConfidenceOption());
+					output.difficultyList.add(answer.getDifficulty());
+					output.durationList.add(new Double(answer.getElapsedTime()));
+					output = this.computeConfusionMatrix(output, answer); //compute TP, FP, FN, TN
+				}
 
-				if(output.bugCovering){
-					if(answer.getOption().compareTo(Answer.YES)==0){
-						output.TP++;
-					}
-					else
-						if(answer.getOption().compareTo(Answer.NO)==0){ //Ignore IDK
-							output.FN++;
-						}
-				}
-				else{//Non-bug covering
-					if(answer.getOption().compareTo(Answer.YES)==0){
-						output.FP++;
-					}
-					else
-						if(answer.getOption().compareTo(Answer.NO)==0){ //Ignore IDK
-							output.TN++;
-						}
-				}
 			}//for loop Answerlist
 			output.averageDifficulty = computeAverageInteger(output.difficultyList);
 			output.averageConfidence = computeAverageInteger(output.confidenceList);
@@ -153,6 +149,39 @@ public class QuestionTypeAnalysis {
 		return list;
 	}
 
+	private boolean isWorkerInSamples(String workerID){
+
+		if(this.bugWorkerMap.containsKey(workerID)){
+			return true;
+		}
+		else{
+			bugWorkerMap.put(workerID, workerID); 
+			return false;
+		}
+	}
+
+	private QuestionTypeOutput computeConfusionMatrix(QuestionTypeOutput output, Answer answer){
+
+		if(output.bugCovering){
+			if(answer.getOption().compareTo(Answer.YES)==0){
+				output.TP++;
+			}
+			else
+				if(answer.getOption().compareTo(Answer.NO)==0){ //Ignore IDK
+					output.FN++;
+				}
+		}
+		else{//Non-bug covering
+			if(answer.getOption().compareTo(Answer.YES)==0){
+				output.FP++;
+			}
+			else
+				if(answer.getOption().compareTo(Answer.NO)==0){ //Ignore IDK
+					output.TN++;
+				}
+		}
+		return output;
+	}
 
 	private Double computeAverageDouble(ArrayList<Double> list) {
 		Double average = 0.0;
@@ -245,11 +274,13 @@ public class QuestionTypeAnalysis {
 			outputLists.questionType = type;
 			for(QuestionTypeOutput output : QuestionTypeOutputList){
 				if(output.questionType.compareTo(type)==0){
-					outputLists.durationList.addAll(output.durationList);
-					outputLists.confidenceList.addAll(output.confidenceList);
-					outputLists.difficultyList.addAll(output.difficultyList);
-					outputLists.LocList.add(output.LOCs);
-					outputLists.accuracyList.add(output.accuracy);
+					for(int i=0;i<output.durationList.size();i++){
+					outputLists.durationList.add(output.durationList.get(i));
+					outputLists.confidenceList.add(output.confidenceList.get(i));
+					outputLists.difficultyList.add(output.difficultyList.get(i));
+					outputLists.LocList.add(output.LOCs); //repeats the value to the duration and confidence lists.
+					outputLists.accuracyList.add(output.accuracy); //repeats the value
+					}
 				}
 			}
 			outputListsMap.put(type, outputLists);
@@ -260,7 +291,7 @@ public class QuestionTypeAnalysis {
 
 	/**Prints a file in which each line is a question type with all answers values for confidence, difficulty, duration, accuracy, and LOC */
 	public void printList( HashMap<String, OutputLists> outputListsMap ) {
-		String destination = "C://firefly//QuestionTypeAnalysis//QuestionTypeLISTSOutput.csv";
+		String destination = "C://firefly//QuestionTypeAnalysis//QuestionTypeLISTSOutput_independent.csv";
 		BufferedWriter log;
 
 		String[] questionTypes =  {"IF_CONDITIONAL", "METHOD_INVOCATION", "VARIABLE_DECLARATION", "FOR_LOOP", "WHILE_LOOP"};
@@ -311,7 +342,7 @@ public class QuestionTypeAnalysis {
 		QuestionLOCs lineCounter = new QuestionLOCs();
 		HashMap<String, Integer>  IDLOCMap = lineCounter.loadList();
 		HashMap<String,Microtask> microtaskWithLOCS_Map = counter.addQuestionSizeData(microtaskMap,  IDLOCMap);
-		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map);
+		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map,true); 
 		//counter.printOutput(outputList); 
 
 		HashMap<String, OutputLists> map = counter.buildLists(outputList);
