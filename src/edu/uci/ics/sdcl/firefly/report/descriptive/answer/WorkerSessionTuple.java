@@ -24,9 +24,13 @@ public class WorkerSessionTuple {
 	
 	public ArrayList<Answer> answerList = new ArrayList<Answer>();
 	
+	public ArrayList<String> taskIDList = new ArrayList<String>();
+	
 	public ArrayList<Integer> difficultyList = new ArrayList<Integer>();
 	
 	public ArrayList<Integer> confidenceList = new ArrayList<Integer>();
+	
+	public ArrayList<Double> durationList = new ArrayList<Double>();
 	
 	/** Number of lines covered by question */
 	public ArrayList<Integer> sizeList = new ArrayList<Integer>(); 
@@ -44,7 +48,8 @@ public class WorkerSessionTuple {
 	 * @param session the microtasks for a worker
 	 * @param bugCoveringMap Map with bug covering question IDs
 	 */
-	public WorkerSessionTuple(WorkerSession session, HashMap<String, String> bugCoveringMap){
+	public WorkerSessionTuple(WorkerSession session, HashMap<String, String> bugCoveringMap, 
+			HashMap<String, Microtask> microtaskWithLOCS_Map){
 		
 		this.bugID = session.getFileName(); 
 		this.workerID = session.getWorkerId();
@@ -54,10 +59,15 @@ public class WorkerSessionTuple {
 		for(Microtask task : microtaskList){
 			Answer answer = task.getAnswerByUserId(session.getWorkerId());
 			answerList.add(answer);
+			taskIDList.add(task.getID().toString());
 			difficultyList.add(answer.getDifficulty());
 			confidenceList.add(answer.getConfidenceOption());
 			questionTypeList.add(task.getQuestionType());
-			//sizeList.add(task.getLOC_CoveredByQuestion());//Check this.
+			durationList.add(new Double(answer.getElapsedTime())/1000);
+			
+			//Add lines covered information
+			Microtask taskWithLOCS = microtaskWithLOCS_Map.get(task.getID().toString());
+			sizeList.add(taskWithLOCS.getLOC_CoveredByQuestion());//Check this.
 	
 			correctnessList.add(bugCoveringMap.containsKey(task.getID().toString()));
 		}
@@ -65,9 +75,8 @@ public class WorkerSessionTuple {
 		this.identicalDifficultyLevels = countIdenticalLevels(this.difficultyList);
 		this.identicalConfidenceLevels = countIdenticalLevels(this.confidenceList);
 	}
-
-	public WorkerSessionTuple() {}
-
+	
+	
 	/**
 	 * Counts how many of the numbers are identical.
 	 * @param list
