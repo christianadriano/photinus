@@ -275,10 +275,12 @@ public class WorkerPerceptionAnalysis {
 	/** Prints the paired data for each worker by each Java Method. This data is used to look for correlations
 	 *  @param answerIndex which answers per worker (first, second, third, all, etc).
 	 *  @param bugID prints each Java method data in a different file
+	 *  @param questionType the type of question (METHOD_INVOCATION, IF_CONDITIONAL, VARIABLE_DECLARATION), if null, then 
+	 *  print all types.
 	 */
-	private void printPairedConfidenceDifficultySizeDuration(int[] answerIndex, String bugID){
+	private void printPairedConfidenceDifficultySizeDuration(int[] answerIndex, String bugID, String questionType){
 
-		String destination = "C://firefly//AnswerCorrelationAnalysis//Paired//Bug_"+bugID+"paired_questioType.csv";
+		String destination = "C://firefly//AnswerCorrelationAnalysis//Paired1stAnswers//Bug_"+bugID+"_"+questionType+".csv";		
 		BufferedWriter log;
 
 		try {
@@ -289,35 +291,38 @@ public class WorkerPerceptionAnalysis {
 
 			//HEADER
 			StringBuffer buffer = new StringBuffer(bugID+"_TaskID,");
-			buffer.append(bugID+"_questionType,");
 			buffer.append(bugID+"_confidence,");
 			buffer.append(bugID+"_difficulty,");
 			buffer.append(bugID+"_duration,");
 			buffer.append(bugID+"_size,");
+			buffer.append(bugID+"_questionType,");
 			log.write(buffer.toString()+"\n");
 			buffer = new StringBuffer();
-			
+
 			ArrayList<WorkerSessionTuple> tupleList  = this.sessionByBugMap.get(bugID);
 			for(WorkerSessionTuple tuple : tupleList){
 				for(int index : answerIndex){
-					
+
 					if(index<tuple.answerList.size()){
-						String taskID = tuple.taskIDList.get(index);
-						buffer.append(taskID+",");
-						
-						Integer confidence = tuple.confidenceList.get(index);
-						buffer.append(confidence.toString()+",");
-						Integer difficulty = tuple.difficultyList.get(index);
-						buffer.append(difficulty.toString()+",");
-						Double duration =  tuple.durationList.get(index);
-						buffer.append(duration.toString()+",");
-						Integer locs =  tuple.sizeList.get(index);
-						buffer.append(locs.toString()+",");
-						String questionType = tuple.questionTypeList.get(index);
-						buffer.append(questionType+",");
-						
-						log.write(buffer.toString()+"\n");
-						buffer = new StringBuffer();
+						String tupleQuestionType = tuple.questionTypeList.get(index);
+
+						if(questionType.isEmpty() || tupleQuestionType.matches(questionType)){
+							String taskID = tuple.taskIDList.get(index);
+							buffer.append(taskID+",");
+							Integer confidence = tuple.confidenceList.get(index);
+							buffer.append(confidence.toString()+",");
+							Integer difficulty = tuple.difficultyList.get(index);
+							buffer.append(difficulty.toString()+",");
+							Double duration =  tuple.durationList.get(index);
+							buffer.append(duration.toString()+",");
+							Integer locs =  tuple.sizeList.get(index);
+							buffer.append(locs.toString()+",");
+
+							buffer.append(tupleQuestionType+",");
+
+							log.write(buffer.toString()+"\n");
+							buffer = new StringBuffer();
+						}
 					}
 				}
 			}
@@ -333,11 +338,11 @@ public class WorkerPerceptionAnalysis {
 	}	
 
 	public void printPairedForAllBugs(int[] answerIndex){
-
+		String questionType = ""; //"IF_CONDITIONAL";//"VARIABLE_DECLARATION";// // "METHOD_INVOCATION";
 		Iterator<String> iter = this.sessionByBugMap.keySet().iterator();
 		while(iter.hasNext()){
 			String bugID = iter.next();
-			this.printPairedConfidenceDifficultySizeDuration(answerIndex, bugID);
+			this.printPairedConfidenceDifficultySizeDuration(answerIndex, bugID, questionType);
 		}
 
 	}
@@ -347,7 +352,7 @@ public class WorkerPerceptionAnalysis {
 	//-------------------------------------------------------------
 	public static void main(String[] args){
 
-		int answerIndex[] = {0,1,2}; //{0,1,2} ;
+		int answerIndex[] = {0}; //{0,1,2} ;
 
 		WorkerPerceptionAnalysis analysis =  new WorkerPerceptionAnalysis();
 		analysis.loadWorkerSessions(false);
