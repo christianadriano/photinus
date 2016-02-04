@@ -26,6 +26,8 @@ public class WorkerPerceptionAnalysis {
 
 	HashMap<String, ArrayList<WorkerSessionTuple>> sessionByBugMap = new HashMap<String, ArrayList<WorkerSessionTuple>>();
 
+	ArrayList<WorkerSessionTuple> sessionTupleList =  new ArrayList<WorkerSessionTuple>();
+	
 	/** Map used to control which worker was already sample for each bug. This is necessary to 
 	 * avoid that a worker participates in more than one bug. ANOVA analysis requires this for
 	 * the independence of samples assumption.
@@ -35,13 +37,13 @@ public class WorkerPerceptionAnalysis {
 	public void loadWorkerSessions(boolean independentSamples){
 		FileSessionDTO dto = new FileSessionDTO();
 		this.workerSessionMap = (HashMap<String, WorkerSession>) dto.getSessions();
-
+	
 		Iterator<String> iter = workerSessionMap.keySet().iterator();
 		HashMap<String,Microtask> microtaskWithLOCS_Map = loadMicrotaskLocs();
 		while(iter.hasNext()){
 			String sessionID = iter.next();
 			WorkerSession session = workerSessionMap.get(sessionID);
-
+			
 			HashMap<String,String> bugCoveringMap = BugCoveringMap.initialize();
 			WorkerSessionTuple tuple = new WorkerSessionTuple(session,bugCoveringMap,microtaskWithLOCS_Map);
 			addTuple(tuple, independentSamples);
@@ -88,6 +90,7 @@ public class WorkerPerceptionAnalysis {
 			}
 			tupleList.add(tuple);
 			sessionByBugMap.put(tuple.bugID,tupleList);
+			sessionTupleList.add(tuple);
 		}
 	}
 

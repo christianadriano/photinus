@@ -32,7 +32,7 @@ public class AnswerCorrelationAnalysis {
 	
 	HashMap<String, WorkerSession> workerSessionMap;
 	
-	HashMap<String, ArrayList<WorkerSession>> 
+	//HashMap<String, ArrayList<WorkerSession>> 
 	
 	public void loadWorkerSessions(){
 		FileSessionDTO dto = new FileSessionDTO();
