@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -600,4 +601,22 @@ public class Filter {
 		this.maxAnswers = maxAnswers;
 	}
 
+	public static HashMap<String,Microtask> selectMicrotaskFromFileName(HashMap<String, Microtask> originalMicrotaskMap, 
+																	String fileName){
+	
+		HashMap<String, Microtask> selectedMap =  new HashMap<String, Microtask>();
+		
+		Iterator<String> iter = originalMicrotaskMap.keySet().iterator();
+		while(iter.hasNext()){
+			String id = iter.next();
+			Microtask task = originalMicrotaskMap.get(id);
+			if(task.getFileName().matches(fileName)){
+				selectedMap.put(id, task);
+			}
+		}
+		
+		return selectedMap;
+	}
+	
+	
 }

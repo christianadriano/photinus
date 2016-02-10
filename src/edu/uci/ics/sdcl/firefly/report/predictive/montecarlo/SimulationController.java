@@ -53,14 +53,47 @@ public class SimulationController {
 
 		return subCrowdList;
 	}
+	
+	
 
+	private ArrayList<SubCrowd> generateJavaMethodFakeSubCrowds() {
+
+		ArrayList<SubCrowd> JavaMethodSubcrowdList =  new ArrayList<SubCrowd>();
+		for(String fileName:MonteCarloSimulator.fileNameList){
+			SubCrowd crowd =  new SubCrowd();
+			crowd.name = fileName;
+			JavaMethodSubcrowdList.add(crowd);			
+		}
+		return JavaMethodSubcrowdList;
+	}
+	
 	/**
 	 * 2- Obtain the microtasks for each of these sub-crowds
 	 * @param filterList
 	 * @return
 	 */
-	public ArrayList<SubCrowd> generateSubCrowdMicrotasks(ArrayList<SubCrowd> subCrowdList){
+	public ArrayList<SubCrowd> generateJavaMethodSubCrowdMicrotasks(ArrayList<SubCrowd> subCrowdList){
 
+		FileSessionDTO dto = new FileSessionDTO();
+		HashMap<String, Microtask> originalMicrotaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
+
+		for(int i=0; i<subCrowdList.size();i++){
+
+			SubCrowd crowd = subCrowdList.get(i);
+			HashMap<String, Microtask> map = (HashMap<String, Microtask>) 
+					Filter.selectMicrotaskFromFileName(originalMicrotaskMap, crowd.name);
+			crowd.microtaskMap = map;
+			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
+			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
+			subCrowdList.set(i, crowd);
+		}
+
+		return subCrowdList;
+	}
+
+	public ArrayList<SubCrowd> generateSubCrowdMicrotasks(ArrayList<SubCrowd> subCrowdList){
+		
+		
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
@@ -75,8 +108,9 @@ public class SimulationController {
 		}
 
 		return subCrowdList;
+		
 	}
-
+	
 	/**
 	 * 3- Obtain the maximum common number of answers for each sub-crowd
 	 * 
@@ -121,11 +155,11 @@ public class SimulationController {
 		for(SubCrowd crowd: subCrowdList){
 
 			MonteCarloSimulator simulator = new MonteCarloSimulator(crowd.name);
-			simulator.generateSimulations(crowd.maxCommonAnswers, this.numberOfSamples, crowd.microtaskMap, crowd.name);
+			simulator.generateSimulations(crowd.maxCommonAnswers, this.numberOfSamples,	crowd.microtaskMap, crowd.name);
 		}
 	}
 
-	/** Entry point method */
+	/** Simulations for all subcrowds */
 	public void run(){
 
 		ArrayList<SubCrowd> subCrowdList =  this.generateSubCrowdFilters();
@@ -135,10 +169,22 @@ public class SimulationController {
 		this.runSimulations(subCrowdList);
 	}
 
+	/** Simulations for all Java methods */
+	public void run_JavaMethodSimulations(){
 
+		ArrayList<SubCrowd> subCrowdList =  this.generateJavaMethodFakeSubCrowds();
+		subCrowdList = this.generateJavaMethodSubCrowdMicrotasks(subCrowdList);
+		subCrowdList = this.setMaximumCommonAnswers(subCrowdList);
+		subCrowdList = this.cutAnswerListsToMaximum(subCrowdList);
+		this.runSimulations(subCrowdList);
+	}
+
+
+	/** Entry point method */
 	public static void main(String args[]){
 		SimulationController controller = new SimulationController();
 		controller.run();
+		//controller.run_JavaMethodSimulations();
 	}
 
 }

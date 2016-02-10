@@ -2,6 +2,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive.montecarlo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 
@@ -65,7 +66,7 @@ public class RandomSampler {
 
 		ArrayList<HashMap<String, Microtask>> sampleMapsList = new ArrayList<HashMap<String, Microtask>> ();	
 
-		for(int i=0; i<numberOfSamples;i++){
+		for(int i=0; i<this.numberOfSamples;i++){
 			HashMap<String, Microtask> sampleMicrotaskMap = this.cloneMap(microtaskMap);
 			sampleMapsList.add(sampleMicrotaskMap);
 		}
@@ -86,9 +87,7 @@ public class RandomSampler {
 			String questionID = task.getID().toString();
 			Vector<Answer> answerList = task.getAnswerList();
 			ArrayList<Vector<Answer>> sampleAnswerList = this.sampleAnswers(answerList);
-			
-			//printSamples(questionID,sampleAnswerList);
-			
+					
 			sampledAnswerByQuestion.put(questionID, sampleAnswerList);
 		}
 		return sampledAnswerByQuestion;
@@ -120,7 +119,7 @@ public class RandomSampler {
 
 		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>(); 
 
-		for(int i=0;i<numberOfSamples;i++){
+		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
 			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize);
@@ -129,9 +128,21 @@ public class RandomSampler {
 				sample.add(answer);
 			}
 			samplesList.add(sample);
+			//if(sampleSize==20)
+			//	printSample(sample);
 		}
 		return samplesList;
 	}
+
+	private void printSample(Vector<Answer> sample) {
+		String outcome = "";
+		for(int i=0;i<sample.size();i++){
+			outcome = outcome + ","+ sample.get(i).getOption();
+		}
+		System.out.println(outcome);
+		
+	}
+
 
 	/** To avoid picking the same answer twice */
 	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int max){
@@ -146,9 +157,25 @@ public class RandomSampler {
 				pickedAnswersMap.put(indexStr, index);
 			}
 		}
+		
+		//if(max==20){
+		//	printMap(pickedAnswersMap);
+		//}
+		
 		return pickedAnswersMap;
 	}
 
+	
+	private void printMap(HashMap<String,Integer> pickedAnswersMap){
+		String outcome="";
+		Iterator<String> iter = pickedAnswersMap.keySet().iterator();
+		while(iter.hasNext()){
+			String key = iter.next();
+			outcome = outcome+","+key;
+		}
+		System.out.println(outcome);
+	}
+	
 	private HashMap<String, Microtask> cloneMap(HashMap<String, Microtask> map){
 
 		HashMap<String, Microtask> cloneMap = new HashMap<String, Microtask>();
