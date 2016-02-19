@@ -1,5 +1,9 @@
 package edu.uci.ics.sdcl.firefly.report.predictive;
 
+import java.util.HashMap;
+
+import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+
 public abstract class Predictor {
 
 	public abstract String getName();
@@ -21,5 +25,24 @@ public abstract class Predictor {
 	public abstract Integer getFalsePositives();
 	
 	public abstract Integer getFalseNegatives();
+
+	public abstract HashMap<String, Integer> getTruePositiveLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+		 
+	public abstract HashMap<String, Integer> getTrueNegativeLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+
+	public abstract HashMap<String, Integer> getFalsePositiveLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+
+	public abstract HashMap<String, Integer> getFalseNegativeLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+
+	public abstract HashMap<String, Integer> getTruePositiveFaultyLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+
+	public abstract HashMap<String, Integer> getTruePositiveNearFaultyLineCount(
+			HashMap<String, QuestionLinesMap> lineMapping);
+
 	
 }

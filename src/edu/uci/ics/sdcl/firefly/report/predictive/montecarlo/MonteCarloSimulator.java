@@ -216,7 +216,7 @@ public class MonteCarloSimulator {
 	public void printDataPointsToFile(int name){
 
 		String nameStr = new Integer(name).toString();
-		String destination = "C://firefly//MonteCarloSimulation//"+this.outputFolder+"//"+ nameStr+".csv";
+		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//"+this.outputFolder+"//"+ nameStr+".csv";
 		BufferedWriter log;
 
 		try {
@@ -246,7 +246,7 @@ public class MonteCarloSimulator {
 			HashMap<String, DataPoint> majorityVotingAverageMap,String name) {
 
 		String nameStr = name+"_datapoint";
-		String destination = "C://firefly//MonteCarloSimulation//DataPoints//"+ nameStr+".csv";
+		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//DataPoints//"+ nameStr+".csv";
 		BufferedWriter log;
 
 		try {

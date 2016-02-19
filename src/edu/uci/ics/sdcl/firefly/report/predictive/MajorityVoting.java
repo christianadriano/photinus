@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Answer;
+import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 /**
  * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
@@ -362,6 +363,48 @@ public class MajorityVoting extends Predictor{
 		
 		Integer trueNegatives = predictor.getTrueNegatives();
 		System.out.println("expected: 1, actual: "+ trueNegatives.toString());
+	}
+
+	@Override
+	public HashMap<String, Integer> getTruePositiveLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Integer> getTrueNegativeLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Integer> getFalsePositiveLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Integer> getFalseNegativeLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Integer> getTruePositiveFaultyLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Integer> getTruePositiveNearFaultyLineCount(
+			HashMap<Integer, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

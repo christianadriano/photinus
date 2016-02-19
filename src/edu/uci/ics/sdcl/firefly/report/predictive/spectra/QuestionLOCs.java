@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
+import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 /**
  * This class loads the number of lines each question covers
@@ -14,7 +15,7 @@ import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
 public class QuestionLOCs {
 
 	private String sourceFileName = "QuestionTypeLOCs.csv";
-	
+
 	private String path = "C://firefly//SpectraAnalysis//";
 
 	/** 
@@ -25,10 +26,9 @@ public class QuestionLOCs {
 		ArrayList<String> fileContentList = ReadWriteFile.readToBuffer(this.path, this.sourceFileName);
 		return initializeMap(fileContentList);
 	}
-	
-	
+
 	private HashMap<String,Integer>  initializeMap(ArrayList<String> buffer){
-		
+
 		HashMap<String, Integer> ID_LOCs_Map = new HashMap<String, Integer>();
 
 		buffer.remove(0); //removes header
@@ -41,5 +41,5 @@ public class QuestionLOCs {
 		}
 		return ID_LOCs_Map;
 	}
-
+ 
 }

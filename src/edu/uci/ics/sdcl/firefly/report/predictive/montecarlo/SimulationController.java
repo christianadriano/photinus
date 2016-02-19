@@ -183,8 +183,8 @@ public class SimulationController {
 	/** Entry point method */
 	public static void main(String args[]){
 		SimulationController controller = new SimulationController();
-		controller.run();
-		//controller.run_JavaMethodSimulations();
+		//controller.run();
+		controller.run_JavaMethodSimulations();
 	}
 
 }
