@@ -14,7 +14,9 @@ public class ClassCastTest {
 	public static <T> T[] add(T[] array, T element) {
 		Class<?> type = array != null ? array.getClass() : (element != null ? element.getClass() : Object.class);
 		// TODO - this is NOT safe to ignore - see LANG-571
+		System.out.println("passed here");
 		T[] newArray = (T[]) copyArrayGrow1(array, type);
+		System.out.println("did not reach here");
 		newArray[newArray.length - 1] = element;
 		return newArray;
 	}
