@@ -14,7 +14,7 @@ import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapL
 /**
  * 
  * WHAT ARE THRESHOLDS?
- * The Positive Voting method calculates the number of YES's answers that enable a fault to be located.
+ * The Across-Questions Consensus method calculates the number of YES's answers that enable a fault to be located.
  * This number is called "Threshold". 
  * 
  * The threshold is the number of YES's that is larger than the one received by 
@@ -65,7 +65,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private Integer finalThreshold=null;
 	
-	private int calibrationLevel=2; //DEFAULT is 2, but can be set 
+	/** The number of top ranking questions which will be considered to locate a fault *
+	 * Default is 2 */
+	private int calibrationLevel=2; 
 
 	public AcrossQuestionsConsensus(){
 		super();
@@ -123,7 +125,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	
-	
+	@Override
 	public Integer getTruePositives() {
 
 		if(this.finalThreshold<=0)
@@ -191,19 +193,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return count;
 	}
 
-//	@Override
-//	public Integer getNumberBugCoveringQuestions(){
-//
-//		Integer count=0;
-//
-//		for(String questionID: this.questionYESCountMap.keySet()){
-//			if(data.bugCoveringMap.containsKey(questionID))			
-//				count ++;
-//		}
-//		return count;
-//	}
-
-
+  
 	//----------------------------------------------------------------------------------------------------------
 
 	/**
@@ -230,15 +220,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private Integer computeThreshold(int calibrationLevel){
 		
-		Integer threshold=0;
-	
 		if(this.questionYESCountMap.isEmpty())
 			return -1;
 		
 		TreeMap<String, Integer> sortedYESMap = this.sortByValue(this.questionYESCountMap);
 		this.maxYES = this.questionYESCountMap.get(sortedYESMap.firstKey());
 				
-		String questionID_at_Level="";
 		Integer yesCount_at_Level=0;
 		int i=1;
 		for(String questionID: sortedYESMap.navigableKeySet()){
@@ -246,7 +233,6 @@ public class AcrossQuestionsConsensus extends Consensus{
 			//System.out.println("questionID: "+questionID+":"+yesCount);
 			i++;
 			if(i>calibrationLevel) {
-				questionID_at_Level = new String(questionID);
 				yesCount_at_Level = new Integer(yesCount);
 				break;
 			}
@@ -282,39 +268,6 @@ public class AcrossQuestionsConsensus extends Consensus{
 	    }
 	}
 
-	
-
-	private Integer computeTruePositives(){
-
-		Integer count=0;
-
-		for(String questionID: questionYESCountMap.keySet()){
-			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = questionYESCountMap.get(questionID);
-				if(vote!=null && vote>=this.finalThreshold){
-					count++;
-				}
-			}
-		}	
-		return count;
-	}
-
-
-	private Integer computeTrueNegatives(){
-
-		Integer count=0;
-
-		for(String questionID: questionYESCountMap.keySet()){
-			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = questionYESCountMap.get(questionID);
-				if(vote!=null){// && vote<=this.maxYES_NonBugCovering){
-					count++;
-				}
-			}
-		}	
-		return count;
-	}
-
 
 	private Double computeTruePositiveRate(){
 		Double numberOfBugCovering = new Double(this.data.bugCoveringMap.size()); 
@@ -322,9 +275,11 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return numberOfTruePositives / numberOfBugCovering;
 	}
 
+	//--------------------------------------------------------------------------------------------------
 	
+
 	@Override
-	public HashMap<String, Integer> getTruePositiveLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getTruePositiveLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
 		if(this.finalThreshold<=0)
 			return null; //Means that bug was not found
@@ -344,7 +299,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
 	@Override
-	public HashMap<String, Integer> getTruePositiveFaultyLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getTruePositiveFaultyLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
 		if(this.finalThreshold<=0)
 			return null; //Means that bug was not found
@@ -365,7 +320,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
 	@Override
-	public HashMap<String, Integer> getTruePositiveNearFaultyLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getNearPositiveFaultyLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
 		if(this.finalThreshold<=0)
 			return null; //Means that bug was not found
@@ -385,7 +340,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
 	@Override
-	public HashMap<String, Integer> getFalsePositiveLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getFalsePositiveLines(HashMap<String, QuestionLinesMap> lineMapping){
 	 
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
@@ -404,7 +359,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
 	@Override
-	public HashMap<String, Integer> getFalseNegativeLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getFalseNegativeLines(HashMap<String, QuestionLinesMap> lineMapping){
 	 
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
@@ -420,7 +375,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
 	@Override
-	public HashMap<String, Integer> getTrueNegativeLineCount(HashMap<String, QuestionLinesMap> lineMapping){
+	public HashMap<String, Integer> getTrueNegativeLines(HashMap<String, QuestionLinesMap> lineMapping){
 	 
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
@@ -435,8 +390,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			return map;
 	}
 	
- 
-		
+ 		
 	private HashMap<String, Integer> loadLines(HashMap<String, Integer> map, HashMap<String, String> lineMapping) {
 		
 		HashMap<String, Integer> newMap = new HashMap<String, Integer>();

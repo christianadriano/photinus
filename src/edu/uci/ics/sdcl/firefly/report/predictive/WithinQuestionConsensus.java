@@ -365,42 +365,42 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public HashMap<String, Integer> getTruePositiveLineCount(
+	public HashMap<String, Integer> getTruePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HashMap<String, Integer> getTrueNegativeLineCount(
+	public HashMap<String, Integer> getTrueNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HashMap<String, Integer> getFalsePositiveLineCount(
+	public HashMap<String, Integer> getFalsePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HashMap<String, Integer> getFalseNegativeLineCount(
+	public HashMap<String, Integer> getFalseNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HashMap<String, Integer> getTruePositiveFaultyLineCount(
+	public HashMap<String, Integer> getTruePositiveFaultyLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HashMap<String, Integer> getTruePositiveNearFaultyLineCount(
+	public HashMap<String, Integer> getNearPositiveFaultyLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;

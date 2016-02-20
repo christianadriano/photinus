@@ -31,12 +31,18 @@ public class LinesToInspectController {
 
 	HashMap<String, ArrayList<OutcomeInspect>> outcomeMap;
 
-	private OutcomeInspect computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> linesMapping) {
+	private OutcomeInspect computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
+
+		Boolean signal = predictor.computeSignal(answerData);
+		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		falsePositiveLines = removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		OutcomeInspect outcome = new OutcomeInspect(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				predictor.computeSignal(answerData),
+				signal,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -47,23 +53,44 @@ public class LinesToInspectController {
 				predictor.getFalseNegatives(),
 				answerData.getWorkerCount(),
 				answerData.getDifferentWorkersAmongHITs(),
-				predictor.getTruePositiveFaultyLineCount(linesMapping),
-				predictor.getTruePositiveNearFaultyLineCount(linesMapping),
-				predictor.getFalsePositiveLineCount(linesMapping));
+				truePositiveLines,
+				nearPositiveLines,
+				falsePositiveLines);
 		return outcome;
 	}
 
-	public HashMap<String, Microtask> getCutAnswers(int maximum){
 
+	/**
+	 *  Lines considered Near positive cannot be considered again False positives 
+	 * 
+	 * @param nearPositiveMap
+	 * @param falsePositiveMap
+	 * @return
+	 */
+	private HashMap<String,Integer> removeFalsePositiveDuplications(HashMap<String, Integer> nearPositiveMap,
+			HashMap<String, Integer> falsePositiveMap ){
+		if(nearPositiveMap!=null && falsePositiveMap!=null){
+			HashMap<String, Integer> revisedFalsePositiveMap = new HashMap<String,Integer>();
+			for (Map.Entry<String, Integer> entry : falsePositiveMap.entrySet()) {
+				if(!nearPositiveMap.containsKey(entry.getKey())){
+					revisedFalsePositiveMap.put(entry.getKey(),entry.getValue());
+				}
+			}
+			return revisedFalsePositiveMap;
+		}
+		else
+			return falsePositiveMap;
+	}
+
+
+	public HashMap<String, Microtask> getCutAnswers(int maximum){
 
 		HashMap<String, Microtask> cutMicrotaskMap = new HashMap<String, Microtask>();
 		FileSessionDTO sessionDTO = new FileSessionDTO();
-
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 
-		Iterator<String> iter = microtaskMap.keySet().iterator();
-		while(iter.hasNext()){
-			String id = iter.next();
+		for(Map.Entry<String,Microtask> entry : microtaskMap.entrySet()){
+			String id = entry.getKey();
 			Microtask microtask = microtaskMap.get(id);
 			Vector<Answer> answerlist = microtask.getAnswerList();
 			if(answerlist.size()<maximum)
@@ -179,9 +206,9 @@ public class LinesToInspectController {
 	public static void main(String args[]){
 
 		LinesToInspectController controller = new LinesToInspectController();
-		//controller.runAcrossQuestions(1);
+		controller.runAcrossQuestions(1);
 		//controller.runAcrossQuestions(2);
-		controller.runAcrossQuestions(3);
+		//controller.runAcrossQuestions(3);
 
 
 	}

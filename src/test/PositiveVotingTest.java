@@ -200,23 +200,23 @@ public class PositiveVotingTest {
 		
 		assertEquals(3,predictor.getThreshold().intValue());	
 		
-		HashMap<String,Integer> truePositiveFaultyLineCount = predictor.getTruePositiveFaultyLineCount(this.allQuestionLineMaps);
+		HashMap<String,Integer> truePositiveFaultyLineCount = predictor.getTruePositiveFaultyLines(this.allQuestionLineMaps);
 		printMap("True Positive Faulty", truePositiveFaultyLineCount);
 		assertEquals(1, truePositiveFaultyLineCount.size());
 		
-		HashMap<String,Integer> truePositiveNearFaultyLineCount = predictor.getTruePositiveNearFaultyLineCount(this.allQuestionLineMaps);
+		HashMap<String,Integer> truePositiveNearFaultyLineCount = predictor.getNearPositiveFaultyLines(this.allQuestionLineMaps);
 		printMap("True Positives Near Faulty", truePositiveNearFaultyLineCount);
 		assertEquals(2, truePositiveNearFaultyLineCount.size());
 		
-		HashMap<String,Integer> falsePositiveLineCount = predictor.getFalsePositiveLineCount(this.allQuestionLineMaps);
+		HashMap<String,Integer> falsePositiveLineCount = predictor.getFalsePositiveLines(this.allQuestionLineMaps);
 		printMap("False Positives", falsePositiveLineCount);
 		assertEquals(3, falsePositiveLineCount.size());
 		
-		HashMap<String,Integer> falseNegativeLineCount = predictor.getFalseNegativeLineCount(this.allQuestionLineMaps);
+		HashMap<String,Integer> falseNegativeLineCount = predictor.getFalseNegativeLines(this.allQuestionLineMaps);
 		printMap("False Negatives", falseNegativeLineCount);
 		assertEquals(1, falseNegativeLineCount.size());
 		
-		HashMap<String,Integer> trueNegativeLineCount = predictor.getTrueNegativeLineCount(this.allQuestionLineMaps);
+		HashMap<String,Integer> trueNegativeLineCount = predictor.getTrueNegativeLines(this.allQuestionLineMaps);
 		printMap("True Negatives", trueNegativeLineCount);
 		assertEquals(2, trueNegativeLineCount.size());
 

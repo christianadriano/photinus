@@ -24,22 +24,22 @@ public abstract class Consensus {
 	
 	public abstract Integer getFalseNegatives();
 
-	public abstract HashMap<String, Integer> getTruePositiveLineCount(
+	public abstract HashMap<String, Integer> getTruePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 		 
-	public abstract HashMap<String, Integer> getTrueNegativeLineCount(
+	public abstract HashMap<String, Integer> getTrueNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
-	public abstract HashMap<String, Integer> getFalsePositiveLineCount(
+	public abstract HashMap<String, Integer> getFalsePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
-	public abstract HashMap<String, Integer> getFalseNegativeLineCount(
+	public abstract HashMap<String, Integer> getFalseNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
-	public abstract HashMap<String, Integer> getTruePositiveFaultyLineCount(
+	public abstract HashMap<String, Integer> getTruePositiveFaultyLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
-	public abstract HashMap<String, Integer> getTruePositiveNearFaultyLineCount(
+	public abstract HashMap<String, Integer> getNearPositiveFaultyLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
 	
