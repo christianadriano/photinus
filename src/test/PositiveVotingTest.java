@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
-import edu.uci.ics.sdcl.firefly.report.predictive.PositiveVoting;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 
@@ -64,7 +64,7 @@ public class PositiveVotingTest {
 	//@Test
 	public void testComputeSignal_FirstThreshold() {
 		this.setup1();
-		PositiveVoting predictor = new PositiveVoting();
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 		predictor.setCalibrationLevel(2);
 		assertTrue(predictor.computeSignal(this.data));
 		assertEquals(2,predictor.getThreshold().intValue());	
@@ -129,7 +129,7 @@ public class PositiveVotingTest {
 	//@Test
 	public void testComputeSignal_SecondThreshold() {
 		this.setup2();
-		PositiveVoting predictor = new PositiveVoting();
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 		
 		assertTrue(predictor.computeSignal(this.data));
 		assertEquals(2,predictor.getThreshold().intValue());	
@@ -194,7 +194,7 @@ public class PositiveVotingTest {
 		
 		this.setupLineCountTests();
 		
-		PositiveVoting predictor =  new PositiveVoting();
+		AcrossQuestionsConsensus predictor =  new AcrossQuestionsConsensus();
 		
 		assertTrue(predictor.computeSignal(this.data));
 		

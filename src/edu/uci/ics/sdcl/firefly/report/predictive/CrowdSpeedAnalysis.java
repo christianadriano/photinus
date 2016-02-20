@@ -187,11 +187,11 @@ public class CrowdSpeedAnalysis {
 			HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(microtaskMap,fileName);
 			Integer workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-			Predictor predictor = new PositiveVoting();
+			Predictor predictor = new AcrossQuestionsConsensus();
 			Outcome outcome = computeDataPoint(data,predictor);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new MajorityVoting();
+			predictor = new WithinQuestionConsensus();
 			outcome = computeDataPoint(data,predictor);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 		}

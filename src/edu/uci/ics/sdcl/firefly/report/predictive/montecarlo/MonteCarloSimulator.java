@@ -11,9 +11,9 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
-import edu.uci.ics.sdcl.firefly.report.predictive.MajorityVoting;
+import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
-import edu.uci.ics.sdcl.firefly.report.predictive.PositiveVoting;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Predictor;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerConfidenceCounter.Output;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
@@ -72,11 +72,11 @@ public class MonteCarloSimulator {
 						
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Predictor predictor = new PositiveVoting();
+					Predictor predictor = new AcrossQuestionsConsensus();
 					Outcome outcome = computeDataPoint(data,predictor);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
-					predictor = new MajorityVoting();
+					predictor = new WithinQuestionConsensus();
 					outcome = computeDataPoint(data,predictor);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}

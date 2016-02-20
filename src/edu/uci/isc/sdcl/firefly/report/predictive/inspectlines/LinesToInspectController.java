@@ -14,7 +14,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
-import edu.uci.ics.sdcl.firefly.report.predictive.PositiveVoting;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Predictor;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
@@ -102,7 +102,7 @@ public class LinesToInspectController {
 				Integer workerCountPerHIT = countWorkers(cutMicrotaskMap,fileName);
 				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
-				PositiveVoting predictor = new PositiveVoting();
+				AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 				predictor.setCalibrationLevel(calibration);
 				OutcomeInspect outcome = this.computeDataPoint(data,predictor,linesMapping);
 				ArrayList<OutcomeInspect> list = outcomeMap.get(fileName);

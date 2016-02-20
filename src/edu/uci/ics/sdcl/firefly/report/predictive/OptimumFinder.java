@@ -196,8 +196,8 @@ public class OptimumFinder {
 		}
 
 		OptimumFinder finder =  new OptimumFinder(processingList);
-		finder.addPredictor(new PositiveVoting());
-		finder.addPredictor(new MajorityVoting());
+		finder.addPredictor(new AcrossQuestionsConsensus());
+		finder.addPredictor(new WithinQuestionConsensus());
 		finder.run();
 		finder.printResults();
 	}

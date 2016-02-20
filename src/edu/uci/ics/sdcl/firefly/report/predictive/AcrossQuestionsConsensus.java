@@ -53,9 +53,9 @@ import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapL
  * @author adrianoc
  *
  */
-public class PositiveVoting extends Predictor{
+public class AcrossQuestionsConsensus extends Predictor{
 
-	private String name = "Positive vote";
+	private String name = "Across-questions consensus";
 	
 	private Integer maxYES=0;
 
@@ -67,7 +67,7 @@ public class PositiveVoting extends Predictor{
 	
 	private int calibrationLevel=2; //DEFAULT is 2, but can be set 
 
-	public PositiveVoting(){
+	public AcrossQuestionsConsensus(){
 		super();
 	}
 
@@ -191,17 +191,17 @@ public class PositiveVoting extends Predictor{
 		return count;
 	}
 
-	@Override
-	public Integer getNumberBugCoveringQuestions(){
-
-		Integer count=0;
-
-		for(String questionID: this.questionYESCountMap.keySet()){
-			if(data.bugCoveringMap.containsKey(questionID))			
-				count ++;
-		}
-		return count;
-	}
+//	@Override
+//	public Integer getNumberBugCoveringQuestions(){
+//
+//		Integer count=0;
+//
+//		for(String questionID: this.questionYESCountMap.keySet()){
+//			if(data.bugCoveringMap.containsKey(questionID))			
+//				count ++;
+//		}
+//		return count;
+//	}
 
 
 	//----------------------------------------------------------------------------------------------------------
@@ -317,7 +317,7 @@ public class PositiveVoting extends Predictor{
 
 
 	private Double computeTruePositiveRate(){
-		Double numberOfBugCovering = this.getNumberBugCoveringQuestions().doubleValue();
+		Double numberOfBugCovering = new Double(this.data.bugCoveringMap.size()); 
 		Double numberOfTruePositives = this.getTruePositives().doubleValue();
 		return numberOfTruePositives / numberOfBugCovering;
 	}
@@ -501,7 +501,7 @@ public class PositiveVoting extends Predictor{
 
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
 
-		PositiveVoting predictor = new PositiveVoting();
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 
 		System.out.println("expected: true, actual: "+ predictor.computeSignal(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getThreshold().toString());

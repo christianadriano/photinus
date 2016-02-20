@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
-import edu.uci.ics.sdcl.firefly.report.predictive.MajorityVoting;
-import edu.uci.ics.sdcl.firefly.report.predictive.PositiveVoting;
+import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 
 public class MajorityVotingTest {
 
@@ -60,7 +60,7 @@ public class MajorityVotingTest {
 	@Test
 	public void testComputeSignal_FirstThreshold() {
 		this.setup1();
-		MajorityVoting predictor = new MajorityVoting();
+		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
 		assertTrue(predictor.computeSignal(this.data));	
 		
 		assertEquals(1, predictor.getFalsePositives().intValue());
@@ -123,7 +123,7 @@ public class MajorityVotingTest {
 	@Test
 	public void testComputeSignal_SecondThreshold() {
 		this.setup2();
-		MajorityVoting predictor = new MajorityVoting();
+		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
 		
 		assertTrue(predictor.computeSignal(this.data));
 		

@@ -12,9 +12,9 @@ import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
  * @author adrianoc
  *
  */
-public class MajorityVoting extends Predictor{
+public class WithinQuestionConsensus extends Predictor{
 
-	public static String name = "Majority vote";
+	public static String name = "Within-question consensus";
 	
 	private HashMap<String, Integer> voteMap;
 	
@@ -140,8 +140,7 @@ public class MajorityVoting extends Predictor{
 	 * sent, which should be only the ones pertaining one HIT (e.g., HIT01_8).
 	 * @return
 	 */
-	@Override
-	public Integer getNumberBugCoveringQuestions(){
+	private Integer getNumberBugCoveringQuestions(){
 		if(this.voteMap!=null)
 			return countBugCovering();
 		else
@@ -150,11 +149,11 @@ public class MajorityVoting extends Predictor{
 
 	@Override
 	public String getName(){
-		return MajorityVoting.name;
+		return WithinQuestionConsensus.name;
 	}
 
 
-	public MajorityVoting(){
+	public WithinQuestionConsensus(){
 		super();
 	}
 	//----------------------------------------------------------------------------------------------------------
@@ -345,7 +344,7 @@ public class MajorityVoting extends Predictor{
 		
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
 		
-		MajorityVoting predictor = new MajorityVoting();
+		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
 		
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
 		Double totalBugCovering = 2.0;
@@ -367,42 +366,42 @@ public class MajorityVoting extends Predictor{
 
 	@Override
 	public HashMap<String, Integer> getTruePositiveLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public HashMap<String, Integer> getTrueNegativeLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public HashMap<String, Integer> getFalsePositiveLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public HashMap<String, Integer> getFalseNegativeLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public HashMap<String, Integer> getTruePositiveFaultyLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public HashMap<String, Integer> getTruePositiveNearFaultyLineCount(
-			HashMap<Integer, QuestionLinesMap> lineMapping) {
+			HashMap<String, QuestionLinesMap> lineMapping) {
 		// TODO Auto-generated method stub
 		return null;
 	}
