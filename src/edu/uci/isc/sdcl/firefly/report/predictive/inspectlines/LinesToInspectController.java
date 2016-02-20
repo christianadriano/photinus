@@ -15,7 +15,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
-import edu.uci.ics.sdcl.firefly.report.predictive.Predictor;
+import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 /** Compute the lines to inspect under various crowd consensus configurations
@@ -31,7 +31,7 @@ public class LinesToInspectController {
 
 	HashMap<String, ArrayList<OutcomeInspect>> outcomeMap;
 
-	private OutcomeInspect computeDataPoint(AnswerData answerData, Predictor predictor, HashMap<String, QuestionLinesMap> linesMapping) {
+	private OutcomeInspect computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> linesMapping) {
 
 		OutcomeInspect outcome = new OutcomeInspect(null,
 				answerData.getHitFileName(),

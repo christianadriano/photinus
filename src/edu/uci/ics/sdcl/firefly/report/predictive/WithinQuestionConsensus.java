@@ -12,7 +12,7 @@ import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
  * @author adrianoc
  *
  */
-public class WithinQuestionConsensus extends Predictor{
+public class WithinQuestionConsensus extends Consensus{
 
 	public static String name = "Within-question consensus";
 	

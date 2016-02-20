@@ -53,7 +53,7 @@ import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapL
  * @author adrianoc
  *
  */
-public class AcrossQuestionsConsensus extends Predictor{
+public class AcrossQuestionsConsensus extends Consensus{
 
 	private String name = "Across-questions consensus";
 	

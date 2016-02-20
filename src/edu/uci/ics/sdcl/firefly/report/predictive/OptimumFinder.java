@@ -37,7 +37,7 @@ public class OptimumFinder {
 
 	ArrayList<HashMap<FilterCombination,AnswerData>> dataList;
 
-	ArrayList<Predictor> predictorList;
+	ArrayList<Consensus> predictorList;
 
 	ArrayList<Outcome> filterOutcomeList = new ArrayList<Outcome>();
 	
@@ -47,9 +47,9 @@ public class OptimumFinder {
 		this.dataList = dataList;
 	}
 
-	public void addPredictor(Predictor pred){
+	public void addPredictor(Consensus pred){
 		if(predictorList==null)
-			this.predictorList = new ArrayList<Predictor>();
+			this.predictorList = new ArrayList<Consensus>();
 		this.predictorList.add(pred);
 	}
 
@@ -59,7 +59,7 @@ public class OptimumFinder {
 			for(FilterCombination filter : map.keySet()){ //one time
 				AnswerData answerData = map.get(filter);
 				
-				for(Predictor predictor: predictorList){ //one time
+				for(Consensus predictor: predictorList){ //one time
 					
 					Outcome outcome = new Outcome(filter,
 							answerData.getHitFileName(),

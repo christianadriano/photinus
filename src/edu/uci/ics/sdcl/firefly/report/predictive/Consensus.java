@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
-public abstract class Predictor {
+public abstract class Consensus {
 
 	public abstract String getName();
 	
