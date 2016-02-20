@@ -60,7 +60,7 @@ public class LinesToInspectController {
 		FileSessionDTO sessionDTO = new FileSessionDTO();
 
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
-		
+
 		Iterator<String> iter = microtaskMap.keySet().iterator();
 		while(iter.hasNext()){
 			String id = iter.next();
@@ -68,10 +68,10 @@ public class LinesToInspectController {
 			Vector<Answer> answerlist = microtask.getAnswerList();
 			if(answerlist.size()<maximum)
 				System.err.println("AnswerList < "+maximum+", size:"+answerlist.size()+", id:"+id);
-			
-				microtask.setAnswerList(new Vector<Answer>(answerlist.subList(0, maximum)));
-				cutMicrotaskMap.put(id, microtask);
-			
+
+			microtask.setAnswerList(new Vector<Answer>(answerlist.subList(0, maximum)));
+			cutMicrotaskMap.put(id, microtask);
+
 		}
 		return cutMicrotaskMap;
 	}
@@ -81,7 +81,7 @@ public class LinesToInspectController {
 	public void runAcrossQuestions(int calibration){
 
 		this.outcomeMap = this.initializeOutcomeMap();
-	
+
 
 		PropertyManager manager = PropertyManager.initializeSingleton();
 		HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
@@ -94,6 +94,7 @@ public class LinesToInspectController {
 		HashMap<String, QuestionLinesMap> linesMapping =  loader.loadList();
 
 		for(String fileName: fileNameList){
+
 			for(int i=1; i<=20;i++){
 				HashMap<String, Microtask> cutMicrotaskMap = this.getCutAnswers(i);
 				Integer totalDifferentWorkersAmongHITs = countWorkers(cutMicrotaskMap, null);
@@ -102,13 +103,13 @@ public class LinesToInspectController {
 				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
 				PositiveVoting predictor = new PositiveVoting();
-
+				predictor.setCalibrationLevel(calibration);
 				OutcomeInspect outcome = this.computeDataPoint(data,predictor,linesMapping);
 				ArrayList<OutcomeInspect> list = outcomeMap.get(fileName);
 				list.add(outcome);
 				outcomeMap.put(fileName,list);
 			}
-			printOutcomeMap(fileName, fileName+"_AQ_2");			
+			printOutcomeMap(fileName, fileName+"_AQ_"+calibration);			
 		}
 
 	}
@@ -178,7 +179,11 @@ public class LinesToInspectController {
 	public static void main(String args[]){
 
 		LinesToInspectController controller = new LinesToInspectController();
-		controller.runAcrossQuestions(2);
+		//controller.runAcrossQuestions(1);
+		//controller.runAcrossQuestions(2);
+		controller.runAcrossQuestions(3);
+
+
 	}
 
 }

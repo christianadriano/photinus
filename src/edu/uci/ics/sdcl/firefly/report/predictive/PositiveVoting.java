@@ -355,7 +355,7 @@ public class PositiveVoting extends Predictor{
 					Integer yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.finalThreshold){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-						if(questionLinesMap==null) System.err.println("No mapping for questionID: "+questionID);
+						if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
 					}
 				}
@@ -393,7 +393,10 @@ public class PositiveVoting extends Predictor{
 					Integer yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount>=this.finalThreshold || this.finalThreshold<=0){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-						map = loadLines(map,questionLinesMap.nonFaultyLines);
+						if(questionLinesMap.nonFaultyLines==null) 
+							System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
+						else
+							map = loadLines(map,questionLinesMap.nonFaultyLines);
 					}
 				}
 			}
