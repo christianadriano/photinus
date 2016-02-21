@@ -67,7 +67,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
-	private int calibrationLevel=2; 
+	private int calibration=2; 
 
 	public AcrossQuestionsConsensus(){
 		super();
@@ -83,18 +83,29 @@ public class AcrossQuestionsConsensus extends Consensus{
 		this.data = data;
 	
 		this.questionYESCountMap = this.computeNumberOfAnswers(Answer.YES);
-		finalThreshold =  this.computeThreshold(this.calibrationLevel);
+		finalThreshold =  this.computeThreshold(this.calibration);
 		
 		if(finalThreshold>0)
 			return true;
 		else
 			return false;
 	}
-
-	public void setCalibrationLevel(int calibrationLevel){
-		this.calibrationLevel = calibrationLevel;
+	
+	@Override
+	public void setCalibration(int calibrationLevel){
+		this.calibration = calibrationLevel;
 	}
 
+	@Override
+	public int getCalibration(){
+		return this.calibration;
+	}
+	
+	@Override
+	public void setData(AnswerData data){
+		this.data = data;
+	}
+	
 	@Override
 	/**
 	 * @return if the threshold is positive, then returns the difference between Maximum YES's and the Threshold. If 

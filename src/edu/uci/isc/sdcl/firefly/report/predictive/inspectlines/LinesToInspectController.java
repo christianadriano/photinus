@@ -16,6 +16,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
+import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 /** Compute the lines to inspect under various crowd consensus configurations
@@ -105,41 +106,6 @@ public class LinesToInspectController {
 
 
 
-	public void runAcrossQuestions(int calibration){
-
-		this.outcomeMap = this.initializeOutcomeMap();
-
-
-		PropertyManager manager = PropertyManager.initializeSingleton();
-		HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
-		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
-		for(String questionID:listOfBugPointingQuestions){
-			bugCoveringMap.put(questionID,questionID);
-		}
-
-		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
-		HashMap<String, QuestionLinesMap> linesMapping =  loader.loadList();
-
-		for(String fileName: fileNameList){
-
-			for(int i=1; i<=20;i++){
-				HashMap<String, Microtask> cutMicrotaskMap = this.getCutAnswers(i);
-				Integer totalDifferentWorkersAmongHITs = countWorkers(cutMicrotaskMap, null);
-				HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(cutMicrotaskMap,fileName);
-				Integer workerCountPerHIT = countWorkers(cutMicrotaskMap,fileName);
-				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-
-				AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
-				predictor.setCalibrationLevel(calibration);
-				OutcomeInspect outcome = this.computeDataPoint(data,predictor,linesMapping);
-				ArrayList<OutcomeInspect> list = outcomeMap.get(fileName);
-				list.add(outcome);
-				outcomeMap.put(fileName,list);
-			}
-			printOutcomeMap(fileName, fileName+"_AQ_"+calibration);			
-		}
-
-	}
 	public void printOutcomeMap(String fileName, String outputFileName){	
 
 		String destination = "C://firefly//InspectLinesAnalysis//"+ outputFileName+".txt";
@@ -202,15 +168,63 @@ public class LinesToInspectController {
 		}
 		return workerMap.size();
 	}
+	
+	
+    //-------------------------------------------------------
+	/** Entry point of all computations
+	 * 
+	 * @param consensus
+	 */
+	public void run(Consensus consensus){
+
+		this.outcomeMap = this.initializeOutcomeMap();
+
+
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
+		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
+		for(String questionID:listOfBugPointingQuestions){
+			bugCoveringMap.put(questionID,questionID);
+		}
+
+		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
+		HashMap<String, QuestionLinesMap> linesMapping =  loader.loadList();
+
+		for(String fileName: fileNameList){
+
+			for(int i=1; i<=20;i++){
+				HashMap<String, Microtask> cutMicrotaskMap = this.getCutAnswers(i);
+				Integer totalDifferentWorkersAmongHITs = countWorkers(cutMicrotaskMap, null);
+				HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(cutMicrotaskMap,fileName);
+				Integer workerCountPerHIT = countWorkers(cutMicrotaskMap,fileName);
+				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
+
+				consensus.setData(data);
+				OutcomeInspect outcome = this.computeDataPoint(data,consensus,linesMapping);
+				ArrayList<OutcomeInspect> list = outcomeMap.get(fileName);
+				list.add(outcome);
+				outcomeMap.put(fileName,list);
+			}
+			printOutcomeMap(fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());			
+		}
+
+	}
 
 	public static void main(String args[]){
 
 		LinesToInspectController controller = new LinesToInspectController();
-		controller.runAcrossQuestions(1);
-		//controller.runAcrossQuestions(2);
-		//controller.runAcrossQuestions(3);
-
-
+		
+		//Compute across-questions consensus
+		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus();
+		acrossQuestionsConsensus.setCalibration(1);
+		 
+		
+		//Compute within-question consensus
+		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus();
+		withinQuestionConsensus.setCalibration(0); //Other values are -2,-1,1,2
+	 
+		
+		controller.run((Consensus)withinQuestionConsensus);
 	}
 
 }

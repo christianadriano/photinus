@@ -22,7 +22,24 @@ public class WithinQuestionConsensus extends Consensus{
 	
 	private AnswerData data;
 	
-
+	/** Difference between number of YES's and NO's. Default is 1.*/
+	private int calibration=1;
+	
+	@Override
+	public void setCalibration(int calibration){
+		this.calibration = calibration;
+	}
+	
+	@Override
+	public int getCalibration(){
+		return this.calibration;
+	}
+	
+	@Override
+	public void setData(AnswerData data){
+		this.data = data;
+	}
+	
 	/** The number of bug covering questions that were actually found */
 	@Override
 	public Boolean computeSignal(AnswerData data){
@@ -50,8 +67,8 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: data.bugCoveringMap.keySet()){
 			
 			Integer vote = voteMap.get(questionID);
-			if(vote!=null && vote>0){
-				extraVotes = extraVotes + vote-1;
+			if(vote!=null && vote>this.calibration){
+				extraVotes = extraVotes + vote-this.calibration;
 			}
 		}
 
@@ -90,7 +107,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: this.voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = this.voteMap.get(questionID);
-				if(vote!=null && vote>0 && vote<smallestVote){
+				if(vote!=null && vote>this.calibration && vote<smallestVote){
 					smallestVote = vote;
 					questionIDSmallestVote = new String(questionID);
 				}
@@ -232,7 +249,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: data.bugCoveringMap.keySet()){
 			Integer vote = voteMap.get(questionID);
 			if(vote!=null){
-				if(vote>0)
+				if(vote>this.calibration)
 					quantityLocated++;
 			}
 		}
@@ -247,7 +264,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: voteMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote!=null && vote>0)
+				if(vote!=null && vote>this.calibration)
 					quantityFalsePositives = quantityFalsePositives +1;
 			}
 		}
@@ -261,7 +278,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote!=null && vote<=0)
+				if(vote!=null && vote<=this.calibration)
 					quantityFalseNegatives = quantityFalseNegatives +1;
 			}
 		}
@@ -275,7 +292,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: voteMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote!=null && vote<=0)
+				if(vote!=null && vote<=this.calibration)
 					quantityTrueNegatives = quantityTrueNegatives +1;
 			}
 		}
@@ -329,14 +346,14 @@ public class WithinQuestionConsensus extends Consensus{
 		answerList = new ArrayList<String>();//2 yes's NON-BUG COVERING FALSE POSITIVE
 		answerList.add(Answer.YES);
 		answerList.add(Answer.YES);
-		answerList.add(Answer.YES);
+		answerList.add(Answer.NO);
 		answerList.add(Answer.NO);
 		answerMap.put("2",answerList);
 		
 		answerList = new ArrayList<String>();//4 yes's BUG COVERING TRUE POSITIVE
 		answerList.add(Answer.YES);
 		answerList.add(Answer.YES);
-		answerList.add(Answer.YES);
+		answerList.add(Answer.NO);
 		answerList.add(Answer.NO);
 		answerMap.put("3",answerList);
 		
@@ -345,7 +362,8 @@ public class WithinQuestionConsensus extends Consensus{
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
 		
 		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
-		
+		predictor.setCalibration(-1);
+		predictor.computeSignal(data);
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
 		Double totalBugCovering = 2.0;
 		
@@ -362,6 +380,9 @@ public class WithinQuestionConsensus extends Consensus{
 		
 		Integer trueNegatives = predictor.getTrueNegatives();
 		System.out.println("expected: 1, actual: "+ trueNegatives.toString());
+		
+		Integer truePositives = predictor.getTruePositives();
+		System.out.println("expected: 1, actual: "+ truePositives.toString());
 	}
 
 	@Override

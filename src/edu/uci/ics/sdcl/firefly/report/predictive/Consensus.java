@@ -8,6 +8,12 @@ public abstract class Consensus {
 
 	public abstract String getName();
 	
+	public abstract void setCalibration(int calilbration);
+	
+	public abstract int getCalibration();
+	
+	public abstract void setData(AnswerData data);
+	
 	public abstract Boolean computeSignal(AnswerData data);
 	
 	public abstract Double computeSignalStrength(AnswerData data);
