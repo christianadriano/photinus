@@ -217,13 +217,11 @@ public class LinesToInspectController {
 		//Compute across-questions consensus
 		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus();
 		acrossQuestionsConsensus.setCalibration(1);
-		 
-		
+	
 		//Compute within-question consensus
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus();
-		withinQuestionConsensus.setCalibration(0); //Other values are -2,-1,1,2
-	 
-		
+		withinQuestionConsensus.setCalibration(2); //Other values are -2,-1,0,1,2
+	 	
 		controller.run((Consensus)withinQuestionConsensus);
 	}
 

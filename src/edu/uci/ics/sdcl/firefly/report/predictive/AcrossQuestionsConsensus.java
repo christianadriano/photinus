@@ -63,7 +63,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	AnswerData data;
 
-	private Integer finalThreshold=null;
+	private Integer threshold=null;
 	
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
@@ -83,9 +83,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 		this.data = data;
 	
 		this.questionYESCountMap = this.computeNumberOfAnswers(Answer.YES);
-		finalThreshold =  this.computeThreshold(this.calibration);
+		threshold =  this.computeThreshold(this.calibration);
 		
-		if(finalThreshold>0)
+		if(threshold>0)
 			return true;
 		else
 			return false;
@@ -113,12 +113,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 */
 	public Double computeSignalStrength(AnswerData data) {
 
-		if(this.finalThreshold==null)
+		if(this.threshold==null)
 			this.computeSignal(data);
 
-		if(finalThreshold>0){	
+		if(threshold>0){	
 			Double truePositiveRate = this.computeTruePositiveRate();
-			Integer extraVotes = this.maxYES - this.finalThreshold;
+			Integer extraVotes = this.maxYES - this.threshold;
 			return truePositiveRate * extraVotes;
 		}
 		else
@@ -139,14 +139,14 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public Integer getTruePositives() {
 
-		if(this.finalThreshold<=0)
+		if(this.threshold<=0)
 			return 0;
 		else{
 			int count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.finalThreshold){
+					if(yesCount!=null && yesCount>=this.threshold){
 						count++;
 					}
 				}
@@ -158,14 +158,14 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public Integer getTrueNegatives() {
 
-		if(this.finalThreshold<=0)
+		if(this.threshold<=0)
 			return 0;
 		else{
 			int count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.finalThreshold){
+					if(yesCount<this.threshold){
 						count++;
 					}
 				}
@@ -181,7 +181,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer yesCount = this.questionYESCountMap.get(questionID);
-				if(yesCount>=this.finalThreshold || this.finalThreshold<=0){
+				if(yesCount>=this.threshold || this.threshold<=0){
 					count++;
 				}
 			}
@@ -196,7 +196,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer yesCount = this.questionYESCountMap.get(questionID);
-				if(yesCount<this.finalThreshold || this.finalThreshold<=0){
+				if(yesCount<this.threshold || this.threshold<=0){
 					count++;
 				}
 			}
@@ -292,14 +292,14 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getTruePositiveLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
-		if(this.finalThreshold<=0)
+		if(this.threshold<=0)
 			return null; //Means that bug was not found
 		else{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.finalThreshold){
+					if(yesCount!=null && yesCount>=this.threshold){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.allLines);
 					}
@@ -312,14 +312,14 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getTruePositiveFaultyLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
-		if(this.finalThreshold<=0)
+		if(this.threshold<=0)
 			return null; //Means that bug was not found
 		else{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.finalThreshold){
+					if(yesCount!=null && yesCount>=this.threshold){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
@@ -333,14 +333,14 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getNearPositiveFaultyLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
-		if(this.finalThreshold<=0)
+		if(this.threshold<=0)
 			return null; //Means that bug was not found
 		else{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.finalThreshold){
+					if(yesCount!=null && yesCount>=this.threshold){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nearFaultyLines);
 					}
@@ -357,7 +357,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount>=this.finalThreshold || this.finalThreshold<=0){
+					if(yesCount>=this.threshold || this.threshold<=0){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap.nonFaultyLines==null) 
 							System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
@@ -376,7 +376,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.finalThreshold || this.finalThreshold<=0){
+					if(yesCount<this.threshold || this.threshold<=0){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
 					}
@@ -392,7 +392,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.finalThreshold){
+					if(yesCount<this.threshold){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nonFaultyLines);
 					}
@@ -402,11 +402,11 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 	
  		
-	private HashMap<String, Integer> loadLines(HashMap<String, Integer> map, HashMap<String, String> lineMapping) {
+	private HashMap<String, Integer> loadLines(HashMap<String, Integer> map, HashMap<String, String> questionLineMapping) {
 		
 		HashMap<String, Integer> newMap = new HashMap<String, Integer>();
 		
-		Iterator<String> iter = lineMapping.keySet().iterator();
+		Iterator<String> iter = questionLineMapping.keySet().iterator();
 		while(iter.hasNext()){
 			String line = iter.next();
 			if(map.containsKey(line)){
@@ -476,7 +476,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	@Override
 	public Integer getThreshold(){
-		return this.finalThreshold;
+		return this.threshold;
 	}
 
 
