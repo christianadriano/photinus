@@ -37,8 +37,8 @@ public class FilterGenerator {
 		HashMap<String, CombinedFilterRange> map;
 		CombinedFilterRange range;
 
-		map = AttributeRangeGenerator.setupProfessionRangeFilters();
-		range = map.get(AttributeRangeGenerator.WORKER_NON_STUDENT);	
+		map = AttributeRangeGenerator.setupNoFilters();
+		range = map.get(AttributeRangeGenerator.NO_FILTERS);	
 
 		ArrayList<FilterCombination> filterList = new ArrayList<FilterCombination>();
 

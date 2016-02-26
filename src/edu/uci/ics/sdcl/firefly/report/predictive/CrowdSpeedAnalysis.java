@@ -11,6 +11,8 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 import edu.uci.ics.sdcl.firefly.util.RoundDouble;
@@ -112,12 +114,18 @@ public class CrowdSpeedAnalysis {
 		return newMap;
 	}
 
-	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor) {
+	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor,HashMap<String, QuestionLinesMap> lineMapping) {
+
+		Boolean signal = predictor.computeSignal(answerData);
+		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				predictor.computeSignal(answerData),
+				signal,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -127,7 +135,10 @@ public class CrowdSpeedAnalysis {
 				predictor.getFalsePositives(),
 				predictor.getFalseNegatives(),
 				answerData.getWorkerCount(),
-				answerData.getDifferentWorkersAmongHITs());
+				answerData.getDifferentWorkersAmongHITs(),
+				truePositiveLines,
+				nearPositiveLines,
+				falsePositiveLines);
 
 		return outcome;
 	}
@@ -183,16 +194,20 @@ public class CrowdSpeedAnalysis {
 		DataPoint positiveVDataPoint = new DataPoint();
 		DataPoint majorityVDataPoint = new DataPoint();
 
+		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
+		HashMap<String, QuestionLinesMap> lineMapping =  loader.loadList();
+
+		
 		for(String fileName: fileNameList){//each fileName is a Java method
 			HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(microtaskMap,fileName);
 			Integer workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 			Consensus predictor = new AcrossQuestionsConsensus();
-			Outcome outcome = computeDataPoint(data,predictor);
+			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
 			predictor = new WithinQuestionConsensus();
-			outcome = computeDataPoint(data,predictor);
+			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 		}
 		

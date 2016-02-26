@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import edu.uci.ics.sdcl.firefly.Answer;
-import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 /**
  * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
@@ -24,7 +24,7 @@ public class WithinQuestionConsensus extends Consensus{
 	private AnswerData data;
 	
 	/** Difference between number of YES's and NO's. Default is 1.*/
-	private int calibration=1;
+	private int calibration=0;
 
 	@Override
 	public void setCalibration(int calibration){
@@ -56,12 +56,12 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public Double computeSignalStrength(AnswerData data){
+	public Integer computeSignalStrength(AnswerData data){
 		if(voteMap==null)
 			this.computeSignal(data);
 
 		if(getTruePositives()==0)
-			return -1.0;
+			return -1;
 
 		Integer extraVotes=0;
 
@@ -73,9 +73,7 @@ public class WithinQuestionConsensus extends Consensus{
 			}
 		}
 
-		Double truePositiveRate = this.computeTruePositiveRate();
-
-		return truePositiveRate * extraVotes;
+		return extraVotes;
 	}
 
 

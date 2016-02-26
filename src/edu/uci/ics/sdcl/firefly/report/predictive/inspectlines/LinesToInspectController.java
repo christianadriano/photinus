@@ -1,4 +1,4 @@
-package edu.uci.isc.sdcl.firefly.report.predictive.inspectlines;
+package edu.uci.ics.sdcl.firefly.report.predictive.inspectlines;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -38,7 +38,7 @@ public class LinesToInspectController {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		falsePositiveLines = removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
+		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		OutcomeInspect outcome = new OutcomeInspect(null,
 				answerData.getHitFileName(),
@@ -58,29 +58,6 @@ public class LinesToInspectController {
 				nearPositiveLines,
 				falsePositiveLines);
 		return outcome;
-	}
-
-
-	/**
-	 *  Lines considered Near positive cannot be considered again False positives 
-	 * 
-	 * @param nearPositiveMap
-	 * @param falsePositiveMap
-	 * @return
-	 */
-	private HashMap<String,Integer> removeFalsePositiveDuplications(HashMap<String, Integer> nearPositiveMap,
-			HashMap<String, Integer> falsePositiveMap ){
-		if(nearPositiveMap!=null && falsePositiveMap!=null){
-			HashMap<String, Integer> revisedFalsePositiveMap = new HashMap<String,Integer>();
-			for (Map.Entry<String, Integer> entry : falsePositiveMap.entrySet()) {
-				if(!nearPositiveMap.containsKey(entry.getKey())){
-					revisedFalsePositiveMap.put(entry.getKey(),entry.getValue());
-				}
-			}
-			return revisedFalsePositiveMap;
-		}
-		else
-			return falsePositiveMap;
 	}
 
 
@@ -216,13 +193,13 @@ public class LinesToInspectController {
 		
 		//Compute across-questions consensus
 		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus();
-		acrossQuestionsConsensus.setCalibration(1);
+		acrossQuestionsConsensus.setCalibration(2);
 	
 		//Compute within-question consensus
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus();
 		withinQuestionConsensus.setCalibration(2); //Other values are -2,-1,0,1,2
 	 	
-		controller.run((Consensus)withinQuestionConsensus);
+		controller.run((Consensus)acrossQuestionsConsensus);
 	}
 
 }

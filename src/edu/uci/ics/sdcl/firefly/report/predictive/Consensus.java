@@ -1,8 +1,9 @@
 package edu.uci.ics.sdcl.firefly.report.predictive;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 public abstract class Consensus {
 
@@ -16,7 +17,7 @@ public abstract class Consensus {
 	
 	public abstract Boolean computeSignal(AnswerData data);
 	
-	public abstract Double computeSignalStrength(AnswerData data);
+	public abstract Integer computeSignalStrength(AnswerData data);
 	
 	public abstract Integer computeNumberOfWorkers(AnswerData data);
 
@@ -48,5 +49,25 @@ public abstract class Consensus {
 	public abstract HashMap<String, Integer> getNearPositiveFaultyLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
-	
+	/**
+	 *  Lines considered Near positive cannot be considered again False positives 
+	 * 
+	 * @param nearPositiveMap
+	 * @param falsePositiveMap
+	 * @return
+	 */
+	public static HashMap<String,Integer> removeFalsePositiveDuplications(HashMap<String, Integer> nearPositiveMap,
+			HashMap<String, Integer> falsePositiveMap ){
+		if(nearPositiveMap!=null && falsePositiveMap!=null){
+			HashMap<String, Integer> revisedFalsePositiveMap = new HashMap<String,Integer>();
+			for (Map.Entry<String, Integer> entry : falsePositiveMap.entrySet()) {
+				if(!nearPositiveMap.containsKey(entry.getKey())){
+					revisedFalsePositiveMap.put(entry.getKey(),entry.getValue());
+				}
+			}
+			return revisedFalsePositiveMap;
+		}
+		else
+			return falsePositiveMap;
+	}
 }

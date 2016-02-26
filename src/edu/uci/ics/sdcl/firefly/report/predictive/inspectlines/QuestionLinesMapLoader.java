@@ -1,4 +1,4 @@
-package edu.uci.isc.sdcl.firefly.report.predictive.inspectlines;
+package edu.uci.ics.sdcl.firefly.report.predictive.inspectlines;
 
  
 import java.util.ArrayList;

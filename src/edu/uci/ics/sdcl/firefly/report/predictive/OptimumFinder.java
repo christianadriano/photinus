@@ -20,6 +20,8 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask; 
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.ElapsedTimeUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 import edu.uci.ics.sdcl.firefly.util.mturk.AnswerCounter;
@@ -33,18 +35,21 @@ import edu.uci.ics.sdcl.firefly.util.mturk.AnswerCounter;
  *
  */
 public class OptimumFinder {
-	
+
 
 	ArrayList<HashMap<FilterCombination,AnswerData>> dataList;
 
 	ArrayList<Consensus> predictorList;
 
 	ArrayList<Outcome> filterOutcomeList = new ArrayList<Outcome>();
-	
-	ArrayList<String> hitFileNameList = new 	ArrayList<String>();
 
-	public OptimumFinder(ArrayList<HashMap<FilterCombination,AnswerData>> dataList){
+	ArrayList<String> hitFileNameList = new 	ArrayList<String>();
+	
+	HashMap<String, QuestionLinesMap> lineMapping;
+
+	public OptimumFinder(ArrayList<HashMap<FilterCombination,AnswerData>> dataList, HashMap<String, QuestionLinesMap> lineMapping){
 		this.dataList = dataList;
+		this.lineMapping = lineMapping;
 	}
 
 	public void addPredictor(Consensus pred){
@@ -54,17 +59,25 @@ public class OptimumFinder {
 	}
 
 	public void run(){
-		
+
+	
+
 		for(HashMap<FilterCombination,AnswerData> map : dataList){ //one for each file (8)
 			for(FilterCombination filter : map.keySet()){ //one time
 				AnswerData answerData = map.get(filter);
-				
+
 				for(Consensus predictor: predictorList){ //one time
-					
+
+					Boolean signal = predictor.computeSignal(answerData);
+					HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
+					HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+					HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+					falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
+
 					Outcome outcome = new Outcome(filter,
 							answerData.getHitFileName(),
 							predictor.getName(),
-							predictor.computeSignal(answerData),
+							signal,
 							predictor.computeSignalStrength(answerData),
 							predictor.computeNumberOfWorkers(answerData),
 							answerData.getTotalAnswers(),
@@ -74,8 +87,11 @@ public class OptimumFinder {
 							predictor.getFalsePositives(),
 							predictor.getFalseNegatives(),
 							answerData.getWorkerCount(),
-							answerData.getDifferentWorkersAmongHITs());
-						
+							answerData.getDifferentWorkersAmongHITs(),
+							truePositiveLines,
+							nearPositiveLines,
+							falsePositiveLines);
+					
 					filterOutcomeList.add(outcome);					
 				}
 			}
@@ -104,16 +120,16 @@ public class OptimumFinder {
 			e.printStackTrace();
 		}
 	}
-	
 
-	
-	
+
+
+
 	private String getHeader(){
-	
+
 		return FilterCombination.getFilterHeaders() + Outcome.getHeader();
 	}
-	
-	
+
+
 	private static HashMap<String, ArrayList<String>>  extractAnswersForFileName(
 			HashMap<String, Microtask> microtaskMap,String fileName){
 
@@ -145,7 +161,7 @@ public class OptimumFinder {
 		}
 		return workerMap.size();
 	}
-	
+
 
 
 	public static void main(String[] args){
@@ -162,8 +178,11 @@ public class OptimumFinder {
 		ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
 
 		String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
-								"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
+				"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
+		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
+		HashMap<String, QuestionLinesMap> lineMapping =  loader.loadList();
+		
 		ArrayList<HashMap<FilterCombination,AnswerData>> processingList = new 	ArrayList<HashMap<FilterCombination,AnswerData>> ();
 
 		//Apply filter and extract data by fileName
@@ -172,19 +191,19 @@ public class OptimumFinder {
 			//FilterCombination combination =  filterList.get(0);
 			FileSessionDTO sessionDTO = new FileSessionDTO();
 			HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
-			
+
 			Filter filter = combination.getFilter();
 
 			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
-			
-		
+
+
 			Integer totalDifferentWorkersAmongHITs = countWorkers(filteredMicrotaskMap, null);
-			
+
 			System.out.println("Elapsed time: "+ElapsedTimeUtil.getElapseTime(filteredMicrotaskMap)+
 					", number of answers: "+AnswerCounter.countAnswers(filteredMicrotaskMap) + 
 					", number of workers: "+totalDifferentWorkersAmongHITs);
-			
-			
+
+
 			for(String fileName: fileNameList){
 				HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(filteredMicrotaskMap,fileName);
 				Integer workerCountPerHIT = countWorkers(filteredMicrotaskMap,fileName);
@@ -195,11 +214,11 @@ public class OptimumFinder {
 			}
 		}
 
-		OptimumFinder finder =  new OptimumFinder(processingList);
+		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
 		finder.addPredictor(new AcrossQuestionsConsensus());
 		finder.addPredictor(new WithinQuestionConsensus());
 		finder.run();
 		finder.printResults();
 	}
-	
+
 }

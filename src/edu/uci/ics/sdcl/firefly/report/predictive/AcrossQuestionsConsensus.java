@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import edu.uci.ics.sdcl.firefly.Answer;
-import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
-import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 
 /**
  * 
@@ -111,18 +111,16 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * @return if the threshold is positive, then returns the difference between Maximum YES's and the Threshold. If 
 	 * threshold is zero, then return -1.0
 	 */
-	public Double computeSignalStrength(AnswerData data) {
+	public Integer computeSignalStrength(AnswerData data) {
 
 		if(this.threshold==null)
 			this.computeSignal(data);
 
 		if(threshold>0){	
-			Double truePositiveRate = this.computeTruePositiveRate();
-			Integer extraVotes = this.maxYES - this.threshold;
-			return truePositiveRate * extraVotes;
+			return this.maxYES - this.threshold;
 		}
 		else
-			return -1.0;
+			return -1;
 	}
 
 	@Override
@@ -280,11 +278,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 
-	private Double computeTruePositiveRate(){
-		Double numberOfBugCovering = new Double(this.data.bugCoveringMap.size()); 
-		Double numberOfTruePositives = this.getTruePositives().doubleValue();
-		return numberOfTruePositives / numberOfBugCovering;
-	}
+
 
 	//--------------------------------------------------------------------------------------------------
 	

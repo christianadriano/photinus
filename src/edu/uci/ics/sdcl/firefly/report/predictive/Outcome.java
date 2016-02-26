@@ -1,10 +1,15 @@
 package edu.uci.ics.sdcl.firefly.report.predictive;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
+import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;;
 /**
- *  Outcome of a predictor
+ *  Outcome of a crowd consensus 
  * 
  * @author adrianoc
- * @see Predictor, MajorityVoting, PositiveVoting
+ * @see Predictor, WithinQuestionConsensus, AcrossQuestionsConsensus
  */
 public class Outcome {
 
@@ -16,7 +21,7 @@ public class Outcome {
 
 	public Boolean faultLocated;
 
-	public Double signalStrength;
+	public Integer signalStrength;
 
 	/** Maximum different workers per question for this HIT */
 	public Integer maxWorkerPerQuestion;
@@ -24,7 +29,7 @@ public class Outcome {
 	/** All the YES, NO, IDK for all different questions in the same HIT */
 	public Integer totalAnswersObtained;
 
-	/** Minimal number of YES's (has different definitions for MajorityVoting and Positive Voting */
+	/** Minimal number of YES's (has different definitions for WithinQuestionConsensus and AcrossQuestionsConsensus  */
 	public Integer threshold; 
 
 	public Integer truePositives;
@@ -35,8 +40,18 @@ public class Outcome {
 
 	public Integer falseNegatives;
 
-	public Double precision;
 
+	//Lines counts per consensus outcome
+	public HashMap<String,Integer> allLines;
+	public HashMap<String,Integer> trueNegativesLines;
+	public HashMap<String,Integer> falseNegativesLines;
+	public HashMap<String, Integer> truePositiveLines;
+	public HashMap<String,Integer> falsePositiveLines;
+
+	public HashMap<String, Integer> nearTruePositiveFaultyLines; //Only the true positive lines that are not actually faulty
+	public HashMap<String, Integer> truePositiveFaultyLines; //Only the true positive lines that are actually faulty
+
+	public Double precision;
 	public Double recall;
 
 	/** Total workers that contributed to one HIT after applying the combined filter */
@@ -46,9 +61,11 @@ public class Outcome {
 	public Integer differentWorkersAmongHITs;
 
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
-			Double signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
+			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
 			Integer truePositives, Integer trueNegatives,
-			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs) {
+			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
+			HashMap<String,Integer> truePosiveFaultyLines, HashMap<String,Integer> truePosiveNearFaultyLines, 
+			HashMap<String,Integer> falsePositiveLines  ) {
 		super();
 		this.filter = filter;
 		this.fileName = new String(fileName.replace("HIT0", "J").replace("_","."));
@@ -66,6 +83,9 @@ public class Outcome {
 		this.differentWorkersAmongHITs = differentWorkersAmongHITs;
 		this.precision = this.computePrecision(this.truePositives, this.falsePositives);
 		this.recall = this.computeRecall(this.truePositives, this.falseNegatives);
+		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.nearTruePositiveFaultyLines =  (HashMap<String, Integer>) ((truePosiveNearFaultyLines!=null) ? truePosiveNearFaultyLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.truePositiveFaultyLines =   (HashMap<String, Integer>) ((truePosiveFaultyLines!=null) ? truePosiveFaultyLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 	}
 
 	private Double computePrecision(int tp, int fp){
@@ -88,18 +108,39 @@ public class Outcome {
 
 	public static String getHeader(){
 
-		String header =  "HIT:Predictor:Fault located?:Signal strength:#Maximum workers per question:#Total answers obtained: #YES needed :"+
-				"True positives:True negatives:False positives:False negatives:Different workers in HIT:"+
-				"Different Workers among all HITs";
+		String header =  "HIT:Consensus:Fault located?:"
+				+ "True Positive Faulty Lines:" + "#True Positive Faulty Lines:"
+				+ "Near Positive Faulty Lines:" + "#Near Positive Faulty Lines:"
+				+ "False Positive Lines:"+ "#False Positive Lines:"
+				+ "Signal strength:#Maximum workers per question:#Total answers obtained: #YES needed :"
+				+"True positives:True negatives:False positives:False negatives:Different workers in HIT:"
+				+"Different Workers among all HITs";
 		return header;
 	}
 
 	public String toString(){
+		
+		String output = fileName +":"+ predictorType +":"+ faultLocated + 
+				":"+ this.linesToString(this.truePositiveFaultyLines) + ":"+ this.truePositiveFaultyLines.size()+
+				":"+ this.linesToString(this.nearTruePositiveFaultyLines) + ":"+ this.nearTruePositiveFaultyLines.size()+
+				":"+ this.linesToString(this.falsePositiveLines) + ":"+ this.falsePositiveLines.size()+
 
-		String output = fileName +":"+ predictorType +":"+ faultLocated +":"+ signalStrength +":"+ maxWorkerPerQuestion +":"+ totalAnswersObtained+
+				":"+ signalStrength +":"+ maxWorkerPerQuestion +":"+ totalAnswersObtained+
 				":"+threshold +":"+	truePositives +":"+ trueNegatives +":"+ falsePositives +":"+ falseNegatives +":"+ differentWorkersPerHIT +
 				":"+differentWorkersAmongHITs;
 		return output;	
 	}
 
+	public String linesToString(HashMap<String,Integer> map){
+		if(map==null)
+			return "";
+		else{
+			Iterator<String> iter = map.keySet().iterator();
+			String result="";
+			while(iter.hasNext()){
+				result = result+";"+iter.next();
+			}
+			return result;
+		}
+	}
 }

@@ -3,8 +3,8 @@ package edu.uci.ics.sdcl.firefly.report.predictive.spectra;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
-import edu.uci.isc.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 /**
  * This class loads the number of lines each question covers

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
@@ -15,10 +14,10 @@ import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
-import edu.uci.ics.sdcl.firefly.report.predictive.AnswerConfidenceCounter.Output;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
-import edu.uci.ics.sdcl.firefly.util.RoundDouble;
 
 public class MonteCarloSimulator {
 
@@ -57,6 +56,9 @@ public class MonteCarloSimulator {
 		this.outcomes_PositiveVoting = new ArrayList<DataPoint>();
 		this.outcomes_MajorityVoting = new ArrayList<DataPoint>();
 		
+		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
+		HashMap<String, QuestionLinesMap> lineMapping =  loader.loadList();
+		
 		for(int i=0; i<listOfMicrotaskMaps.size();i++){
 
 			HashMap<String, Microtask> microtaskMap = listOfMicrotaskMaps.get(i);
@@ -73,11 +75,11 @@ public class MonteCarloSimulator {
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 					Consensus predictor = new AcrossQuestionsConsensus();
-					Outcome outcome = computeDataPoint(data,predictor);
+					Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
 					predictor = new WithinQuestionConsensus();
-					outcome = computeDataPoint(data,predictor);
+					outcome = computeDataPoint(data,predictor,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}
 			}
@@ -190,12 +192,18 @@ public class MonteCarloSimulator {
 		return averageDataPoint;
 	}
 
-	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor) {
+	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
+		
+		Boolean signal = predictor.computeSignal(answerData);
+		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				predictor.computeSignal(answerData),
+				signal,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -205,8 +213,11 @@ public class MonteCarloSimulator {
 				predictor.getFalsePositives(),
 				predictor.getFalseNegatives(),
 				answerData.getWorkerCount(),
-				answerData.getDifferentWorkersAmongHITs());
-
+				answerData.getDifferentWorkersAmongHITs(),
+				truePositiveLines,
+				nearPositiveLines,
+				falsePositiveLines);
+		
 		return outcome;
 	}
 
@@ -229,7 +240,6 @@ public class MonteCarloSimulator {
 				String index = new Integer(i).toString();
 				String positiveVote_Outcomes = this.outcomes_PositiveVoting.get(i).toString();
 				String majorytVote_Outcomes = this.outcomes_MajorityVoting.get(i).toString();
-
 				log.write(index+","+positiveVote_Outcomes+","+majorytVote_Outcomes+"\n");
 			}
 
