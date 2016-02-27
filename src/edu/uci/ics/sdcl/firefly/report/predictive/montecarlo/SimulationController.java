@@ -11,6 +11,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.AttributeRangeGenerator;
 import edu.uci.ics.sdcl.firefly.report.predictive.CombinedFilterRange;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterGenerator;
+import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 
 /**

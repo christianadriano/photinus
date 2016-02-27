@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.report.predictive.AttributeRangeGenerator;
+import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;
 import edu.uci.ics.sdcl.firefly.report.predictive.montecarlo.SimulationController;
-import edu.uci.ics.sdcl.firefly.report.predictive.montecarlo.SubCrowd;
 
 public class SimulatorTest {
 	

@@ -1,4 +1,4 @@
-package edu.uci.ics.sdcl.firefly.report.predictive.montecarlo;
+package edu.uci.ics.sdcl.firefly.report.predictive;
 
 import java.util.HashMap;
 
