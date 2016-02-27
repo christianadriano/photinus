@@ -30,9 +30,9 @@ public class LinesToInspectController {
 	String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
 			"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
-	HashMap<String, ArrayList<OutcomeInspect>> outcomeMap;
+	HashMap<String, ArrayList<Outcome>> outcomeMap;
 
-	private OutcomeInspect computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
+	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
 		Boolean signal = predictor.computeSignal(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
@@ -40,7 +40,7 @@ public class LinesToInspectController {
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
-		OutcomeInspect outcome = new OutcomeInspect(null,
+		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
 				signal,
@@ -90,9 +90,9 @@ public class LinesToInspectController {
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
-			ArrayList<OutcomeInspect> list= this.outcomeMap.get(fileName);
+			ArrayList<Outcome> list= this.outcomeMap.get(fileName);
 			log.write(list.get(0).getHeader()+"\n");
-			for(OutcomeInspect outcome: list){
+			for(Outcome outcome: list){
 				String line= outcome.toString();
 				log.write(line+"\n");
 			}
@@ -105,10 +105,10 @@ public class LinesToInspectController {
 		}
 	}
 
-	private HashMap<String, ArrayList<OutcomeInspect>> initializeOutcomeMap(){
-		HashMap<String, ArrayList<OutcomeInspect>> outcomeMap =  new  HashMap<String, ArrayList<OutcomeInspect>>();
+	private HashMap<String, ArrayList<Outcome>> initializeOutcomeMap(){
+		HashMap<String, ArrayList<Outcome>> outcomeMap =  new  HashMap<String, ArrayList<Outcome>>();
 		for(String fileName: fileNameList){
-			ArrayList<OutcomeInspect> list =  new ArrayList<OutcomeInspect>();
+			ArrayList<Outcome> list =  new ArrayList<Outcome>();
 			outcomeMap.put(fileName, list);
 		}
 		return outcomeMap;
@@ -177,8 +177,8 @@ public class LinesToInspectController {
 				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
 				consensus.setData(data);
-				OutcomeInspect outcome = this.computeDataPoint(data,consensus,linesMapping);
-				ArrayList<OutcomeInspect> list = outcomeMap.get(fileName);
+				Outcome outcome = this.computeDataPoint(data,consensus,linesMapping);
+				ArrayList<Outcome> list = outcomeMap.get(fileName);
 				list.add(outcome);
 				outcomeMap.put(fileName,list);
 			}
