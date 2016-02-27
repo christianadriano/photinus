@@ -3,6 +3,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class DataPoint {
 
@@ -19,11 +20,11 @@ public class DataPoint {
 	public Double numberOfOutcomes=0.0;
 	public String subcrowdName;
 	
-	public Double truePositiveLinesCount;
-	public Double falsePositiveLinesCount;
-	public Double nearPositiveLinesCount;
-	public Double falseNegativeLinesCount;
-	public Double trueNegativeLinesCount;
+	public Integer truePositiveLinesCount;
+	public Integer falsePositiveLinesCount;
+	public Integer nearPositiveLinesCount;
+	public Integer falseNegativeLinesCount;
+	public Integer trueNegativeLinesCount;
 	
 	public Double LinesPrecision;
 	public Double LinesRecall;
@@ -49,13 +50,13 @@ public class DataPoint {
 
 	public void computeAverages(){
 
-		ArrayList<Double> precisionValues = new ArrayList<Double>();
-		ArrayList<Double> recallValues = new ArrayList<Double>();
+		ArrayList<Double> precisionValueList = new ArrayList<Double>();
+		ArrayList<Double> recallValueList = new ArrayList<Double>();
 
 		for(String key: fileNameOutcomeMap.keySet()){
 			Outcome outcome = fileNameOutcomeMap.get(key);
-			precisionValues.add(outcome.precision);
-			recallValues.add(outcome.recall);
+			precisionValueList.add(outcome.precision);
+			recallValueList.add(outcome.recall);
 			
 			if(outcome.precision!=0){
 				faultsLocated++;
@@ -74,10 +75,18 @@ public class DataPoint {
 			
 			
 		}
+		this.truePositiveLinesCount = this.truePositiveLineMap.size();
+		this.trueNegativeLinesCount = this.trueNegativeLineMap.size();
+		this.falsePositiveLinesCount = this.falsePositiveLineMap.size();
+		this.nearPositiveLinesCount = this.nearPositiveLineMap.size();
+		this.falseNegativeLinesCount = this.falseNegativeLineMap.size();
+		
+		this.LinesPrecision = new Integer(this.truePositiveLinesCount / (this.truePositiveLinesCount + this.falsePositiveLinesCount)).doubleValue();
+		this.LinesRecall =  new Integer (this.truePositiveLinesCount / this.truePositiveLinesCount + this.falseNegativeLinesCount)).doubleValue();
 		
 		numberOfOutcomes = new Double(fileNameOutcomeMap.size());
-		averagePrecision = average(precisionValues);
-		averageRecall = average(recallValues);
+		averagePrecision = average(precisionValueList);
+		averageRecall = average(recallValueList);
 			
 	}
 
@@ -133,13 +142,34 @@ public class DataPoint {
 	/** Selects the intersection of lines from two DataPoints and recalculates all metrics 
 	 * @return a new data point representing the intersection the two data points
 	 * */
-	public static DataPoint combineConsensusDataPoints(
-			DataPoint acrossQuestionsDataPoint,
-			DataPoint withinQuestionDataPoint) {
-		// TODO Auto-generated method stub
-		return null;
+	public static DataPoint combineConsensusDataPoints(DataPoint dataPoint_A,DataPoint dataPoint_W) {
+		
+		DataPoint combinedDataPoint =  new DataPoint("Combined");
+		
+		combinedDataPoint.falseNegativeLineMap = intersectionMap(dataPoint_A.falseNegativeLineMap,dataPoint_W.falseNegativeLineMap);
+		combinedDataPoint.falsePositiveLineMap = intersectionMap(dataPoint_A.falsePositiveLineMap,dataPoint_W.falsePositiveLineMap);
+		combinedDataPoint.truePositiveLineMap = intersectionMap(dataPoint_A.truePositiveLineMap,dataPoint_W.truePositiveLineMap);
+		combinedDataPoint.nearPositiveLineMap = intersectionMap(dataPoint_A.nearPositiveLineMap,dataPoint_W.nearPositiveLineMap);
+		combinedDataPoint.trueNegativeLineMap = intersectionMap(dataPoint_A.trueNegativeLineMap,dataPoint_W.trueNegativeLineMap);
+		
+		return combinedDataPoint;
 	}
 
 
+	private static HashMap<String,Integer> intersectionMap(HashMap<String,Integer> map_A, HashMap<String,Integer> map_B){
+		
+		HashMap<String,Integer> intersectionMap = new HashMap<String,Integer>();
+		
+		for(Entry<String,Integer> entry : map_A.entrySet()){
+			String key = entry.getKey();
+			if(map_B.containsKey(key)){
+				Integer valueA = map_A.get(key);
+				Integer valueB = map_B.get(key);
+				intersectionMap.put(key, valueA+valueB);
+			}
+		}
+		return intersectionMap;	
+	}
+	
 }
 
