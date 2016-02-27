@@ -43,8 +43,8 @@ public class Outcome {
 
 	//Lines counts per consensus outcome
 	public HashMap<String,Integer> allLines;
-	public HashMap<String,Integer> trueNegativesLines;
-	public HashMap<String,Integer> falseNegativesLines;
+	public HashMap<String,Integer> trueNegativeLines;
+	public HashMap<String,Integer> falseNegativeLines;
 	public HashMap<String, Integer> truePositiveLines;
 	public HashMap<String,Integer> falsePositiveLines;
 
