@@ -111,8 +111,8 @@ public class SubcrowdConsensusFinder {
 		for(SubCrowd subcrowd: subCrowdList){
 			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
 
-			DataPoint positiveVDataPoint = new DataPoint();
-			DataPoint majorityVDataPoint = new DataPoint();
+			DataPoint acrossQuestionsDataPoint = new DataPoint(subcrowd.name);
+			DataPoint withinQuestionDataPoint = new DataPoint(subcrowd.name);
 
 			for(String fileName: this.fileNameList){//each fileName is a Java method
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(subcrowd.microtaskMap,fileName);
@@ -122,17 +122,25 @@ public class SubcrowdConsensusFinder {
 					AnswerData data = new AnswerData(fileName,answerMap,this.bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 					Consensus consensus = new AcrossQuestionsConsensus();
 					Outcome outcome = computeDataPoint(data,consensus,this.lineMapping);
-					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
+					acrossQuestionsDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
 					consensus = new WithinQuestionConsensus();
 					outcome = computeDataPoint(data,consensus,lineMapping);
-					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
+					withinQuestionDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}
 			}
+			subcrowd.acrossQuestionsDataPoint = acrossQuestionsDataPoint;
+			subcrowd.withinQuestionDataPoint = withinQuestionDataPoint;
+			subcrowd.combinedConsensusDataPoint = DataPoint.combineConsensusDataPoint(acrossQuestionsDataPoint,withinQuestionDataPoint)
 		}
+		
 
 	}
 
+	private SubCrowd computeSubcrowdAverages(D){
+		
+	}
+	
 	//Print Method Data
 
 

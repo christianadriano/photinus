@@ -16,12 +16,30 @@ public class DataPoint {
 	public Double truePositives=0.0;
 	public Double trueNegatives=0.0;
 	public Double numberOfOutcomes=0.0;
-
+	public String subcrowdName;
+	
+	public Double averageTruePositiveLinesCount;
+	public Double averageFalsePositiveLinesCount;
+	public Double averageNearPositiveLinesCount;
+	public Double averageFalseNegativeLinesCount;
+	public Double averageTrueNegativeLinesCount;
+	
+	// All lines selected under each category <line number, number of times it was selected> 
+	public HashMap<String, Integer> truePositiveLineMap;
+	public HashMap<String, Integer> nearPositiveLineMap;
+	public HashMap<String, Integer> falsePositiveLineMap;
+	public HashMap<String, Integer> falseNegativeLineMap;
+	public HashMap<String, Integer> trueNegativeLineMap;
+	
 	private static String[] header = { "average Precision", "average Recall", "elapsed Time", "total Workers", 
 			"total Answers", "faults Located", "true Positives", "true Negatives", 
 			 "false Positives", "false Negatives", "number of Outcomes Simulated"} ;
 	
 	public DataPoint(){}
+	
+	public DataPoint(String subcrowdName){
+		this.subcrowdName = subcrowdName;
+	}
 
 	public HashMap<String, Outcome> fileNameOutcomeMap = new HashMap<String, Outcome>();
 
@@ -34,16 +52,34 @@ public class DataPoint {
 			Outcome outcome = fileNameOutcomeMap.get(key);
 			precisionValues.add(outcome.precision);
 			recallValues.add(outcome.recall);
-			if(outcome.precision!=0)
+			
+			if(outcome.precision!=0){
 				faultsLocated++;
+			}
+			
 			falsePositives = falsePositives + outcome.falsePositives;
 			falseNegatives = falseNegatives + outcome.falseNegatives;
 			truePositives = truePositives + outcome.truePositives;
 			trueNegatives = trueNegatives + outcome.trueNegatives;
+			
+		
+			this.truePositiveLineMap = addLines(outcome.truePositiveLines);
+			this.nearPositiveLineMap = addLines(outcome.nearTruePositiveFaultyLines);
+			this.falsePositiveLineMap = addLines(outcome.falsePositiveLines);
+			this.falseNegativeLineMap = addLines(outcome.falseNegativeLines);
+			this.trueNegativeLineMap = addLines(outcome.trueNegativeLines);
 		}
 		numberOfOutcomes = new Double(fileNameOutcomeMap.size());
 		averagePrecision = average(precisionValues);
 		averageRecall = average(recallValues);
+		
+		
+	}
+
+	private HashMap<String, Integer> addLines(
+			HashMap<String, Integer> truePositiveLines) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private Double average(ArrayList<Double> values){
@@ -75,6 +111,16 @@ public class DataPoint {
 		return this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
 				this.totalAnswers+","+this.faultsLocated+","+this.truePositives+","+this.trueNegatives+","+
 				this.falsePositives+","+this.falseNegatives+","+this.numberOfOutcomes;
+	}
+
+	/** Selects the intersection of lines from two DataPoints and recalculates all metrics 
+	 * @return a new data point representing the intersection the two data points
+	 * */
+	public static DataPoint combineConsensusDataPoint(
+			DataPoint acrossQuestionsDataPoint,
+			DataPoint withinQuestionDataPoint) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
