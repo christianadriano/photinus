@@ -16,6 +16,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
+import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
@@ -41,14 +42,7 @@ public class MonteCarloSimulator {
 	public MonteCarloSimulator(String outputFolder){
 
 		this.outputFolder = outputFolder;
-
-		//Obtain bug covering question list
-		PropertyManager manager = PropertyManager.initializeSingleton();
-		bugCoveringMap = new HashMap<String,String>();
-		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
-		for(String questionID:listOfBugPointingQuestions){
-			bugCoveringMap.put(questionID,questionID);
-		}
+		bugCoveringMap = BugCoveringMap.initialize();
 	}
 
 
