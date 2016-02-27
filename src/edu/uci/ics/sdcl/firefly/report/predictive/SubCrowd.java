@@ -32,5 +32,14 @@ public class SubCrowd {
 	/** Name of the sub-crowd */
 	public String name;
 	
+	//------------------------------------------------------------------------
 	
+	/** Results for all Java methods and averages computed with Across-questions consensus*/
+	public DataPoint acrossQuestionsDataPoint; 
+
+	/** Results for all Java methods and averages computed with Within-questions consensus */
+	public DataPoint withinQuestionDataPoint; 
+	
+	/** Results from combining across and within question Data Points */
+	public DataPoint combinedConsensusDataPoint;
 }
