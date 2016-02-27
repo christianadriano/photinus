@@ -2,6 +2,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class DataPoint {
 
@@ -18,11 +19,14 @@ public class DataPoint {
 	public Double numberOfOutcomes=0.0;
 	public String subcrowdName;
 	
-	public Double averageTruePositiveLinesCount;
-	public Double averageFalsePositiveLinesCount;
-	public Double averageNearPositiveLinesCount;
-	public Double averageFalseNegativeLinesCount;
-	public Double averageTrueNegativeLinesCount;
+	public Double truePositiveLinesCount;
+	public Double falsePositiveLinesCount;
+	public Double nearPositiveLinesCount;
+	public Double falseNegativeLinesCount;
+	public Double trueNegativeLinesCount;
+	
+	public Double LinesPrecision;
+	public Double LinesRecall;
 	
 	// All lines selected under each category <line number, number of times it was selected> 
 	public HashMap<String, Integer> truePositiveLineMap;
@@ -62,24 +66,37 @@ public class DataPoint {
 			truePositives = truePositives + outcome.truePositives;
 			trueNegatives = trueNegatives + outcome.trueNegatives;
 			
-		
-			this.truePositiveLineMap = addLines(outcome.truePositiveLines);
-			this.nearPositiveLineMap = addLines(outcome.nearTruePositiveFaultyLines);
-			this.falsePositiveLineMap = addLines(outcome.falsePositiveLines);
-			this.falseNegativeLineMap = addLines(outcome.falseNegativeLines);
-			this.trueNegativeLineMap = addLines(outcome.trueNegativeLines);
+			this.truePositiveLineMap = addLines(this.truePositiveLineMap, outcome.truePositiveLines);
+			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearTruePositiveFaultyLines);
+			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLines);
+			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLines);
+			this.trueNegativeLineMap = addLines(this.trueNegativeLineMap, outcome.trueNegativeLines);
+			
+			
 		}
+		
 		numberOfOutcomes = new Double(fileNameOutcomeMap.size());
 		averagePrecision = average(precisionValues);
 		averageRecall = average(recallValues);
-		
-		
+			
 	}
 
-	private HashMap<String, Integer> addLines(
-			HashMap<String, Integer> truePositiveLines) {
-		// TODO Auto-generated method stub
-		return null;
+	private HashMap<String, Integer> addLines(HashMap<String, Integer> destinationMap,
+			HashMap<String, Integer> sourceMap) {
+		
+		for(Entry<String, Integer> entity : sourceMap.entrySet() ){
+			String key = entity.getKey();
+			if(destinationMap.containsKey(key)){
+				  Integer  destinationCount = destinationMap.get(key);
+				  Integer sourceCount = sourceMap.get(key);
+				  destinationCount = destinationCount + sourceCount;
+				  destinationMap.put(key, destinationCount);
+			}
+			else{
+				destinationMap.put(key, entity.getValue());
+			}	
+		}
+		return destinationMap;
 	}
 
 	private Double average(ArrayList<Double> values){
@@ -116,7 +133,7 @@ public class DataPoint {
 	/** Selects the intersection of lines from two DataPoints and recalculates all metrics 
 	 * @return a new data point representing the intersection the two data points
 	 * */
-	public static DataPoint combineConsensusDataPoint(
+	public static DataPoint combineConsensusDataPoints(
 			DataPoint acrossQuestionsDataPoint,
 			DataPoint withinQuestionDataPoint) {
 		// TODO Auto-generated method stub
