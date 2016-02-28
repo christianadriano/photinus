@@ -142,7 +142,7 @@ public class MonteCarloSimulator {
 		Double sumRecall=0.0;
 
 		Double sumFaultsLocated =0.0;
-		Double sumNumberOfOutcomes = 0.0;
+		Integer sumNumberOfOutcomes = 0;
 
 		for(DataPoint data: dataPointList){
 			sumAnswers = sumAnswers + data.totalAnswers;
@@ -192,6 +192,7 @@ public class MonteCarloSimulator {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		Outcome outcome = new Outcome(null,
@@ -210,7 +211,8 @@ public class MonteCarloSimulator {
 				answerData.getDifferentWorkersAmongHITs(),
 				truePositiveLines,
 				nearPositiveLines,
-				falsePositiveLines);
+				falsePositiveLines,
+				falseNegativeLines);
 		
 		return outcome;
 	}

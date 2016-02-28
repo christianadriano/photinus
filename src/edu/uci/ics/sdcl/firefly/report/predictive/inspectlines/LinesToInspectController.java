@@ -38,6 +38,7 @@ public class LinesToInspectController {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
 		Outcome outcome = new Outcome(null,
@@ -56,7 +57,8 @@ public class LinesToInspectController {
 				answerData.getDifferentWorkersAmongHITs(),
 				truePositiveLines,
 				nearPositiveLines,
-				falsePositiveLines);
+				falsePositiveLines,
+				falseNegativeLines);
 		return outcome;
 	}
 

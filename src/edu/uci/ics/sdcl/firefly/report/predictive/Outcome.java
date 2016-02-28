@@ -42,14 +42,11 @@ public class Outcome {
 
 
 	//Lines counts per consensus outcome
-	public HashMap<String,Integer> allLines;
-	public HashMap<String,Integer> trueNegativeLines;
-	public HashMap<String,Integer> falseNegativeLines;
+  	public HashMap<String,Integer> falseNegativeLines;
 	public HashMap<String, Integer> truePositiveLines;
 	public HashMap<String,Integer> falsePositiveLines;
 
-	public HashMap<String, Integer> nearTruePositiveFaultyLines; //Only the true positive lines that are not actually faulty
-	public HashMap<String, Integer> truePositiveFaultyLines; //Only the true positive lines that are actually faulty
+	public HashMap<String, Integer> nearPositiveLines; //Only the true positive lines that are not actually faulty
 
 	public Double precision;
 	public Double recall;
@@ -60,12 +57,14 @@ public class Outcome {
 	/** Total workers that remained after applying the combined filter */
 	public Integer differentWorkersAmongHITs;
 
+	public Outcome(){}
+	
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
 			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
 			Integer truePositives, Integer trueNegatives,
 			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
-			HashMap<String,Integer> truePosiveFaultyLines, HashMap<String,Integer> truePosiveNearFaultyLines, 
-			HashMap<String,Integer> falsePositiveLines  ) {
+			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
+			HashMap<String,Integer> falsePositiveLines, HashMap<String, Integer> falseNegativeLines  ) {
 		super();
 		this.filter = filter;
 		this.fileName = new String(fileName.replace("HIT0", "J").replace("_","."));
@@ -84,8 +83,10 @@ public class Outcome {
 		this.precision = this.computePrecision(this.truePositives, this.falsePositives);
 		this.recall = this.computeRecall(this.truePositives, this.falseNegatives);
 		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
-		this.nearTruePositiveFaultyLines =  (HashMap<String, Integer>) ((truePosiveNearFaultyLines!=null) ? truePosiveNearFaultyLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.truePositiveFaultyLines =   (HashMap<String, Integer>) ((truePosiveFaultyLines!=null) ? truePosiveFaultyLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+
 	}
 
 	private Double computePrecision(int tp, int fp){
@@ -109,25 +110,25 @@ public class Outcome {
 	public static String getHeader(){
 
 		String header =  "HIT:Consensus:Fault located?:"
-				+ "True Positive Faulty Lines:" + "#True Positive Faulty Lines:"
-				+ "Near Positive Faulty Lines:" + "#Near Positive Faulty Lines:"
-				+ "False Positive Lines:"+ "#False Positive Lines:"
-				+ "Signal strength:#Maximum workers per question:#Total answers obtained: #YES needed :"
-				+"True positives:True negatives:False positives:False negatives:Different workers in HIT:"
+				+ "True Positive Faulty Lines," + "#True Positive Faulty Lines,"
+				+ "Near Positive Faulty Lines:" + "#Near Positive Faulty Lines,"
+				+ "False Positive Lines,"+ "#False Positive Lines,"
+				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
+				+"True positives,True negatives,False positives,False negatives:Different workers in HIT,"
 				+"Different Workers among all HITs";
 		return header;
 	}
 
 	public String toString(){
 		
-		String output = fileName +":"+ predictorType +":"+ faultLocated + 
-				":"+ this.linesToString(this.truePositiveFaultyLines) + ":"+ this.truePositiveFaultyLines.size()+
-				":"+ this.linesToString(this.nearTruePositiveFaultyLines) + ":"+ this.nearTruePositiveFaultyLines.size()+
-				":"+ this.linesToString(this.falsePositiveLines) + ":"+ this.falsePositiveLines.size()+
+		String output = fileName +","+ predictorType +","+ faultLocated + 
+				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
+				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
+				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
 
-				":"+ signalStrength +":"+ maxWorkerPerQuestion +":"+ totalAnswersObtained+
-				":"+threshold +":"+	truePositives +":"+ trueNegatives +":"+ falsePositives +":"+ falseNegatives +":"+ differentWorkersPerHIT +
-				":"+differentWorkersAmongHITs;
+				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
+				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
+				","+differentWorkersAmongHITs;
 		return output;	
 	}
 
@@ -143,4 +144,6 @@ public class Outcome {
 			return result;
 		}
 	}
+	
+	 
 }
