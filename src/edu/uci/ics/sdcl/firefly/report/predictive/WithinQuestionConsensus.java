@@ -402,30 +402,10 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return map;
 	}
-
-	
-	@Override
-	public HashMap<String, Integer> getTruePositiveFaultyLines(
-			HashMap<String, QuestionLinesMap> lineMapping) {
-
-		HashMap<String, Integer> map=  new HashMap<String,Integer>();
-
-		for(String questionID: voteMap.keySet()){
-			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
-				if(vote>this.calibration){
-					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-					if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
-					map =  this.loadLines(map, questionLinesMap.faultyLines);
-				}
-			}
-		}
-		return map;
-	}
 	
 	
 	@Override
-	public HashMap<String, Integer> getNearPositiveFaultyLines(
+	public HashMap<String, Integer> getNearPositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 
 		HashMap<String, Integer> map =  new HashMap<String,Integer>();
@@ -433,7 +413,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote>this.calibration){
+				if(vote!=null && vote>this.calibration){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					map = loadLines(map,questionLinesMap.nearFaultyLines);
 				}
@@ -453,7 +433,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote>this.calibration){
+				if(vote!=null && vote>this.calibration){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					if(questionLinesMap.nonFaultyLines==null) 
 						System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
@@ -474,7 +454,7 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote<this.calibration){
+				if(vote!=null && vote<=this.calibration){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					map = loadLines(map,questionLinesMap.nonFaultyLines);
 				}
@@ -492,9 +472,9 @@ public class WithinQuestionConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
-				if(vote<this.calibration){
+				if(vote!=null && vote<=this.calibration){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-					map = loadLines(map,questionLinesMap.nonFaultyLines);
+					map = loadLines(map,questionLinesMap.faultyLines);
 				}
 			}
 		}

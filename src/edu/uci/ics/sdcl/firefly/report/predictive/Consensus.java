@@ -42,11 +42,8 @@ public abstract class Consensus {
 
 	public abstract HashMap<String, Integer> getFalseNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
-
-	public abstract HashMap<String, Integer> getTruePositiveFaultyLines(
-			HashMap<String, QuestionLinesMap> lineMapping);
-
-	public abstract HashMap<String, Integer> getNearPositiveFaultyLines(
+	
+	public abstract HashMap<String, Integer> getNearPositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping);
 
 	/**

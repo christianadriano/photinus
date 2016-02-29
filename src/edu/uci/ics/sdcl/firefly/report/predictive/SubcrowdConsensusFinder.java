@@ -18,18 +18,15 @@ public class SubcrowdConsensusFinder {
 	public  String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
 	private HashMap<String,String> bugCoveringMap;
-
-	private String outputFolder = "";
-
+ 
 	private HashMap<String, QuestionLinesMap> lineMapping;
 
 
-	public SubcrowdConsensusFinder(String outputFolder){
+	public SubcrowdConsensusFinder(){
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		this.lineMapping = loader.loadList();
 
-		this.outputFolder = outputFolder;
-		bugCoveringMap = BugCoveringMap.initialize();
+ 		bugCoveringMap = BugCoveringMap.initialize();
 
 	}
 
@@ -58,7 +55,6 @@ public class SubcrowdConsensusFinder {
 
 	public ArrayList<SubCrowd> generateSubCrowdMicrotasks(ArrayList<SubCrowd> subCrowdList){
 
-
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
@@ -73,14 +69,13 @@ public class SubcrowdConsensusFinder {
 		}
 
 		return subCrowdList;
-
 	}
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
 		Boolean signal = predictor.computeSignal(answerData);
-		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
-		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
+		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
@@ -107,7 +102,7 @@ public class SubcrowdConsensusFinder {
 		return outcome;
 	}
 
-	public void run(){
+	public ArrayList<SubCrowd> run(){
 
 		ArrayList<SubCrowd> subCrowdList =  this.generateSubCrowdFilters();
 		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
@@ -139,6 +134,8 @@ public class SubcrowdConsensusFinder {
 			subcrowd.withinQuestionDataPoint = withinQuestionDataPoint;
 			subcrowd.combinedConsensusDataPoint = DataPoint.combineConsensusDataPoints(acrossQuestionsDataPoint,withinQuestionDataPoint);
 		}
+	
+		return subCrowdList;
 	}
 
 
@@ -197,6 +194,11 @@ public class SubcrowdConsensusFinder {
 		}
 	}
 
-
+	public static void main(String args[]){
+		SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
+		ArrayList<SubCrowd> list = finder.run();
+		finder.printJavaOutcomes(list.get(0));
+	}
+	
 
 }

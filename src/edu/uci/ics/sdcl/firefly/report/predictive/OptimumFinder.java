@@ -69,12 +69,13 @@ public class OptimumFinder {
 				for(Consensus predictor: predictorList){ //one time
 
 					Boolean signal = predictor.computeSignal(answerData);
-					HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveFaultyLines(lineMapping);
-					HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveFaultyLines(lineMapping);
+					HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
+					HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 					HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+					HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);;
 					falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
-					Outcome outcome = new Outcome(filter,
+					Outcome outcome = new Outcome(null,
 							answerData.getHitFileName(),
 							predictor.getName(),
 							signal,
@@ -90,7 +91,8 @@ public class OptimumFinder {
 							answerData.getDifferentWorkersAmongHITs(),
 							truePositiveLines,
 							nearPositiveLines,
-							falsePositiveLines);
+							falsePositiveLines,
+							falseNegativeLines);
 					
 					filterOutcomeList.add(outcome);					
 				}
