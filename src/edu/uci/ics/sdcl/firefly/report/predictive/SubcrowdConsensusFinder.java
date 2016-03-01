@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
@@ -18,7 +19,7 @@ public class SubcrowdConsensusFinder {
 	public  String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
 	private HashMap<String,String> bugCoveringMap;
- 
+
 	private HashMap<String, QuestionLinesMap> lineMapping;
 
 
@@ -26,7 +27,7 @@ public class SubcrowdConsensusFinder {
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		this.lineMapping = loader.loadList();
 
- 		bugCoveringMap = BugCoveringMap.initialize();
+		bugCoveringMap = BugCoveringMap.initialize();
 
 	}
 
@@ -83,7 +84,7 @@ public class SubcrowdConsensusFinder {
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				signal,
+				predictor.getTruePositives()>0,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -121,43 +122,49 @@ public class SubcrowdConsensusFinder {
 					AnswerData data = new AnswerData(fileName,answerMap,this.bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 					Consensus consensus = new AcrossQuestionsConsensus();
 					Outcome outcome = computeDataPoint(data,consensus,this.lineMapping);
-					acrossQuestionsDataPoint.fileNameOutcomeMap.put(fileName, outcome);
-					acrossQuestionsDataPoint.computeAverages();
+					acrossQuestionsDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 
 					consensus = new WithinQuestionConsensus();
 					outcome = computeDataPoint(data,consensus,lineMapping);
-					withinQuestionDataPoint.fileNameOutcomeMap.put(fileName, outcome);
-					withinQuestionDataPoint.computeAverages();
+					withinQuestionDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 				}
 			}
+
+			acrossQuestionsDataPoint.computeAverages();
+			acrossQuestionsDataPoint.elapsedTime = MicrotaskMapUtil.computeElapsedTimeForAnswerLevels(subcrowd.microtaskMap);
+			withinQuestionDataPoint.computeAverages();
+			withinQuestionDataPoint.elapsedTime = MicrotaskMapUtil.computeElapsedTimeForAnswerLevels(subcrowd.microtaskMap);
+
 			subcrowd.acrossQuestionsDataPoint = acrossQuestionsDataPoint;
 			subcrowd.withinQuestionDataPoint = withinQuestionDataPoint;
 			subcrowd.combinedConsensusDataPoint = DataPoint.combineConsensusDataPoints(acrossQuestionsDataPoint,withinQuestionDataPoint);
+			subcrowd.combinedConsensusDataPoint.computeAverages();
+			subcrowd.combinedConsensusDataPoint.elapsedTime = acrossQuestionsDataPoint.elapsedTime > withinQuestionDataPoint.elapsedTime ? acrossQuestionsDataPoint.elapsedTime : withinQuestionDataPoint.elapsedTime;
 		}
-	
+
 		return subCrowdList;
 	}
 
 
 	public void printJavaOutcomes(SubCrowd subcrowd){
-		
-		String nameStr = new Integer(subcrowd.name).toString();
-		String destination = "C://firefly//CombinedFilters_withLinesToInspect//"+ nameStr+"_outcomes.csv";
+
+		String destination = "C://firefly//CombinedFilters_withLinesToInspect//SubcrowdOutcomes//"+ subcrowd.name+"_outcomes.csv";
 		BufferedWriter log;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 
-			log.write(Outcome.getHeader());
-			
-			for(String fileName: this.fileNameList){
+			log.write(Outcome.getHeader()+"\n");
+
+			for(Entry<String, Outcome> entry: subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.entrySet()){
+				String fileName = entry.getKey();
 				Outcome outcome = subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString());
-				outcome = subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString());
+				log.write(outcome.toString()+"\n");
+				outcome = subcrowd.withinQuestionDataPoint.fileNameOutcomeMap.get(fileName);
+				log.write(outcome.toString()+"\n");
 				outcome = subcrowd.combinedConsensusDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString());
+				log.write(outcome.toString()+"\n");
 			}
 
 			log.close();
@@ -171,20 +178,19 @@ public class SubcrowdConsensusFinder {
 
 
 	public void printSubCrowdAverages(SubCrowd subcrowd){
-		
-		String nameStr = new Integer(subcrowd.name).toString();
-		String destination = "C://firefly//CombinedFilters_withLinesToInspect//"+ nameStr+".csv";
+
+		String destination = "C://firefly//CombinedFilters_withLinesToInspect//SubcrowdAverages//"+ subcrowd.name+"_averages.csv";
 		BufferedWriter log;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 
-			log.write(DataPoint.getHeader(""));
-			log.write(subcrowd.acrossQuestionsDataPoint.toString()); 
-			log.write(subcrowd.withinQuestionDataPoint.toString()); 
-			log.write(subcrowd.combinedConsensusDataPoint.toString());
-		
+			log.write(DataPoint.getHeader("")+"\n");
+			log.write(subcrowd.acrossQuestionsDataPoint.toString()+"\n"); 
+			log.write(subcrowd.withinQuestionDataPoint.toString()+"\n"); 
+			log.write(subcrowd.combinedConsensusDataPoint.toString()+"\n");
+
 			log.close();
 			System.out.println("file written at: "+destination);
 		} 
@@ -197,8 +203,11 @@ public class SubcrowdConsensusFinder {
 	public static void main(String args[]){
 		SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
 		ArrayList<SubCrowd> list = finder.run();
-		finder.printJavaOutcomes(list.get(0));
+		for(SubCrowd subcrowd: list){
+			finder.printJavaOutcomes(subcrowd);
+			finder.printSubCrowdAverages(subcrowd);
+		}
 	}
-	
+
 
 }

@@ -198,7 +198,7 @@ public class MonteCarloSimulator {
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				signal,
+				predictor.getTruePositives()>0,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),

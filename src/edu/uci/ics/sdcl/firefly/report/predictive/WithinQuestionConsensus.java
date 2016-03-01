@@ -396,7 +396,7 @@ public class WithinQuestionConsensus extends Consensus{
 				if(vote!=null && vote>this.calibration){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
-					map =  this.loadLines(map, questionLinesMap.allLines);
+					map =  this.loadLines(map, questionLinesMap.faultyLines);
 				}
 			}
 		}

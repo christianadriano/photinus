@@ -95,7 +95,7 @@ public class Outcome {
 		if((tpD+fpD) ==0) 
 			return 0.0;
 		else 
-			return (tpD/(tpD+fpD))*100;
+			return (tpD/(tpD+fpD));
 	}
 
 	private Double computeRecall(int tp, int fn){
@@ -104,17 +104,17 @@ public class Outcome {
 		if((tpD+fnD) ==0) 
 			return 0.0;
 		else 
-			return (tpD/(tpD+fnD))*100;
+			return (tpD/(tpD+fnD));
 	}
 
 	public static String getHeader(){
 
-		String header =  "HIT:Consensus:Fault located?:"
-				+ "True Positive Faulty Lines," + "#True Positive Faulty Lines,"
-				+ "Near Positive Faulty Lines:" + "#Near Positive Faulty Lines,"
+		String header =  "HIT,Consensus,Fault located?,"
+				+ "True Positive Lines," + "#True Positive Lines,"
+				+ "Near Positive Lines," + "#Near Positive Lines,"
 				+ "False Positive Lines,"+ "#False Positive Lines,"
 				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
-				+"True positives,True negatives,False positives,False negatives:Different workers in HIT,"
+				+"True positives,True negatives,False positives,False negatives,Different workers in HIT,"
 				+"Different Workers among all HITs";
 		return header;
 	}
