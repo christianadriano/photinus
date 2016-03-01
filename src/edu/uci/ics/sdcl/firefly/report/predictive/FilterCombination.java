@@ -60,9 +60,9 @@ public class FilterCombination {
 		String result="";
 		for(String name:headerList){
 			if(result.length()==0) 
-				result = name+":";
+				result = name+",";
 			else
-				result = result + name+":";
+				result = result + name+",";
 		}
 		return result;
 	}
@@ -75,7 +75,7 @@ public class FilterCombination {
 			if(result.length()==0)				
 				result = range.toString();
 			else
-				result = result+":"+range.toString();
+				result = result+","+range.toString();
 		}
 		return result;
 	}

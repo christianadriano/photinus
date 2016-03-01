@@ -75,7 +75,7 @@ public class OptimumFinder {
 					HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);;
 					falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 
-					Outcome outcome = new Outcome(null,
+					Outcome outcome = new Outcome(filter,
 							answerData.getHitFileName(),
 							predictor.getName(),
 							signal,
@@ -111,7 +111,7 @@ public class OptimumFinder {
 
 			log.write(getHeader()+"\n");
 			for(Outcome outcome: this.filterOutcomeList){
-				String line= outcome.filter.toString(FilterCombination.headerList)+":"+outcome.toString();
+				String line= outcome.filter.toString(FilterCombination.headerList)+","+outcome.toString();
 				log.write(line+"\n");
 			}
 			log.close();
