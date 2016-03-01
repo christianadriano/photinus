@@ -68,9 +68,9 @@ class Range {
 					return "[excluded" +listToString(professionExclusionList)+  "]";
 				else
 					if(minD!=-1.0 || maxD!=-1.0)
-						return "["+minD.toString()+","+maxD.toString()+"]";
+						return "["+minD.toString()+";"+maxD.toString()+"]";
 					else
-						return "["+min.toString()+","+max.toString()+"]";
+						return "["+min.toString()+";"+max.toString()+"]";
 				
 		}
 
