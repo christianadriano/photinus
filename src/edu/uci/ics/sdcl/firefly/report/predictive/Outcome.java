@@ -57,6 +57,9 @@ public class Outcome {
 	/** Total workers that remained after applying the combined filter */
 	public Integer differentWorkersAmongHITs;
 
+	/** Maps which flagged lines came from which questions */
+	public HashMap<String, HashMap<String, Integer>> questionMap;
+
 	public Outcome(){}
 	
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
@@ -144,6 +147,8 @@ public class Outcome {
 			return result;
 		}
 	}
+	
+
 	
 	 
 }

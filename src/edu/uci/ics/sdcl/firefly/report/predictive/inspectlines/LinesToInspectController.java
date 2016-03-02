@@ -31,6 +31,8 @@ public class LinesToInspectController {
 			"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
 	HashMap<String, ArrayList<Outcome>> outcomeMap;
+	
+	HashMap<String, Microtask> cutMicrotaskMap;
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
@@ -40,6 +42,8 @@ public class LinesToInspectController {
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
+		HashMap<String, HashMap<String, Integer>> questionMap = predictor.getNearPositiveLinesQuestions(lineMapping);
+
 
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
@@ -59,6 +63,9 @@ public class LinesToInspectController {
 				nearPositiveLines,
 				falsePositiveLines,
 				falseNegativeLines);
+
+		outcome.questionMap=questionMap;
+
 		return outcome;
 	}
 
@@ -77,6 +84,7 @@ public class LinesToInspectController {
 				System.err.println("AnswerList < "+maximum+", size:"+answerlist.size()+", id:"+id);
 
 			microtask.setAnswerList(new Vector<Answer>(answerlist.subList(0, maximum)));
+			microtask.setLOC_CoveredByQuestion(QuestionLinesMapLoader.questionLineCount.get(id));
 			cutMicrotaskMap.put(id, microtask);
 
 		}
@@ -85,18 +93,19 @@ public class LinesToInspectController {
 
 
 
-	public void printOutcomeMap(String fileName, String outputFileName){	
+	public void printOutcomeMap(  String fileName, String outputFileName){	
 
-		String destination = "C://firefly//InspectLinesAnalysis//"+ outputFileName+".txt";
+		String destination = "C://firefly//InspectLinesAnalysis//"+ outputFileName+".csv";
 		BufferedWriter log;
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 			ArrayList<Outcome> list= this.outcomeMap.get(fileName);
-			log.write(list.get(0).getHeader()+"\n");
-			for(Outcome outcome: list){
+			log.write("#answers,"+list.get(0).getHeader()+"\n");
+			for(int i=0;i<list.size();i++){
+				Outcome outcome = list.get(i);
 				String line= outcome.toString();
-				log.write(line+"\n");
+				log.write(i+1+","+line+"\n");
 			}
 			log.close();
 			System.out.println("file written at: "+destination);
@@ -105,6 +114,39 @@ public class LinesToInspectController {
 			System.out.println("ERROR while processing file:" + destination);
 			e.printStackTrace();
 		}
+	}
+
+	public void printLinesFlaggedInQuestion(String fileName, String outputFileName){
+
+		String destination = "C://firefly//InspectLinesAnalysis//LinesFlaggedInQuestion//"+ outputFileName+"_LinesFlagged.csv";
+		BufferedWriter log;
+		
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
+			ArrayList<Outcome> list= this.outcomeMap.get(fileName);
+			log.write("fileName, #answers, question, lines,questionType,LOC covered by question"+ "\n");
+			for(int i=0;i<list.size();i++){
+				Outcome outcome = list.get(i);
+				Iterator<String> iter = outcome.questionMap.keySet().iterator();
+				int answerLevel = i+1;
+				while(iter.hasNext()){
+					String key = iter.next();
+					String questionType = this.cutMicrotaskMap.get(key).getQuestionType();
+					Integer locCoveredByQuestion = this.cutMicrotaskMap.get(key).getLOC_CoveredByQuestion();
+					HashMap<String,Integer> lineMap = outcome.questionMap.get(key);
+					String lines = outcome.linesToString(lineMap);
+					log.write(fileName+","+answerLevel+","+key+","+lines+","+questionType+","+locCoveredByQuestion+"\n");
+				}
+			}
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+
 	}
 
 	private HashMap<String, ArrayList<Outcome>> initializeOutcomeMap(){
@@ -147,9 +189,9 @@ public class LinesToInspectController {
 		}
 		return workerMap.size();
 	}
-	
-	
-    //-------------------------------------------------------
+
+
+	//-------------------------------------------------------
 	/** Entry point of all computations
 	 * 
 	 * @param consensus
@@ -168,11 +210,13 @@ public class LinesToInspectController {
 
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		HashMap<String, QuestionLinesMap> linesMapping =  loader.loadList();
+		
+		
 
 		for(String fileName: fileNameList){
 
 			for(int i=1; i<=20;i++){
-				HashMap<String, Microtask> cutMicrotaskMap = this.getCutAnswers(i);
+				this.cutMicrotaskMap = this.getCutAnswers(i);
 				Integer totalDifferentWorkersAmongHITs = countWorkers(cutMicrotaskMap, null);
 				HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(cutMicrotaskMap,fileName);
 				Integer workerCountPerHIT = countWorkers(cutMicrotaskMap,fileName);
@@ -184,7 +228,8 @@ public class LinesToInspectController {
 				list.add(outcome);
 				outcomeMap.put(fileName,list);
 			}
-			printOutcomeMap(fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());			
+			printOutcomeMap(fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());	
+			printLinesFlaggedInQuestion (fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());
 		}
 
 	}
@@ -192,15 +237,15 @@ public class LinesToInspectController {
 	public static void main(String args[]){
 
 		LinesToInspectController controller = new LinesToInspectController();
-		
+
 		//Compute across-questions consensus
 		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus();
 		acrossQuestionsConsensus.setCalibration(2);
-	
+
 		//Compute within-question consensus
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus();
 		withinQuestionConsensus.setCalibration(2); //Other values are -2,-1,0,1,2
-	 	
+
 		controller.run((Consensus)acrossQuestionsConsensus);
 	}
 

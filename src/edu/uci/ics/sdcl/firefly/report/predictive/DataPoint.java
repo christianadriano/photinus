@@ -95,10 +95,10 @@ public class DataPoint {
 			truePositives = truePositives + outcome.truePositives;
 			trueNegatives = trueNegatives + outcome.trueNegatives;
 
-			this.truePositiveLineMap = addLines(this.truePositiveLineMap, outcome.truePositiveLines);
-			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearPositiveLines);
-			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLines);
-			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLines);
+			this.truePositiveLineMap = addLines(this.truePositiveLineMap, outcome.truePositiveLines, key);
+			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearPositiveLines, key);
+			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLines, key);
+			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLines, key);
 
 			Double precisionLine = 0.0;
 			Double recallLine = 0.0;
@@ -123,7 +123,7 @@ public class DataPoint {
 	}
 
 	private HashMap<String, Integer> addLines(HashMap<String, Integer> destinationMap,
-			HashMap<String, Integer> sourceMap) {
+			HashMap<String, Integer> sourceMap, String fileName) {
 
 		for(Entry<String, Integer> entity : sourceMap.entrySet() ){
 			String key = entity.getKey();
@@ -131,10 +131,10 @@ public class DataPoint {
 				Integer  destinationCount = destinationMap.get(key);
 				Integer sourceCount = sourceMap.get(key);
 				destinationCount = destinationCount + sourceCount;
-				destinationMap.put(key, destinationCount);
+				destinationMap.put(fileName+"-"+key, destinationCount);
 			}
 			else{
-				destinationMap.put(key, entity.getValue());
+				destinationMap.put(fileName+"-"+key, entity.getValue());
 			}	
 		}
 		return destinationMap;

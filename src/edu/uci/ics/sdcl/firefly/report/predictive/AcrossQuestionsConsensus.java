@@ -379,7 +379,7 @@ public class AcrossQuestionsConsensus extends Consensus{
  		
 	private HashMap<String, Integer> loadLines(HashMap<String, Integer> map, HashMap<String, String> questionLineMapping) {
 		
-		HashMap<String, Integer> newMap = new HashMap<String, Integer>();
+		HashMap<String, Integer> newMap = (HashMap<String, Integer>) map.clone();
 		
 		Iterator<String> iter = questionLineMapping.keySet().iterator();
 		while(iter.hasNext()){
@@ -396,6 +396,33 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return newMap;
 	}
 
+
+	@Override
+	public HashMap<String, HashMap<String,Integer>> getNearPositiveLinesQuestions(HashMap<String, QuestionLinesMap> lineMapping){
+		
+		HashMap<String, HashMap<String,Integer>> questionMap = new HashMap<String, HashMap<String,Integer>>();
+		
+		if(this.threshold<=0){
+			return questionMap; //Means that bug was not found
+		}
+		else{
+			HashMap<String, Integer> map =  new HashMap<String,Integer>();
+			for(String questionID: this.questionYESCountMap.keySet()){
+				if(data.bugCoveringMap.containsKey(questionID)){
+					Integer yesCount = this.questionYESCountMap.get(questionID);
+					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){
+						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
+						map = loadLines(map,questionLinesMap.nearFaultyLines);
+						if(map.size()>0){
+							questionMap.put(questionID, map);
+						}
+					}
+				}
+			}
+			return questionMap;
+		}
+	}
+	
 	//--------------------------------------------------------------------------------------------------------------
 	
 	 

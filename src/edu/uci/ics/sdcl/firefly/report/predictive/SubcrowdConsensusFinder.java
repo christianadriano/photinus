@@ -73,7 +73,7 @@ public class SubcrowdConsensusFinder {
 	}
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
-
+	
 		Boolean signal = predictor.computeSignal(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
@@ -98,7 +98,8 @@ public class SubcrowdConsensusFinder {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
-				falseNegativeLines);
+				falseNegativeLines
+				);
 
 		return outcome;
 	}

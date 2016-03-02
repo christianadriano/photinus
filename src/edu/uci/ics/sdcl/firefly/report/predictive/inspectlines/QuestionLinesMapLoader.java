@@ -18,7 +18,8 @@ public class QuestionLinesMapLoader {
 	
 	private String path = "C://firefly//InspectLinesAnalysis//";
 	
-	
+	/** Keeps the number of lines per question */
+	public static HashMap<String, Integer> questionLineCount;
 
 	/** 
 	 * The list is loaded from a text file 
@@ -37,6 +38,7 @@ public class QuestionLinesMapLoader {
 
 		//Header : bugID, ID,	LineID,	isBugCovering,	question,	type,	faulty_lines,	all_Lines,
 
+		QuestionLinesMapLoader.questionLineCount = new HashMap<String, Integer>();
 		
 		buffer.remove(0); //removes header
 		for(String line : buffer){
@@ -50,8 +52,10 @@ public class QuestionLinesMapLoader {
 			
 			String all_LinesList = new String(tokens[6]);
 			HashMap<String,String> allLinesMap=null;
-			if(all_LinesList.trim().length()>0)
+			if(all_LinesList.trim().length()>0){
 				allLinesMap = loadMap(all_LinesList);
+				questionLineCount.put(questionID.toString(), allLinesMap.size());
+			}
 			else
 				System.err.println("ERROR lines map empty for bugID: "+questionID);
 			

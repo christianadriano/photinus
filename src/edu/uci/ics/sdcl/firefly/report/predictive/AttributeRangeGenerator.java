@@ -116,16 +116,12 @@ public class AttributeRangeGenerator {
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT, range);
 		
 		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
-		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);
-		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
-
-		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100, range);
 
 		originalMap = AttributeRangeGenerator.setupAnswerDurations();
-		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_q1_q1);
-		selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_q1_q1, range);
+		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);
+		selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30, range);
 		
 		originalMap = AttributeRangeGenerator.setupConfidenceDifficulty();
 		range = originalMap.get(AttributeRangeGenerator.CONFIDENCE_DIFFICULTY_UP_3_PERCENT);
@@ -500,9 +496,9 @@ public class AttributeRangeGenerator {
 		range = new CombinedFilterRange();
 		range.setRangeName(ANSWER_DURATION_MIN_30_15); 
 
-		range.setMaxFirstAnswerDuration(1800);//1hour
+		range.setMaxFirstAnswerDuration(3600);//1hour
 		range.setMinFirstAnswerDuration(30);
-		range.setMaxSecondThirdAnswerDuration(1800);//1hour
+		range.setMaxSecondThirdAnswerDuration(3600);//1hour
 		range.setMinSecondThirdAnswerDuration(15);
 
 		range.setUndefinedWithDefault();
@@ -512,10 +508,10 @@ public class AttributeRangeGenerator {
 		range = new CombinedFilterRange();
 		range.setRangeName(ANSWER_DURATION_MIN_60_30);
 
-		range.setMaxFirstAnswerDuration(1800);//1hour
+		range.setMaxFirstAnswerDuration(3600);//1hour
 		range.setMinFirstAnswerDuration(60);
 
-		range.setMaxSecondThirdAnswerDuration(1800);//1hour
+		range.setMaxSecondThirdAnswerDuration(3600);//1hour
 		range.setMinSecondThirdAnswerDuration(30);
 
 		range.setUndefinedWithDefault();
@@ -525,10 +521,10 @@ public class AttributeRangeGenerator {
 		range = new CombinedFilterRange();
 		range.setRangeName(ANSWER_DURATION_MIN_120_60);
 
-		range.setMaxFirstAnswerDuration(1800);//1hour
+		range.setMaxFirstAnswerDuration(3600);//1hour
 		range.setMinFirstAnswerDuration(120);
 
-		range.setMaxSecondThirdAnswerDuration(1800);//1hour
+		range.setMaxSecondThirdAnswerDuration(3600);//1hour
 		range.setMinSecondThirdAnswerDuration(60);
 
 		range.setUndefinedWithDefault();

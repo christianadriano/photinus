@@ -67,4 +67,8 @@ public abstract class Consensus {
 		else
 			return falsePositiveMap;
 	}
+
+	public abstract HashMap<String, HashMap<String, Integer>> getNearPositiveLinesQuestions(
+			 HashMap<String, QuestionLinesMap> lineMapping);
+	
 }

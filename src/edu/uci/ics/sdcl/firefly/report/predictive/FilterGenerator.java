@@ -38,7 +38,7 @@ public class FilterGenerator {
 		CombinedFilterRange range;
 
 		map = AttributeRangeGenerator.setupAnswerDurations();
-		range = map.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_q1_q3);	
+		range = map.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);	
 
 		ArrayList<FilterCombination> filterList = new ArrayList<FilterCombination>();
 
