@@ -504,6 +504,14 @@ public class WithinQuestionConsensus extends Consensus{
 		return newMap;
 	}
 
+	@Override
+	public HashMap<String, HashMap<String, Integer>> getNearPositiveLinesQuestions(
+			HashMap<String, QuestionLinesMap> lineMapping) {
+		// TODO Auto-generated method stub
+		//I implemented this method only for the across-questions consensus
+		return null;
+	}
+
 	//--------------------------------------------------------------------------------------------------------------
 
 
