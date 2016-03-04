@@ -103,7 +103,7 @@ public class OptimumFinder {
 
 	public void printResults(){	
 
-		String destination = "C://firefly//optimumFinder.txt";
+		String destination = "C://firefly//optimumFinder.csv";
 		BufferedWriter log;
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
@@ -218,7 +218,10 @@ public class OptimumFinder {
 
 		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
 		finder.addPredictor(new AcrossQuestionsConsensus());
-		finder.addPredictor(new WithinQuestionConsensus());
+		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null));
+		for(int minimumYes=1;minimumYes<21;minimumYes++){
+			finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes));
+		}
 		finder.run();
 		finder.printResults();
 	}

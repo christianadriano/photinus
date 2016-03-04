@@ -15,8 +15,14 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
  */
 public class WithinQuestionConsensus extends Consensus{
 
-	public static String name = "Within-question consensus";
-
+	public String name = "Within-question";
+	
+	public static String Absolute_YES_Consensus="absolute YES consensus";
+	
+	public static String Balance_YES_NO_Consensus="balance YES NO consensus";
+	
+	private String consensusType = Balance_YES_NO_Consensus; //default
+	
 	private HashMap<String, Integer> voteMap;
 
 	private HashMap<String, Integer> questionYESCountMap;
@@ -26,6 +32,25 @@ public class WithinQuestionConsensus extends Consensus{
 	/** Difference between number of YES's and NO's. Default is 1.*/
 	private int calibration=0;
 
+	/** Minimum number of YES's to consider a question as locating a fault */
+	private Integer minimumYesCount;
+
+
+
+	/**
+	 * 
+	 * @param type one of the two consensus types available in the class (see static attributes)
+	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
+	 */
+	public WithinQuestionConsensus(String type, Integer minimumYesCount){
+		String suffix="";
+		if(minimumYesCount!=null)
+			suffix=minimumYesCount.toString();
+		this.consensusType = type;
+		this.name = this.name + " " + type + "_" + suffix;
+		this.minimumYesCount = minimumYesCount;
+	}
+	
 	@Override
 	public void setCalibration(int calibration){
 		this.calibration = calibration;
@@ -36,6 +61,10 @@ public class WithinQuestionConsensus extends Consensus{
 		return this.calibration;
 	}
 
+	public void setMinimumYESToConsiderFault(int minimumYesCount){
+		this.minimumYesCount=minimumYesCount;
+	}
+	
 	@Override
 	public void setData(AnswerData data){
 		this.data = data;
@@ -47,8 +76,12 @@ public class WithinQuestionConsensus extends Consensus{
 		this.data = data;
 		this.questionYESCountMap = this.computeNumberOfYES(data.getAnswerMap());
 		HashMap<String, Integer> questionNoCountMap = this.computeNumberOfNO(data.getAnswerMap());
-		this.voteMap = this.computeQuestionVoteMap(questionYESCountMap,questionNoCountMap); 
-
+		if(this.consensusType.matches(this.Balance_YES_NO_Consensus)){
+			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap,questionNoCountMap); 
+		}
+		else 
+			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap);
+		
 		if(this.computeTruePositives()>0)
 			return true;
 		else
@@ -165,7 +198,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 	@Override
 	public String getName(){
-		return WithinQuestionConsensus.name;
+		return this.name;
 	}
 
 
@@ -235,6 +268,27 @@ public class WithinQuestionConsensus extends Consensus{
 			Integer yesCount = questionYESCountMap.get(questionID);
 			Integer noCount = questionNOCountMap.get(questionID);
 			Integer vote = yesCount - noCount;
+
+			voteMap.put(questionID, vote);
+		}
+		return voteMap;
+	}
+	
+	/**
+	 * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
+	 * 
+	 * 
+	 * @param questionYESCountMap
+	 * @param questionNOCountMap
+	 * @return map of questions and respective votes
+	 */
+	private HashMap<String,Integer> computeQuestionVoteMap(HashMap<String, Integer> questionYESCountMap) {
+
+		HashMap<String,Integer> voteMap =  new HashMap<String,Integer>();
+		for(String questionID : questionYESCountMap.keySet()){
+			Integer yesCount = questionYESCountMap.get(questionID);
+		 
+			Integer vote = yesCount - this.minimumYesCount-1;
 
 			voteMap.put(questionID, vote);
 		}
