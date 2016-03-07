@@ -42,13 +42,18 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param type one of the two consensus types available in the class (see static attributes)
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 */
-	public WithinQuestionConsensus(String type, Integer minimumYesCount){
-		String suffix="";
+	public WithinQuestionConsensus(String type, Integer minimumYesCount, Integer calibration){
+		this.calibration = calibration;
+		this.minimumYesCount = minimumYesCount;
+		this.consensusType = type;
+		
+		String suffix="0";
 		if(minimumYesCount!=null)
 			suffix=minimumYesCount.toString();
-		this.consensusType = type;
-		this.name = this.name + " " + type + "_" + suffix;
-		this.minimumYesCount = minimumYesCount;
+		
+		this.name = this.name + " " + type + "_" + suffix + "_" + this.calibration;;
+		
+		
 	}
 	
 	@Override

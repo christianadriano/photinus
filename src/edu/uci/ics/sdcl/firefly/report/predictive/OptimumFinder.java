@@ -217,10 +217,16 @@ public class OptimumFinder {
 		}
 
 		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
-		finder.addPredictor(new AcrossQuestionsConsensus());
-		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null));
+		finder.addPredictor(new AcrossQuestionsConsensus(1));
+		finder.addPredictor(new AcrossQuestionsConsensus(2));
+		finder.addPredictor(new AcrossQuestionsConsensus(3));
+		
+		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
+		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
+		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
+
 		for(int minimumYes=1;minimumYes<21;minimumYes++){
-			finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes));
+			finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
 		}
 		finder.run();
 		finder.printResults();

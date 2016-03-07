@@ -69,8 +69,10 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * Default is 2 */
 	private int calibration=2; 
 
-	public AcrossQuestionsConsensus(){
+	public AcrossQuestionsConsensus(int calibration){
 		super();
+		this.calibration = calibration;
+		this.name = this.name + "_" + this.calibration;
 	}
 
 	public String getName(){
@@ -468,7 +470,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
 
-		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2);
 
 		System.out.println("expected: true, actual: "+ predictor.computeSignal(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getThreshold().toString());
