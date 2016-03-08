@@ -121,7 +121,7 @@ public class SubcrowdConsensusFinder {
 
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,this.bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Consensus consensus = new AcrossQuestionsConsensus();
+					Consensus consensus = new AcrossQuestionsConsensus(2);
 					Outcome outcome = computeDataPoint(data,consensus,this.lineMapping);
 					acrossQuestionsDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 

@@ -408,8 +408,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 			return questionMap; //Means that bug was not found
 		}
 		else{
-			HashMap<String, Integer> map =  new HashMap<String,Integer>();
+			
 			for(String questionID: this.questionYESCountMap.keySet()){
+				HashMap<String, Integer> map =  new HashMap<String,Integer>();
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){

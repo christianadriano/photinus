@@ -228,8 +228,8 @@ public class LinesToInspectController {
 				list.add(outcome);
 				outcomeMap.put(fileName,list);
 			}
-			printOutcomeMap(fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());	
-			printLinesFlaggedInQuestion (fileName, fileName+"_"+consensus.getName()+"_"+consensus.getCalibration());
+			printOutcomeMap(fileName, fileName+"_"+consensus.getName());	
+			printLinesFlaggedInQuestion (fileName, fileName+"_"+consensus.getName());
 		}
 
 	}
@@ -239,14 +239,13 @@ public class LinesToInspectController {
 		LinesToInspectController controller = new LinesToInspectController();
 
 		//Compute across-questions consensus
-		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus();
-		acrossQuestionsConsensus.setCalibration(2);
+		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
 
 		//Compute within-question consensus
-		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus();
-		withinQuestionConsensus.setCalibration(2); //Other values are -2,-1,0,1,2
+		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,0,0);
+		
 
-		controller.run((Consensus)acrossQuestionsConsensus);
+		controller.run((Consensus)withinQuestionConsensus);
 	}
 
 }

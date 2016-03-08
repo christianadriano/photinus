@@ -16,19 +16,19 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 public class WithinQuestionConsensus extends Consensus{
 
 	public String name = "Within-question";
-	
+
 	public static String Absolute_YES_Consensus="absolute YES consensus";
-	
+
 	public static String Balance_YES_NO_Consensus="balance YES NO consensus";
-	
+
 	private String consensusType = Balance_YES_NO_Consensus; //default
-	
+
 	private HashMap<String, Integer> voteMap;
 
 	private HashMap<String, Integer> questionYESCountMap;
 
 	private AnswerData data;
-	
+
 	/** Difference between number of YES's and NO's. Default is 1.*/
 	private int calibration=0;
 
@@ -36,6 +36,9 @@ public class WithinQuestionConsensus extends Consensus{
 	private Integer minimumYesCount;
 
 
+	public WithinQuestionConsensus(){
+		super();
+	}
 
 	/**
 	 * 
@@ -46,16 +49,16 @@ public class WithinQuestionConsensus extends Consensus{
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
-		
+
 		String suffix="0";
 		if(minimumYesCount!=null)
 			suffix=minimumYesCount.toString();
-		
+
 		this.name = this.name + " " + type + "_" + suffix + "_" + this.calibration;;
-		
-		
+
+
 	}
-	
+
 	@Override
 	public void setCalibration(int calibration){
 		this.calibration = calibration;
@@ -69,7 +72,7 @@ public class WithinQuestionConsensus extends Consensus{
 	public void setMinimumYESToConsiderFault(int minimumYesCount){
 		this.minimumYesCount=minimumYesCount;
 	}
-	
+
 	@Override
 	public void setData(AnswerData data){
 		this.data = data;
@@ -86,7 +89,7 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		else 
 			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap);
-		
+
 		if(this.computeTruePositives()>0)
 			return true;
 		else
@@ -207,9 +210,7 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 
-	public WithinQuestionConsensus(){
-		super();
-	}
+
 	//----------------------------------------------------------------------------------------------------------
 
 	/**
@@ -278,7 +279,7 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return voteMap;
 	}
-	
+
 	/**
 	 * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
 	 * 
@@ -292,7 +293,7 @@ public class WithinQuestionConsensus extends Consensus{
 		HashMap<String,Integer> voteMap =  new HashMap<String,Integer>();
 		for(String questionID : questionYESCountMap.keySet()){
 			Integer yesCount = questionYESCountMap.get(questionID);
-		 
+
 			Integer vote = yesCount - this.minimumYesCount-1;
 
 			voteMap.put(questionID, vote);
@@ -461,14 +462,14 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return map;
 	}
-	
-	
+
+
 	@Override
 	public HashMap<String, Integer> getNearPositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 
 		HashMap<String, Integer> map =  new HashMap<String,Integer>();
-		
+
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
@@ -480,15 +481,15 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return map;
 	}
-	
-	
+
+
 
 	@Override
 	public HashMap<String, Integer> getFalsePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
-		
+
 		HashMap<String, Integer> map =  new HashMap<String,Integer>();
-		
+
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
@@ -503,13 +504,13 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return map;
 	}
-	
+
 	@Override
 	public HashMap<String, Integer> getTrueNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
 
 		HashMap<String, Integer> map =  new HashMap<String,Integer>();
-		
+
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
@@ -525,9 +526,9 @@ public class WithinQuestionConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getFalseNegativeLines(
 			HashMap<String, QuestionLinesMap> lineMapping) {
-	
+
 		HashMap<String, Integer> map =  new HashMap<String,Integer>();
-		
+
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer vote = voteMap.get(questionID);
@@ -540,13 +541,13 @@ public class WithinQuestionConsensus extends Consensus{
 		return map;
 	}
 
-	
+
 
 
 
 	private HashMap<String, Integer> loadLines(HashMap<String, Integer> map, HashMap<String, String> questionLineMapping) {
 
-		HashMap<String, Integer> newMap = new HashMap<String, Integer>();
+		HashMap<String, Integer> newMap = (HashMap<String, Integer>) map.clone();
 
 		Iterator<String> iter = questionLineMapping.keySet().iterator();
 		while(iter.hasNext()){
@@ -564,17 +565,32 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public HashMap<String, HashMap<String, Integer>> getNearPositiveLinesQuestions(
-			HashMap<String, QuestionLinesMap> lineMapping) {
-		// TODO Auto-generated method stub
-		//I implemented this method only for the across-questions consensus
-		return null;
+	public HashMap<String, HashMap<String,Integer>> getNearPositiveLinesQuestions(HashMap<String, QuestionLinesMap> lineMapping){
+
+		HashMap<String, HashMap<String,Integer>> questionMap = new HashMap<String, HashMap<String,Integer>>();
+		for(String questionID: this.questionYESCountMap.keySet()){
+			if(data.bugCoveringMap.containsKey(questionID)){
+				Integer vote = voteMap.get(questionID);
+				if(vote!=null && vote>this.calibration){
+					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
+					HashMap<String, Integer> map = loadLines(new HashMap<String, Integer>(),questionLinesMap.nearFaultyLines);
+					if(map.size()>0){
+						questionMap.put(questionID, map);
+					}
+				}
+			}
+		}
+		return questionMap;
 	}
+	
 
-	//--------------------------------------------------------------------------------------------------------------
-
-
-
-
-
+	
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------------
+
+
+
+
