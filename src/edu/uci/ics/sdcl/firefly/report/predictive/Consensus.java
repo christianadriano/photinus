@@ -47,18 +47,18 @@ public abstract class Consensus {
 			HashMap<String, QuestionLinesMap> lineMapping);
 
 	/**
-	 *  Lines considered Near positive cannot be considered again False positives 
+	 *  Lines considered correctly positive cannot be considered again as False positives 
 	 * 
-	 * @param nearPositiveMap
+	 * @param correctPositiveMap any lines that should be considered as correctly flagged as positive (e.g., True or Near positive lines)
 	 * @param falsePositiveMap
 	 * @return
 	 */
-	public static HashMap<String,Integer> removeFalsePositiveDuplications(HashMap<String, Integer> nearPositiveMap,
+	public static HashMap<String,Integer> removeFalsePositiveDuplications(HashMap<String, Integer> correctPositiveMap,
 			HashMap<String, Integer> falsePositiveMap ){
-		if(nearPositiveMap!=null && falsePositiveMap!=null){
+		if(correctPositiveMap!=null && falsePositiveMap!=null){
 			HashMap<String, Integer> revisedFalsePositiveMap = new HashMap<String,Integer>();
 			for (Map.Entry<String, Integer> entry : falsePositiveMap.entrySet()) {
-				if(!nearPositiveMap.containsKey(entry.getKey())){
+				if(!correctPositiveMap.containsKey(entry.getKey())){
 					revisedFalsePositiveMap.put(entry.getKey(),entry.getValue());
 				}
 			}

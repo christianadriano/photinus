@@ -87,7 +87,7 @@ class Range {
 			String result = "";
 			for(String tuple: map.values()){
 				String tupleStr = tuple.toString();
-				result = result + ","+tupleStr;
+				result = result + ";"+tupleStr;
 			}
 			result = result.substring(0, result.length());
 			return result;
@@ -96,7 +96,7 @@ class Range {
 		private String listToString(String[] list){
 			String result ="";
 			for(String value: list){
-				result = result + ","+value;
+				result = result + ";"+value;
 			}
 			result = result.substring(0, result.length());
 			return result;
@@ -107,7 +107,7 @@ class Range {
 			for(int value: list){
 				//System.out.println("value"+value);
 				String valueStr = new Integer(value).toString();
-				result = result + ","+valueStr;
+				result = result + ";"+valueStr;
 			}
 			result = result.substring(0, result.length());
 			return result;
@@ -117,7 +117,7 @@ class Range {
 			String result = "";
 			for(Tuple tuple: map.values()){
 				String tupleStr = tuple.toString();
-				result = result + ","+tupleStr;
+				result = result + ";"+tupleStr;
 			}
 			result = result.substring(0, result.length());
 			return result;

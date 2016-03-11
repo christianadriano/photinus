@@ -42,6 +42,7 @@ public class LinesToInspectController {
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
+		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		HashMap<String, HashMap<String, Integer>> questionMap = predictor.getNearPositiveLinesQuestions(lineMapping);
 
 
@@ -245,7 +246,7 @@ public class LinesToInspectController {
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,0,0);
 		
 
-		controller.run((Consensus)withinQuestionConsensus);
+		controller.run((Consensus)acrossQuestionsConsensus);
 	}
 
 }
