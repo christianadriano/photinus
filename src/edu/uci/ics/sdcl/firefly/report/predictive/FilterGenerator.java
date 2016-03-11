@@ -37,9 +37,15 @@ public class FilterGenerator {
 		HashMap<String, CombinedFilterRange> map;
 		CombinedFilterRange range;
 
-		map = AttributeRangeGenerator.setupCombineScoreProfession();
-		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);	
+		map = AttributeRangeGenerator.setupNoFilters();
+		range = map.get(AttributeRangeGenerator.NO_FILTERS);	
+		
+	//	map = AttributeRangeGenerator.setupCombineScoreProfession();
+		//range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);	
 
+		//range.setMaxFirstAnswerDuration(10800.00);
+		//range.setMinFirstAnswerDuration(0.0);
+		
 		ArrayList<FilterCombination> filterList = new ArrayList<FilterCombination>();
 
 		for(int minConfidence : range.getConfidenceList()){

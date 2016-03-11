@@ -118,6 +118,10 @@ public class AttributeRangeGenerator {
 		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100, range);
+		
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
 
 		originalMap = AttributeRangeGenerator.setupAnswerDurations();
 		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);

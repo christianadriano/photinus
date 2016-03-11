@@ -18,6 +18,8 @@ import java.util.Vector;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask; 
+import edu.uci.ics.sdcl.firefly.Worker;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
@@ -153,11 +155,15 @@ public class OptimumFinder {
 	private static Integer countWorkers(
 			HashMap<String, Microtask> filteredMicrotaskMap, String fileName) {
 
+		//FileConsentDTO dto = new FileConsentDTO();
+		//HashMap<String,Worker> workerObjectMap = dto.getWorkers();
 		HashMap<String,String> workerMap = new HashMap<String, String>();
 		for(Microtask task: filteredMicrotaskMap.values()){
 			if(fileName==null || task.getFileName().compareTo(fileName)==0){
 				for(Answer answer:task.getAnswerList()){
 					String workerID = answer.getWorkerId();
+					//Worker workerObj = workerObjectMap.get(workerID);
+					//System.out.println(workerID+","+workerObj.getSurveyAnswer("Experience")+","+workerObj.getGrade());
 					workerMap.put(workerID, workerID);
 				}
 			}
@@ -232,5 +238,7 @@ public class OptimumFinder {
 		finder.run();
 		finder.printResults();
 	}
+	
+	
 
 }

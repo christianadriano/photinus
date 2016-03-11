@@ -353,14 +353,14 @@ public class Filter {
 					{
 						if(worker!=null && (workerScore[0] != -1) && (worker.getGrade() < workerScore[0]))
 						{
-							if(worker.getGrade()==4)
-								//System.out.println("removing workerScore:"+worker.getGrade());
+							//if(worker.getGrade()==4 || worker.getGrade()==3 )
+								System.out.println("removing workerScore:"+worker.getGrade());
 							removeIndex.add(i);
 							continue;
 						}
 						if( worker!=null && (workerScore[1] != -1) && (worker.getGrade() > workerScore[1]))
 						{
-							if(worker.getGrade()==4)
+							//if(worker.getGrade()==4)
 								//System.out.println("removing workerScore:"+worker.getGrade());
 							removeIndex.add(i);
 							continue;
