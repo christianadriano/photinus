@@ -96,7 +96,7 @@ public class LinesToInspectController {
 
 	public void printOutcomeMap(  String fileName, String outputFileName){	
 
-		String destination = "C://firefly//InspectLinesAnalysis//"+ outputFileName+".csv";
+		String destination = "C://firefly//InspectLinesAnalysis//SummaryTables//"+ outputFileName+".csv";
 		BufferedWriter log;
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
@@ -119,7 +119,7 @@ public class LinesToInspectController {
 
 	public void printLinesFlaggedInQuestion(String fileName, String outputFileName){
 
-		String destination = "C://firefly//InspectLinesAnalysis//LinesFlaggedInQuestion//"+ outputFileName+"_LinesFlagged.csv";
+		String destination = "C://firefly//InspectLinesAnalysis//LinesFlaggedInQuestion//"+ outputFileName+"_LinesFlaggedPerQuestion.csv";
 		BufferedWriter log;
 		
 		try {
@@ -244,9 +244,9 @@ public class LinesToInspectController {
 
 		//Compute within-question consensus
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,0,0);
-		
+		withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
 
-		controller.run((Consensus)acrossQuestionsConsensus);
+		controller.run((Consensus)withinQuestionConsensus);
 	}
 
 }
