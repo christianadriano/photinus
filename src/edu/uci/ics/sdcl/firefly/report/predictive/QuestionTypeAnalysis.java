@@ -22,6 +22,7 @@ public class QuestionTypeAnalysis {
 
 	public class QuestionTypeOutput{
 
+		String bugID="";
 		String questionID="";
 		boolean bugCovering=false;
 		String questionType="";
@@ -46,7 +47,7 @@ public class QuestionTypeAnalysis {
 
 
 
-			return (questionID+","+bugCovering+","+questionType+","+LOCs+ 
+			return (bugID+","+questionID+","+bugCovering+","+questionType+","+LOCs+ 
 					arrayDoubleToString(this.durationList)+","+
 					averageDuration.toString()+ 
 					arrayIntToString(this.confidenceList)+","+
@@ -120,6 +121,7 @@ public class QuestionTypeAnalysis {
 		for(Microtask microtask: microtaskMap.values()){
 			Vector<Answer> answerList = microtask.getAnswerList();
 			QuestionTypeOutput output = new QuestionTypeOutput();
+			output.bugID = microtask.getFileName();
 			output.questionID = microtask.getID().toString();
 			output.questionType = microtask.getQuestionType();
 			output.LOCs = microtask.getLOC_CoveredByQuestion();
@@ -130,9 +132,9 @@ public class QuestionTypeAnalysis {
 				output.bugCovering = false;
 
 			for(Answer answer : answerList){
-				
+
 				if((!independentSamples) || (!isWorkerInSamples(answer.getWorkerId()))){
-					//Either is not indepenentSamples or it is, then the worker should have not participated yet in the sampling
+					//Either is not independentSamples or it is, then the worker should have not participated yet in the sampling
 					output.confidenceList.add(answer.getConfidenceOption());
 					output.difficultyList.add(answer.getDifficulty());
 					output.durationList.add(new Double(answer.getElapsedTime()));
@@ -205,7 +207,7 @@ public class QuestionTypeAnalysis {
 
 
 	public String header(){
-		return ("questionID,bugCovering,questionType,LOCs,"+ 
+		return ("bugID,questionID,bugCovering,questionType,LOCs,"+ 
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average duration,"+
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average confidence,"+
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average difficulty,"+
@@ -275,11 +277,11 @@ public class QuestionTypeAnalysis {
 			for(QuestionTypeOutput output : QuestionTypeOutputList){
 				if(output.questionType.compareTo(type)==0){
 					for(int i=0;i<output.durationList.size();i++){
-					outputLists.durationList.add(output.durationList.get(i));
-					outputLists.confidenceList.add(output.confidenceList.get(i));
-					outputLists.difficultyList.add(output.difficultyList.get(i));
-					outputLists.LocList.add(output.LOCs); //repeats the value to the duration and confidence lists.
-					outputLists.accuracyList.add(output.accuracy); //repeats the value
+						outputLists.durationList.add(output.durationList.get(i));
+						outputLists.confidenceList.add(output.confidenceList.get(i));
+						outputLists.difficultyList.add(output.difficultyList.get(i));
+						outputLists.LocList.add(output.LOCs); //repeats the value to the duration and confidence lists.
+						outputLists.accuracyList.add(output.accuracy); //repeats the value
 					}
 				}
 			}
@@ -324,29 +326,40 @@ public class QuestionTypeAnalysis {
 	}
 
 
+	public HashMap<String,Microtask> getMicrotasks(boolean filtered){
+
+		FileSessionDTO sessionDTO = new FileSessionDTO();
+		HashMap<String,Microtask> microtaskMap =  (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
+
+
+		if(filtered){
+			//Produce the list of filters
+			ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
+			FilterCombination combination =  filterList.get(0);
+			Filter filter = combination.getFilter();
+			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
+
+			return filteredMicrotaskMap;
+		}
+		else {
+			return microtaskMap;
+		}
+	}
 
 	public static void main(String[] args){	
 
 		QuestionTypeAnalysis counter = new QuestionTypeAnalysis();
-		FileSessionDTO sessionDTO = new FileSessionDTO();
-
-		//Produce the list of filters
-		ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
-		FilterCombination combination =  filterList.get(0);
-		Filter filter = combination.getFilter();
-
-		HashMap<String,Microtask> microtaskMap =  (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
-
-		//HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
+		HashMap<String,Microtask> microtaskMap = counter.getMicrotasks(false); //DO NOT FILTER
 
 		QuestionLOCs lineCounter = new QuestionLOCs();
 		HashMap<String, Integer>  IDLOCMap = lineCounter.loadList();
 		HashMap<String,Microtask> microtaskWithLOCS_Map = counter.addQuestionSizeData(microtaskMap,  IDLOCMap);
-		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map,true); 
-		//counter.printOutput(outputList); 
+		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map,false); 
+		counter.printOutput(outputList); 
 
-		HashMap<String, OutputLists> map = counter.buildLists(outputList);
-		counter.printList(map);
+		//Build lists of question type, duration, LOC, etc., to run ANOVA analysis
+		//HashMap<String, OutputLists> map = counter.buildLists(outputList);
+		//counter.printList(map);
 
 	}
 }
