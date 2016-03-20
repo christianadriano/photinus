@@ -36,7 +36,7 @@ public class LinesToInspectController {
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
-		Boolean signal = predictor.computeSignal(answerData);
+		predictor.computeThreshold(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
@@ -44,12 +44,12 @@ public class LinesToInspectController {
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		HashMap<String, HashMap<String, Integer>> questionMap = predictor.getNearPositiveLinesQuestions(lineMapping);
-
+		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
 
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				signal,
+				faultLocated,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -244,9 +244,9 @@ public class LinesToInspectController {
 
 		//Compute within-question consensus
 		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,0,0);
-		withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
+		//withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
 
-		controller.run((Consensus)withinQuestionConsensus);
+		controller.run((Consensus)acrossQuestionsConsensus);
 	}
 
 }

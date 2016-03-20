@@ -80,17 +80,13 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Boolean computeSignal(AnswerData data){
+	public Integer computeThreshold(AnswerData data){
 		
 		this.data = data;
 	
 		this.questionYESCountMap = this.computeNumberOfAnswers(Answer.YES);
-		threshold =  this.computeThreshold(this.calibration);
-		
-		if(threshold>0)
-			return true;
-		else
-			return false;
+		this.threshold =   this.computeThreshold(this.calibration);
+		return threshold;
 	}
 	
 	@Override
@@ -116,7 +112,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	public Integer computeSignalStrength(AnswerData data) {
 
 		if(this.threshold==null)
-			this.computeSignal(data);
+			this.computeThreshold(data);
 
 		if(threshold>0){	
 			return this.maxYES - this.threshold;
@@ -473,7 +469,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2);
 
-		System.out.println("expected: true, actual: "+ predictor.computeSignal(data).toString());
+		System.out.println("expected: true, actual: "+ predictor.computeThreshold(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getThreshold().toString());
 
 		

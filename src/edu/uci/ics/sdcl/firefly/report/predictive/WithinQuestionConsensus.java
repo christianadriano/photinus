@@ -80,7 +80,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 	/** The number of bug covering questions that were actually found */
 	@Override
-	public Boolean computeSignal(AnswerData data){
+	public Integer computeThreshold(AnswerData data){
 		this.data = data;
 		this.questionYESCountMap = this.computeNumberOfYES(data.getAnswerMap());
 		HashMap<String, Integer> questionNoCountMap = this.computeNumberOfNO(data.getAnswerMap());
@@ -90,16 +90,14 @@ public class WithinQuestionConsensus extends Consensus{
 		else 
 			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap);
 
-		if(this.computeTruePositives()>0)
-			return true;
-		else
-			return false;
+		return this.computeTruePositives();
+			
 	}
 
 	@Override
 	public Integer computeSignalStrength(AnswerData data){
 		if(voteMap==null)
-			this.computeSignal(data);
+			this.computeThreshold(data);
 
 		if(getTruePositives()==0)
 			return -1;
@@ -131,12 +129,12 @@ public class WithinQuestionConsensus extends Consensus{
 	@Override
 	/**
 	 * 
-	 * @return number of YES of the bug covering question that has the smallest positive vote. If the fault was not found returns 0.
+	 * @return number of YES of the bug covering question that has the smallest positive vote. If the fault was not found returns -1.
 	 */
 	public Integer getThreshold(){
 
 		if (voteMap==null){
-			if(!this.computeSignal(data))
+			if(this.computeThreshold(data)==0)
 				return -1;
 		}
 
@@ -422,7 +420,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
 		predictor.setCalibration(-1);
-		predictor.computeSignal(data);
+		predictor.computeThreshold(data);
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
 		Double totalBugCovering = 2.0;
 

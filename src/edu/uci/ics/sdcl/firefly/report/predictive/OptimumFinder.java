@@ -70,18 +70,19 @@ public class OptimumFinder {
 
 				for(Consensus predictor: predictorList){ //one time
 
-					Boolean signal = predictor.computeSignal(answerData);
+					predictor.computeThreshold(answerData);
 					HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 					HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 					HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 					HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);;
 					falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 					falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
-
+					Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
+					
 					Outcome outcome = new Outcome(filter,
 							answerData.getHitFileName(),
 							predictor.getName(),
-							predictor.getTruePositives()>0,
+							faultLocated,
 							predictor.computeSignalStrength(answerData),
 							predictor.computeNumberOfWorkers(answerData),
 							answerData.getTotalAnswers(),
