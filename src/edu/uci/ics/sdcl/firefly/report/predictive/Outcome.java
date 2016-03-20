@@ -118,7 +118,7 @@ public class Outcome {
 				+ "False Positive Lines,"+ "#False Positive Lines,"
 				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
 				+"True positives,True negatives,False positives,False negatives,Different workers in HIT,"
-				+"Different Workers among all HITs";
+				+"Different Workers among all HITs,Precision,Recall";
 		return header;
 	}
 
@@ -131,7 +131,7 @@ public class Outcome {
 
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
 				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
-				","+differentWorkersAmongHITs;
+				","+differentWorkersAmongHITs+","+this.precision+","+this.recall;
 		return output;	
 	}
 
