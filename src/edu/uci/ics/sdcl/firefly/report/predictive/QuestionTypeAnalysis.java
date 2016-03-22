@@ -33,6 +33,9 @@ public class QuestionTypeAnalysis {
 		Integer FN=0;
 		Integer FP=0;
 		Double accuracy =0.0;
+		
+		Double precision;
+		Double recall;
 
 		ArrayList<Double> durationList= new ArrayList<Double>();;
 
@@ -54,7 +57,7 @@ public class QuestionTypeAnalysis {
 					averageConfidence.toString()+ 
 					arrayIntToString(this.difficultyList)+","+
 					averageDifficulty.toString()+
-					","+TP+","+TN+","+FN+","+FP);
+					","+TP+","+TN+","+FN+","+FP+","+accuracy+","+precision+","+recall);
 		}
 
 		public String arrayIntToString(ArrayList<Integer> list){
@@ -76,6 +79,26 @@ public class QuestionTypeAnalysis {
 		public void computeAccuracy(){
 			accuracy = new Double ((TP.doubleValue()+TN.doubleValue())/(TP.doubleValue()+TN.doubleValue()+FN.doubleValue()+FP.doubleValue()));
 		}
+		
+		private void computePrecision(){
+			Double tpD = new Double(this.TP);
+			Double fpD =  new Double(this.FP);
+			if((tpD+fpD) ==0) 
+				this.precision =  0.0;
+			else 
+				this.precision = tpD/(tpD+fpD);
+		}
+
+		private void computeRecall(){
+			Double tpD = new Double(this.TP);
+			Double fnD =  new Double(this.FN);
+			if((tpD+fnD) ==0) 
+				this.recall = 0.0;
+			else 
+				this.recall = tpD/(tpD+fnD);
+		}
+
+		
 
 	}	
 
@@ -146,6 +169,8 @@ public class QuestionTypeAnalysis {
 			output.averageConfidence = computeAverageInteger(output.confidenceList);
 			output.averageDuration = computeAverageDouble(output.durationList);
 			output.computeAccuracy();
+			output.computePrecision();
+			output.computeRecall();
 			list.add(output);
 		}
 		return list;
@@ -211,7 +236,7 @@ public class QuestionTypeAnalysis {
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average duration,"+
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average confidence,"+
 				"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,average difficulty,"+
-				"TP,TN,FN,FP");
+				"TP,TN,FN,FP, accuracy, precision, recall");
 	}
 
 	private void printOutput(ArrayList<QuestionTypeOutput> outputList) {
