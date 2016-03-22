@@ -33,6 +33,7 @@ public class Microtask implements Serializable
 	private Integer callerLOCS;
 	protected String fileName;
 	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
+	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 	
 	private String questionType;
 
@@ -325,6 +326,12 @@ public class Microtask implements Serializable
 		this.LOC_CoveredByQuestion = locs;
 	}
 	
-	
+	public Integer getLOC_Trimmed() {
+		return LOC_Trimmed;
+	}
+
+	public void setLOC_Trimmed(Integer locs) {
+		this.LOC_Trimmed = locs;
+	}
 	
 }
