@@ -46,9 +46,34 @@ public class QuestionTypeAnalysis {
 		Double averageDifficulty = 1.0;
 		Double averageDuration = 1.0;
 
+		/** Completes duration list so it has 20 items. */
+		private void topUpDurationList(){
+			int durationListSize = durationList.size();
+			if(durationListSize<20){
+				while(durationListSize<20){
+					this.durationList.add(new Double(-1.0));
+					durationListSize++;
+				}
+			}
+		}
+
+		private ArrayList<Integer> topUpIntegerList(ArrayList<Integer> list){
+			int listSize = list.size();
+			if(listSize<20){
+				while(listSize<20){
+					list.add(new Integer(-1));
+					listSize++;
+				}
+			}
+			return list;
+		}
+		
+		
 		public String toString(){
 
-
+			topUpDurationList();
+			this.confidenceList = topUpIntegerList(this.confidenceList);
+			this.difficultyList = topUpIntegerList(this.difficultyList);
 
 			return (bugID+","+questionID+","+bugCovering+","+questionType+","+LOCs+ 
 					arrayDoubleToString(this.durationList)+","+
@@ -240,7 +265,7 @@ public class QuestionTypeAnalysis {
 	}
 
 	private void printOutput(ArrayList<QuestionTypeOutput> outputList) {
-		String destination = "C://firefly//SpectraAnalysis//QuestionTypeOutput.csv";
+		String destination = "C://firefly//SpectraAnalysis//QuestionTypeOutput_independent.csv";
 		BufferedWriter log;
 
 		try {
@@ -379,7 +404,7 @@ public class QuestionTypeAnalysis {
 		QuestionLOCs lineCounter = new QuestionLOCs();
 		HashMap<String, Integer>  IDLOCMap = lineCounter.loadList();
 		HashMap<String,Microtask> microtaskWithLOCS_Map = counter.addQuestionSizeData(microtaskMap,  IDLOCMap);
-		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map,false); 
+		ArrayList<QuestionTypeOutput> outputList = counter.buildOutputList(microtaskWithLOCS_Map,true); 
 		counter.printOutput(outputList); 
 
 		//Build lists of question type, duration, LOC, etc., to run ANOVA analysis
