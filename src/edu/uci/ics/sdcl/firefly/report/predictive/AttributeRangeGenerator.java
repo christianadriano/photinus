@@ -93,6 +93,7 @@ public class AttributeRangeGenerator {
 	 static final String FIRST_48_HOURS= "FIRST_48_HOURS";
 
 	 static final String MAX_ANSWERS = "MAX_ANSWERS";
+	public static final String WORKER_SCORE_100_DIFFICULTY_5 = "WORKER_SCORE_100_DIFFICULTY_5";
 	
 	 /**
 	  * These are filters that selected sub-crowds who located all 8 faults.
@@ -811,6 +812,34 @@ public class AttributeRangeGenerator {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	static HashMap<String,CombinedFilterRange> getMostDifficultySkill(){
+
+		HashMap<String,CombinedFilterRange> rangeMap = new 	HashMap<String,CombinedFilterRange>();
+
+		CombinedFilterRange range = new CombinedFilterRange();
+		range.setRangeName(WORKER_SCORE_100_DIFFICULTY_5);
+		range.setMaxWorkerScore(5);
+		range.setWorkerScoreExclusionList(new int[] {3,4});
+		range.setWorkerScoreList(new int[]{5});
+		range.setUndefinedWithDefault();
+		
+		//Confidence,Difficulty
+		HashMap<String, Tuple>  map = new HashMap<String, Tuple>();
+		map.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map.put(new Tuple(5,5).toString(), new Tuple(5,5));
+		
+		range.setConfidenceDifficultyPairMap(map);
+
+		
+		rangeMap.put(range.getRangeName(),range);
+
+		return rangeMap;
 	}
 
 	static HashMap<String,CombinedFilterRange> setupMaxAnswers(int max){
