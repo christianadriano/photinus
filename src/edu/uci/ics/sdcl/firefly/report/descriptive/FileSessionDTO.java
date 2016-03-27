@@ -165,7 +165,7 @@ public class FileSessionDTO extends SessionDTO{
 			currentNumberMicrotasks = session.getMicrotaskListSize() + 1;//how many microtasks are there = index +1;
 
 			answerList.add(new Answer(answer,confidenceLevel, explanation, workerID, duration, questionTimestamp,diffculty,currentNumberMicrotasks));
-			microtask = new Microtask(question, microtaskID, answerList , fileName);
+			microtask = new Microtask(question, microtaskID, answerList , fileName,0);
 			microtask.setQuestionType(questionType);
 
 			//Add this microtask to the session

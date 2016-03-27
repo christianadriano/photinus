@@ -18,7 +18,7 @@ public class Tuple {
 	}
 	
 	public String toString(){
-		return "["+confidence+","+difficulty+"]";
+		return "["+confidence+":"+difficulty+"]";
 	}
 	
 	
@@ -28,7 +28,7 @@ public class Tuple {
 		
 		for(int i =0; i<=confidenceMax; i++){
 			for(int j=1; j<=difficultyMax; j++){
-				String key = "["+i+","+j+"]";
+				String key = "["+i+":"+j+"]";
 				Tuple tuple = new Tuple(i,j);
 				map.put(key,tuple);
 			}

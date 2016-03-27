@@ -115,18 +115,19 @@ public class CrowdSpeedAnalysis {
 	}
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor,HashMap<String, QuestionLinesMap> lineMapping) {
-
-		Boolean signal = predictor.computeSignal(answerData);
+		predictor.computeThreshold(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);;
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
-
+		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
+		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
+		
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
 				predictor.getName(),
-				signal,
+				faultLocated,
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
@@ -224,7 +225,7 @@ public class CrowdSpeedAnalysis {
 
 		positiveVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 		majorityVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
-
+		
 		this.outcomes_PositiveVoting.add(positiveVDataPoint);
 		this.outcomes_MajorityVoting.add(majorityVDataPoint);
 	}
@@ -246,14 +247,14 @@ public class CrowdSpeedAnalysis {
 
 	//----------------------------------------------------------------------
 
-	private String getHeader(){
+	private String getOldHeader(){
 		return "Answer level,Average Precision_PV,Average Recall_PV,Average Precision_MV,Average Recall_MV, Total Workers, Total Answers, "
 				+ " Hours taken, Faults Located_PV, Faults Located_MV, False Positives";
 	}
 
-	public void printDataPointsToFile(){
+	public void printOldDataPointsToFile(){
 
-		String destination = "C://firefly//SpeedAnalysis//speedAnalysis_NonStudents.csv";
+		String destination = "C://firefly//SpeedAnalysis//speedAnalysis_all.csv";
 		BufferedWriter log;
 
 		try {
@@ -288,7 +289,55 @@ public class CrowdSpeedAnalysis {
 			e.printStackTrace();
 		}
 	}
+	//----------------------------------------------------------------------
+	
+	private String getHeader(){
+		return "Answer level,Average Precision,Average Recall,Total Workers, Total Answers, "
+				+ "Hours taken, Faults Located, True Positive Lines, Near Positive Lines, False Positive Lines,"
+				+ "Total lines to inspect";
+	}
 
+	public void printDataPointsToFile(){
+
+		String destination = "C://firefly//SpeedAnalysis//speedAnalysis_all.csv";
+		BufferedWriter log;
+
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
+
+			log.write(getHeader()+"\n");
+
+			for(int i=0; i<this.outcomes_PositiveVoting.size();i++){
+				DataPoint datapointPV = this.outcomes_PositiveVoting.get(i);
+
+				Integer linesToInspect = datapointPV.getTotalLinesToInspect();
+				
+				String line= new Integer(i+1).toString() +","+
+						datapointPV.averagePrecision.toString()+","+
+						datapointPV.averageRecall.toString()+","+
+						datapointPV.totalWorkers.toString()+","+
+						datapointPV.totalAnswers.toString()+","+
+						datapointPV.elapsedTime.toString()+","+
+						datapointPV.faultsLocated.toString()+","+
+						datapointPV.truePositiveLinesCount.toString()+","+
+						datapointPV.falsePositiveLinesCount.toString()+","+
+						datapointPV.nearPositiveLinesCount.toString()+","+
+						linesToInspect.toString();
+				log.write(line+"\n");
+			}
+
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 	//-------------------------------------------------------------------
 	//Work with filtered map, instead of all filters
 

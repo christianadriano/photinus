@@ -145,22 +145,57 @@ public class MicrotaskMapUtil {
 	}
 
 	public static HashMap<String, Microtask> cutMapToMaximumAnswers(HashMap<String, Microtask> map, Integer maxCommonAnswers) {
-		
+
 		HashMap<String, Microtask> cutMap = new HashMap<String, Microtask>();
-		
+
 		for(Microtask microtask: map.values()){
-			
+
 			Vector<Answer> answerList = microtask.getAnswerList();
 			if(answerList.size()>=maxCommonAnswers){
 				answerList.subList(0, maxCommonAnswers-1);
 			}
 			else
 				return null; //size should be at least of maxCommonAnswers
-			
+
 			microtask.setAnswerList(answerList);
 			cutMap.put(microtask.getID().toString(), microtask);
 		}
 		return cutMap;
 	}
+
+	public static HashMap<String, Microtask> mergeMaps (HashMap<String, Microtask> originalMap, HashMap<String, Microtask> map1, 
+			HashMap<String, Microtask> map2){
+
+		HashMap<String, Microtask> mergedMap = new HashMap<String, Microtask>();
+
+		for(Microtask microtask: originalMap.values()){		
+
+			Integer microtaskID = microtask.getID();
+			Vector<Answer> newAnswerList = new Vector<Answer>();
+
+			Microtask microtask1 = map1.get(microtaskID.toString());
+			if(microtask1!=null){
+				Vector<Answer> answerList1 = microtask1.getAnswerList();
+				if(answerList1.size()>0)
+					newAnswerList.addAll(answerList1);
+			}
+
+			Microtask microtask2 = map2.get(microtaskID.toString());		
+			if(microtask2!=null){
+				Vector<Answer> answerList2 = microtask2.getAnswerList();
+				if(answerList2.size()>0)
+					newAnswerList.addAll(answerList2);
+			}
+
+			if(newAnswerList.size()>0){//Do not include questions that have no answers
+				Microtask newMicrotask = microtask.getSimpleVersion();
+				newMicrotask.setAnswerList(newAnswerList);
+				mergedMap.put(microtaskID.toString(), newMicrotask);
+			}
+		}
+		return mergedMap;
+	}
+
+
 
 }

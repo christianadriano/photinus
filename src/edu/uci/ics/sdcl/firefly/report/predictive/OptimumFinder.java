@@ -25,6 +25,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.ElapsedTimeUtil;
+import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 import edu.uci.ics.sdcl.firefly.util.mturk.AnswerCounter;
 
@@ -172,6 +173,24 @@ public class OptimumFinder {
 		return workerMap.size();
 	}
 
+	/** Used this method to obtain data from disjoints sets, for instance, skill 80 and difficulty 1 + skill 100, difficulty 5 */
+	public static HashMap<String, Microtask> apply_OR_filter(HashMap<String, Microtask> microtaskMap, ArrayList<FilterCombination> filterList){
+
+		FilterCombination combination1 = filterList.get(0);
+		FilterCombination combination2 = filterList.get(1);
+		Filter filter1 = combination1.getFilter();
+		Filter filter2 = combination2.getFilter();
+		
+		HashMap<String, Microtask> map1 = (HashMap<String, Microtask>) filter1.apply(microtaskMap);
+		FileSessionDTO sessionDTO = new FileSessionDTO();
+		microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
+		HashMap<String, Microtask> map2 = (HashMap<String, Microtask>) filter2.apply(microtaskMap);
+		
+		HashMap<String, Microtask> map = MicrotaskMapUtil.mergeMaps(microtaskMap, map1, map2); //Elapsed time: 150.0, number of answers: 521, number of workers: 139
+		System.out.println("Map sizes, map1:"+map1.size()+", map2:"+ map2.size()+", map:"+ map.size());
+		return	map;
+		
+	}
 
 
 	public static void main(String[] args){
@@ -185,8 +204,9 @@ public class OptimumFinder {
 		}
 
 		//Produce the list of filters
-		ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
-
+		//ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
+		ArrayList<FilterCombination> filterList = FilterGenerator.generateSkillDifficultyFilterCombinationList();
+		
 		String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
 				"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
@@ -197,15 +217,15 @@ public class OptimumFinder {
 
 		//Apply filter and extract data by fileName
 		//System.out.println("FilterList size: "+ filterList.size());
-		for(FilterCombination combination :  filterList){
-			//FilterCombination combination =  filterList.get(0);
+		//for(FilterCombination combination :  filterList){
+			FilterCombination combination =  filterList.get(0);
 			FileSessionDTO sessionDTO = new FileSessionDTO();
 			HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 
-			Filter filter = combination.getFilter();
+			//Filter filter = combination.getFilter();
+			//HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 
-			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
-
+			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) apply_OR_filter(microtaskMap, filterList);
 
 			Integer totalDifferentWorkersAmongHITs = countWorkers(filteredMicrotaskMap, null);
 
@@ -222,7 +242,7 @@ public class OptimumFinder {
 				map.put(combination, data);
 				processingList.add(map);
 			}
-		}
+		//}
 
 		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
 		finder.addPredictor(new AcrossQuestionsConsensus(1));
@@ -241,5 +261,5 @@ public class OptimumFinder {
 	}
 	
 	
-
+	
 }

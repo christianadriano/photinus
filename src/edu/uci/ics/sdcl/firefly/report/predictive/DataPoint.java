@@ -255,6 +255,10 @@ public class DataPoint {
 		return intersectionMap;	
 	}
 
+	public Integer getTotalLinesToInspect() {
+		return this.falsePositiveLinesCount+this.nearPositiveLinesCount+this.truePositiveLinesCount;
+	}
+
 
 
 }

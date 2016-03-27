@@ -72,11 +72,12 @@ public class Microtask implements Serializable
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
-	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName)	{
+	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName,Integer LOC_Covered)	{
 		this.answerList = answerList;
 		this.ID = ID;
 		this.question = question;
 		this.fileName = fileName;
+		this.LOC_CoveredByQuestion = LOC_Covered;
 	}
 	
 	
@@ -110,7 +111,7 @@ public class Microtask implements Serializable
 		for(Answer answer: this.getAnswerList()){
 			answerListCopy.add(answer);
 		}
-		return new Microtask(this.getQuestion(),this.getID(),answerListCopy,this.getFileName());
+		return new Microtask(this.getQuestion(),this.getID(),answerListCopy,this.getFileName(), this.LOC_CoveredByQuestion);
 	}
 
 	public Integer getID(){
