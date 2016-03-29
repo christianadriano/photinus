@@ -458,7 +458,7 @@ public class LogData {
 				//List of sequential Microtasks
 				Vector<Answer> singleAnswerList = new Vector<Answer>();
 				singleAnswerList.add(answerObj);
-				Microtask uniqueMicrotask = new Microtask(question, new Integer(microtaskId), singleAnswerList,fileName);
+				Microtask uniqueMicrotask = new Microtask(question, new Integer(microtaskId), singleAnswerList,fileName,0);
 				this.microtaskList.add(uniqueMicrotask);
 
 
@@ -468,7 +468,7 @@ public class LogData {
 
 				Microtask microtask = this.microtaskMap.get(microtaskId);
 				if(microtask==null){
-					microtask = new Microtask(question, new Integer(microtaskId), answerList,fileName);
+					microtask = new Microtask(question, new Integer(microtaskId), answerList,fileName,0);
 				}
 				else{
 					microtask.addAnswer(answerObj);
@@ -478,7 +478,7 @@ public class LogData {
 				//Session Microtask
 				answerList = new Vector<Answer>();
 				answerList.add(answerObj);
-				Microtask sessionMicrotask = new Microtask(question, new Integer(microtaskId), answerList,fileName);
+				Microtask sessionMicrotask = new Microtask(question, new Integer(microtaskId), answerList,fileName,0);
 				Vector<Microtask> microtaskList = session.getMicrotaskList();
 				microtaskList.add(sessionMicrotask);
 				session.setMicrotaskList(microtaskList);
@@ -768,7 +768,7 @@ public class LogData {
 				//List of sequential microtasks
 				Vector<Answer> singleAnswerList = new Vector<Answer>();
 				singleAnswerList.add(answerObj);
-				Microtask uniqueMicrotask = new Microtask(question, new Integer(microtaskId), singleAnswerList,fileName);
+				Microtask uniqueMicrotask = new Microtask(question, new Integer(microtaskId), singleAnswerList,fileName,0);
 				this.microtaskList.add(uniqueMicrotask);
 
 				//Map of Microtasks
@@ -777,7 +777,7 @@ public class LogData {
 
 				Microtask microtask = this.microtaskMap.get(microtaskId);
 				if(microtask==null){
-					microtask = new Microtask(question, new Integer(microtaskId), answerList,fileName);
+					microtask = new Microtask(question, new Integer(microtaskId), answerList,fileName,0);
 				}
 				else{
 					microtask.addAnswer(answerObj);
@@ -787,7 +787,7 @@ public class LogData {
 				//Session Microtask
 				answerList = new Vector<Answer>();
 				answerList.add(answerObj);
-				Microtask sessionMicrotask = new Microtask(question, new Integer(microtaskId), answerList,fileName);
+				Microtask sessionMicrotask = new Microtask(question, new Integer(microtaskId), answerList,fileName,0);
 				Vector<Microtask> microtaskList = session.getMicrotaskList();
 				microtaskList.add(sessionMicrotask);
 				session.setMicrotaskList(microtaskList);

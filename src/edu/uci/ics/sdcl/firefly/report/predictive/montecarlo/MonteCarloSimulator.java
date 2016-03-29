@@ -68,7 +68,7 @@ public class MonteCarloSimulator {
 						
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Consensus predictor = new AcrossQuestionsConsensus();
+					Consensus predictor = new AcrossQuestionsConsensus(2);
 					Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
@@ -188,7 +188,7 @@ public class MonteCarloSimulator {
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 		
-		Boolean signal = predictor.computeSignal(answerData);
+		
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
