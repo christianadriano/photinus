@@ -39,7 +39,12 @@ public class Outcome {
 	public Integer falsePositives;	
 
 	public Integer falseNegatives;
+	
+	public Integer correct_YES_Answers;
 
+	public Integer correct_NO_Answers;
+	
+	public Integer total_YESNO_Answers;
 
 	//Lines counts per consensus outcome
   	public HashMap<String,Integer> falseNegativeLines;
@@ -122,6 +127,21 @@ public class Outcome {
 		return header;
 	}
 
+	public static String getHeaderCorrectAnswers(){
+
+		String header =  "HIT,Consensus,Fault located?,"
+				+ "True Positive Lines," + "#True Positive Lines,"
+				+ "Near Positive Lines," + "#Near Positive Lines,"
+				+ "False Positive Lines,"+ "#False Positive Lines,"
+				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
+				+"True positives,True negatives,False positives,False negatives,Different workers in HIT,"
+				+"Different Workers among all HITs,Precision,Recall"
+				+"Correct YES's,Correct NO's, Total YES's NO's";
+		
+		return header;
+	}
+
+	
 	public String toString(){
 		
 		String output = fileName +","+ predictorType +","+ faultLocated + 
@@ -132,6 +152,21 @@ public class Outcome {
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
 				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
 				","+differentWorkersAmongHITs+","+this.precision+","+this.recall;
+		return output;	
+	}
+	
+	
+	public String toStringCorrectAnswers(){
+		
+		String output = fileName +","+ predictorType +","+ faultLocated + 
+				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
+				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
+				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
+
+				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
+				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
+				","+differentWorkersAmongHITs+","+this.precision+","+this.recall+
+				","+this.correct_YES_Answers+","+this.correct_NO_Answers+","+this.total_YESNO_Answers;
 		return output;	
 	}
 

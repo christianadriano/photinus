@@ -2,6 +2,11 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
+import edu.uci.ics.sdcl.firefly.Answer;
+import edu.uci.ics.sdcl.firefly.Microtask;
 
 
 /** Holds all answers for each question for a Java Method */
@@ -61,7 +66,69 @@ public class AnswerData {
 		return answerCount;
 	}
 	
+	/**
+	 *  Count the number of correct answers. 
+	 *  If the questions is bug covering, a correct answer is a YES
+	 *  If the question is not bug covering, a correct answer is either NO or IDK
+	 *  
+	 * @param microtakMap map with all microtask with their respective answers
+	 * @param bugCoveringMap map indicating which questions are bug covering
+	 * @param answerOption  Answer.YES, Answer.NO
+	 * @return
+	 */
+	public static int countCorrectAnswers(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap, String answerOption){
+		
+		int correctCount=0;
+		Iterator<String> iter = microtaskMap.keySet().iterator();
+		
+		while(iter.hasNext()){
+			String questionID = iter.next();
+			ArrayList<String> answerList =  microtaskMap.get(questionID);
+			if(bugCoveringMap.containsKey(questionID) && answerOption.matches(Answer.YES)){
+				correctCount = correctCount + countOption(answerList, Answer.YES);
+			}
+			else{
+				correctCount = correctCount + countOption(answerList, Answer.NO);
+			}	
+		}
+		return correctCount;	
+	}
 	
+	/**
+	 * 
+	 * @param answerList
+	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
+	 * @return number of answers of that type.
+	 */
+	public static int countOption(ArrayList<String> answerList, String answerOption){
+		
+		int count=0;
+		for(String answer:answerList){
+			if(answer.matches(answerOption)){
+				count++;
+			}
+		}
+		return count;
+	}
+		
+	/**
+	 * 
+	 * @param answerList
+	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
+	 * @return number of answers of that type.
+	 */
+	public static int count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
+		
+		int count=0;
+		Iterator<String> iter = answerMap.keySet().iterator();
+		
+		while(iter.hasNext()){
+			String questionID = iter.next();
+			ArrayList<String> answerList =  answerMap.get(questionID);
+				count = count + countOption(answerList, answerOption);
+			}
+		return count;	
+	}
 	
 
 }

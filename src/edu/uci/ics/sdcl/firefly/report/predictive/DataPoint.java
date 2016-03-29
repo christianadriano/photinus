@@ -28,13 +28,17 @@ public class DataPoint {
 
 	public Double LinesPrecision;
 	public Double LinesRecall;
-
+	
 	// All lines selected under each category <line number, number of times it was selected> 
 	public HashMap<String, Integer> truePositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> nearPositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> falsePositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> falseNegativeLineMap=new HashMap<String, Integer>();
 
+	public Integer correct_YES=0;
+	public Integer correct_NO=0;
+	public Integer total_YES_NO=0;
+	
 	private static String[] header = { 
 		"consensus type", 
 		"average Precision", 
@@ -86,9 +90,9 @@ public class DataPoint {
 				this.faultsLocated++;
 			}
 			
-			if(fileNameOutcomeMap.size()>8)
+			if(fileNameOutcomeMap.size()>8){
 				System.out.println("fileNameOutcomeMap>8");
-
+			}
 			
 			falsePositives = falsePositives + outcome.falsePositives;
 			falseNegatives = falseNegatives + outcome.falseNegatives;
@@ -109,7 +113,12 @@ public class DataPoint {
 
 			precision_LineValueList.add(precisionLine);
 			recall_LineValueList.add(recallLine);
+			
+			this.correct_YES = this.correct_YES + outcome.correct_YES_Answers;
+			this.correct_NO = this.correct_NO + outcome.correct_NO_Answers;
+			this.total_YES_NO = this.total_YES_NO + outcome.total_YESNO_Answers;
 		}
+		
 		this.truePositiveLinesCount = this.truePositiveLineMap.size();
 		this.falsePositiveLinesCount = this.falsePositiveLineMap.size();
 		this.nearPositiveLinesCount = this.nearPositiveLineMap.size();
