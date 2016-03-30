@@ -11,19 +11,19 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 
 /** Holds all answers for each question for a Java Method */
 public class AnswerData {
-	
+
 	/** name of the HIT (HIT01_8, HIT02_24, etc.) */
 	String hitFileName;
-	
+
 	/** the total different workers in this data set */
 	Integer workerCount;
-	
+
 	/** Total workers that remained after applying the combined filter */
 	Integer differentWorkersAmongHITs;
-	
+
 	/** questionID, list of answer as YES, NO, IDK */
 	HashMap<String, ArrayList<String>> answerMap;
-	
+
 	/** list of bug-covering question */
 	HashMap<String, String> bugCoveringMap;
 
@@ -44,7 +44,7 @@ public class AnswerData {
 	public Integer getWorkerCount(){
 		return this.workerCount;
 	}	
-	
+
 	public Integer getDifferentWorkersAmongHITs() {
 		return this.differentWorkersAmongHITs;
 	}
@@ -65,6 +65,38 @@ public class AnswerData {
 		}
 		return answerCount;
 	}
+
+
+	public static int countCorrectYES(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
+
+		int correctCount=0;
+		Iterator<String> iter = microtaskMap.keySet().iterator();
+
+		while(iter.hasNext()){
+			String questionID = iter.next();
+			ArrayList<String> answerList =  microtaskMap.get(questionID);
+			if(bugCoveringMap.containsKey(questionID)){
+				correctCount = correctCount + countOption(answerList, Answer.YES);
+			}
+		}
+		return correctCount;	
+	}
+
+	public static int countCorrectNO(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
+
+		int correctCount=0;
+		Iterator<String> iter = microtaskMap.keySet().iterator();
+
+		while(iter.hasNext()){
+			String questionID = iter.next();
+			ArrayList<String> answerList =  microtaskMap.get(questionID);
+			if(!bugCoveringMap.containsKey(questionID)){
+				correctCount = correctCount + countOption(answerList, Answer.NO);
+			}
+		}
+		return correctCount;	
+	}
+	
 	
 	/**
 	 *  Count the number of correct answers. 
@@ -77,10 +109,10 @@ public class AnswerData {
 	 * @return
 	 */
 	public static int countCorrectAnswers(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap, String answerOption){
-		
+
 		int correctCount=0;
 		Iterator<String> iter = microtaskMap.keySet().iterator();
-		
+
 		while(iter.hasNext()){
 			String questionID = iter.next();
 			ArrayList<String> answerList =  microtaskMap.get(questionID);
@@ -93,7 +125,7 @@ public class AnswerData {
 		}
 		return correctCount;	
 	}
-	
+
 	/**
 	 * 
 	 * @param answerList
@@ -101,7 +133,7 @@ public class AnswerData {
 	 * @return number of answers of that type.
 	 */
 	public static int countOption(ArrayList<String> answerList, String answerOption){
-		
+
 		int count=0;
 		for(String answer:answerList){
 			if(answer.matches(answerOption)){
@@ -110,7 +142,7 @@ public class AnswerData {
 		}
 		return count;
 	}
-		
+
 	/**
 	 * 
 	 * @param answerList
@@ -118,17 +150,17 @@ public class AnswerData {
 	 * @return number of answers of that type.
 	 */
 	public static int count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
-		
+
 		int count=0;
 		Iterator<String> iter = answerMap.keySet().iterator();
-		
+
 		while(iter.hasNext()){
 			String questionID = iter.next();
 			ArrayList<String> answerList =  answerMap.get(questionID);
-				count = count + countOption(answerList, answerOption);
-			}
+			count = count + countOption(answerList, answerOption);
+		}
 		return count;	
 	}
-	
+
 
 }
