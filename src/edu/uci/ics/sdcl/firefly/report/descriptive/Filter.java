@@ -267,6 +267,8 @@ public class Filter {
 		if(this.maxAnswers !=-1 )
 			aux = excludeAnswers(aux);
 		
+		int removedCount = 0;
+		
 		for (String questionID : aux.keySet()) {
 
 			Vector<Answer> answerList = aux.get(questionID).getAnswerList();
@@ -438,7 +440,7 @@ public class Filter {
 					}
 					if(confidenceDifficultyPairMap.size()>0){
 
-
+						
 						for(Tuple tuple: confidenceDifficultyPairMap.values()){
 							//System.out.println(tuple.toString()+": answer:"+answer.getConfidenceOption()+","+answer.getDifficulty());
 
@@ -446,11 +448,13 @@ public class Filter {
 									((tuple.difficulty != -1) && (answer.getDifficulty() == tuple.difficulty)))
 							{
 								//System.out.print("removed ["+answer.getConfidenceOption()+","+answer.getDifficulty()+"]");
+								//removedCount++;
 								removeIndex.add(i);
 
 								continue;
 							}
 						}
+					
 					}
 
 					if((stardEndDates[0] !=null) || (stardEndDates[0] !=null) ){
@@ -482,6 +486,10 @@ public class Filter {
 			removeIndex.clear();
 
 		}//for		
+		
+		//System.out.println();
+		//System.out.println("removed: "+ removedCount+" answers");
+		
 		return content;
 	}
 

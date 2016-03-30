@@ -98,14 +98,22 @@ public class MicrotaskMapUtil {
 		int answerCount = 0;
 		HashMap<String, ArrayList<String>> resultMap = new HashMap<String, ArrayList<String>>();
 
-		for(Microtask task:microtaskMap.values() ){
-			//System.out.println("fileName: "+fileName+":"+task.getFileName());
+		for(Microtask task : microtaskMap.values() ){
+
 			if(task.getFileName().compareTo(fileName)==0){
+				System.out.println("fileName: "+fileName+":"+task.getFileName());
+				ArrayList<String> optionList = task.getAnswerOptions();
+				System.out.print("size:"+optionList.size()+ " : ");
+				for(String option: optionList){
+					System.out.print(option+":");
+				}
 				resultMap.put(task.getID().toString(),task.getAnswerOptions());
 				answerCount = answerCount+task.getAnswerOptions().size();
+
 			}
+
 		}
-		//System.out.println(fileName+" has "+answerCount+" answers");
+		System.out.println(fileName+" has "+answerCount+" answers");
 		return resultMap;
 	}
 
@@ -196,6 +204,39 @@ public class MicrotaskMapUtil {
 		return mergedMap;
 	}
 
+	/**
+	 * 
+	 * @param answerList
+	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
+	 * @return number of answers of that type.
+	 */
+	public static int countOption(HashMap<String, Microtask> microtaskMap, String answerOption){
+
+		int count=0;
+		for(Microtask task :microtaskMap.values()){
+			//Vector<Answer> answerList = task.getAnswerList();
+			ArrayList<String> answerList = task.getAnswerOptions();
+			for(String answer: answerList){
+				if(answer.matches(answerOption)){
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+
+	
+	public static void main(String args[]){
+		
+		FileSessionDTO dto = new FileSessionDTO();
+		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
+		int yes = MicrotaskMapUtil.countOption(microtaskMap,Answer.YES);
+		int no = MicrotaskMapUtil.countOption(microtaskMap,Answer.NO);
+		int IDK = MicrotaskMapUtil.countOption(microtaskMap,Answer.I_DONT_KNOW);
+		int total = yes + no+ IDK;
+		int totalAnswers = MicrotaskMapUtil.countAnswers(microtaskMap).intValue();
+		System.out.println("Yes:"+yes+", No:"+no+", IDK:"+IDK+", total="+total+", "+totalAnswers);
+	}
 
 
 }
