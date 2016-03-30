@@ -356,7 +356,7 @@ public class Filter {
 						if(worker!=null && (workerScore[0] != -1) && (worker.getGrade() < workerScore[0]))
 						{
 							//if(worker.getGrade()==4 || worker.getGrade()==3 )
-								System.out.println("removing workerScore:"+worker.getGrade());
+								//System.out.println("removing workerScore:"+worker.getGrade());
 							removeIndex.add(i);
 							continue;
 						}
