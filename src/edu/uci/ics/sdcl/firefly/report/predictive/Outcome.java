@@ -44,7 +44,20 @@ public class Outcome {
 
 	public Integer correct_NO_Answers;
 	
+	public Integer total_YES_Answers;
+	
+	public Integer total_NO_Answers;
+	
+	public Integer 	total_IDK_Answers;
+	
 	public Integer total_YESNO_Answers;
+	
+	public Double average_Total_Correct_Answers;
+	
+	public Double average_correctYES_Answers;
+	
+	public Double average_correctNO_Answers;
+	
 
 	//Lines counts per consensus outcome
   	public HashMap<String,Integer> falseNegativeLines;
@@ -93,8 +106,47 @@ public class Outcome {
 		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
 		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-
+		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>());
+	}
+	
+	
+	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
+			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
+			Integer truePositives, Integer trueNegatives,
+			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
+			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
+			HashMap<String,Integer> falsePositiveLines, HashMap<String, Integer> falseNegativeLines,
+			Integer correctYES, Integer correctNO, Integer totalYES, Integer totalNO,Integer totalIDK) {
+		super();
+		this.filter = filter;
+		this.fileName = new String(fileName.replace("HIT0", "J").replace("_","."));
+		this.predictorType = predictorType;
+		this.faultLocated = faultLocated;
+		this.signalStrength = signalStrength;
+		this.maxWorkerPerQuestion = maxWorkerPerQuestion;
+		this.totalAnswersObtained = totalAnswers;
+		this.threshold = threshold; 
+		this.truePositives = truePositives;
+		this.trueNegatives = trueNegatives;
+		this.falsePositives = falsePositives;
+		this.falseNegatives = falseNegatives;
+		this.differentWorkersPerHIT = differentWorkersPerHIT;
+		this.differentWorkersAmongHITs = differentWorkersAmongHITs;
+		this.precision = this.computePrecision(this.truePositives, this.falsePositives);
+		this.recall = this.computeRecall(this.truePositives, this.falseNegatives);
+		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.correct_YES_Answers = correctYES;
+		this.correct_NO_Answers = correctNO;
+		this.total_YES_Answers = totalYES;
+		this.total_NO_Answers =  totalNO;
+		this.total_IDK_Answers = totalIDK;
+		this.total_YESNO_Answers = totalYES+ totalNO;
+		this.average_correctYES_Answers = this.correct_YES_Answers.doubleValue() / this.total_YES_Answers.doubleValue();
+		this.average_correctNO_Answers = this.correct_NO_Answers.doubleValue() / this.total_NO_Answers.doubleValue();
+		this.average_Total_Correct_Answers = (this.correct_YES_Answers.doubleValue()+this.correct_NO_Answers.doubleValue())/this.total_YESNO_Answers.doubleValue();
 	}
 
 	private Double computePrecision(int tp, int fp){
@@ -135,8 +187,8 @@ public class Outcome {
 				+ "False Positive Lines,"+ "#False Positive Lines,"
 				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
 				+"True positives,True negatives,False positives,False negatives,Different workers in HIT,"
-				+"Different Workers among all HITs,Precision,Recall"
-				+"Correct YES's,Correct NO's, Total YES's NO's";
+				+"Different Workers among all HITs,Precision,Recall,"
+				+"#Correct YES,#Correct NO, Total YES, Total NO, Total IDK, Total YES NO,Average correct YES, Average correct NO, Average total correct answers";
 		
 		return header;
 	}
@@ -166,10 +218,13 @@ public class Outcome {
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
 				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
 				","+differentWorkersAmongHITs+","+this.precision+","+this.recall+
-				","+this.correct_YES_Answers+","+this.correct_NO_Answers+","+this.total_YESNO_Answers;
+				","+this.correct_YES_Answers+","+this.correct_NO_Answers+
+				","+this.total_YES_Answers+","+this.total_NO_Answers+","+this.total_IDK_Answers+","+this.total_YESNO_Answers+
+				","+this.average_correctYES_Answers+","+this.average_correctNO_Answers+","+this.average_Total_Correct_Answers;
 		return output;	
 	}
 
+	
 	public String linesToString(HashMap<String,Integer> map){
 		if(map==null)
 			return "";
@@ -182,8 +237,5 @@ public class Outcome {
 			return result;
 		}
 	}
-	
-
-	
 	 
 }
