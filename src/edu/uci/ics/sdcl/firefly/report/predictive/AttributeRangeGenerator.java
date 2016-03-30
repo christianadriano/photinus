@@ -840,24 +840,19 @@ public class AttributeRangeGenerator {
 
 		//Confidence,Difficulty
 		HashMap<String, Tuple>  map543 = new HashMap<String, Tuple>();
-		map543.put(new Tuple(0,5).toString(), new Tuple(0,5));
-		map543.put(new Tuple(1,5).toString(), new Tuple(1,5));
-		map543.put(new Tuple(2,5).toString(), new Tuple(2,5));
-		map543.put(new Tuple(3,5).toString(), new Tuple(3,5));
-		map543.put(new Tuple(4,5).toString(), new Tuple(4,5));
-		map543.put(new Tuple(5,5).toString(), new Tuple(5,5));
-		map543.put(new Tuple(0,4).toString(), new Tuple(0,4));
-		map543.put(new Tuple(1,4).toString(), new Tuple(1,4));
-		map543.put(new Tuple(2,4).toString(), new Tuple(2,4));
-		map543.put(new Tuple(3,4).toString(), new Tuple(3,4));
-		map543.put(new Tuple(4,4).toString(), new Tuple(4,4));
-		map543.put(new Tuple(5,4).toString(), new Tuple(5,4));
-		map543.put(new Tuple(0,3).toString(), new Tuple(0,3));
-		map543.put(new Tuple(1,3).toString(), new Tuple(1,3));
-		map543.put(new Tuple(2,3).toString(), new Tuple(2,3));
-		map543.put(new Tuple(3,3).toString(), new Tuple(3,3));
-		map543.put(new Tuple(4,3).toString(), new Tuple(4,3));
-		map543.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map543.put(new Tuple(0,1).toString(), new Tuple(0,1));
+		map543.put(new Tuple(1,1).toString(), new Tuple(1,1));
+		map543.put(new Tuple(2,1).toString(), new Tuple(2,1));
+		map543.put(new Tuple(3,1).toString(), new Tuple(3,1));
+		map543.put(new Tuple(4,1).toString(), new Tuple(4,1));
+		map543.put(new Tuple(5,1).toString(), new Tuple(5,2));
+		map543.put(new Tuple(0,2).toString(), new Tuple(0,2));
+		map543.put(new Tuple(1,2).toString(), new Tuple(1,2));
+		map543.put(new Tuple(2,2).toString(), new Tuple(2,2));
+		map543.put(new Tuple(3,2).toString(), new Tuple(3,2));
+		map543.put(new Tuple(4,2).toString(), new Tuple(4,2));
+		map543.put(new Tuple(5,2).toString(), new Tuple(5,2));
+	
 
 		range.setConfidenceDifficultyPairMap(map543);
 		rangeMap.put(range.getRangeName(),range);
@@ -873,18 +868,24 @@ public class AttributeRangeGenerator {
 
 		//Confidence,Difficulty
 		HashMap<String, Tuple> map12 = new HashMap<String, Tuple>();
-		map12.put(new Tuple(0,1).toString(), new Tuple(0,1));
-		map12.put(new Tuple(1,1).toString(), new Tuple(1,1));
-		map12.put(new Tuple(2,1).toString(), new Tuple(2,1));
-		map12.put(new Tuple(3,1).toString(), new Tuple(3,1));
-		map12.put(new Tuple(4,1).toString(), new Tuple(4,1));
-		map12.put(new Tuple(5,2).toString(), new Tuple(5,1));
-		map12.put(new Tuple(0,2).toString(), new Tuple(0,2));
-		map12.put(new Tuple(1,2).toString(), new Tuple(1,2));
-		map12.put(new Tuple(2,2).toString(), new Tuple(2,2));
-		map12.put(new Tuple(3,2).toString(), new Tuple(3,2));
-		map12.put(new Tuple(4,2).toString(), new Tuple(4,2));
-		map12.put(new Tuple(5,2).toString(), new Tuple(5,2));
+		map12.put(new Tuple(0,3).toString(), new Tuple(0,3));
+		map12.put(new Tuple(1,3).toString(), new Tuple(1,3));
+		map12.put(new Tuple(2,3).toString(), new Tuple(2,3));
+		map12.put(new Tuple(3,3).toString(), new Tuple(3,3));
+		map12.put(new Tuple(4,3).toString(), new Tuple(4,3));
+		map12.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map12.put(new Tuple(0,4).toString(), new Tuple(0,4));
+		map12.put(new Tuple(1,4).toString(), new Tuple(1,4));
+		map12.put(new Tuple(2,4).toString(), new Tuple(2,4));
+		map12.put(new Tuple(3,4).toString(), new Tuple(3,4));
+		map12.put(new Tuple(4,4).toString(), new Tuple(4,4));
+		map12.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map12.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map12.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map12.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map12.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map12.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map12.put(new Tuple(5,5).toString(), new Tuple(5,5));
 
 		range.setConfidenceDifficultyPairMap(map12);
 		rangeMap.put(range.getRangeName(),range);
@@ -903,9 +904,8 @@ public class AttributeRangeGenerator {
 		//---------------------------------------------
 		range = new CombinedFilterRange();
 		range.setRangeName(WORKER_SCORE_60_DIFFICULTY_1_2); 
-		range.setMaxWorkerScore(4);
-		range.setWorkerScoreExclusionList(new int[] {5,3});
-		range.setWorkerScoreList(new int[]{4});
+		range.setMaxWorkerScore(3);
+		range.setMaxWorkerScore(3);
 		range.setUndefinedWithDefault();
 
 		range.setConfidenceDifficultyPairMap(map12);
@@ -916,67 +916,65 @@ public class AttributeRangeGenerator {
 		range = new CombinedFilterRange();
 		range.setRangeName(WORKER_SCORE_100_80_DIFFICULTY_5_4_3);
 		range.setMaxWorkerScore(5);
-		range.setWorkerScoreExclusionList(new int[] {3});
-		range.setWorkerScoreList(new int[]{5,4});
+		range.setMinWorkerScore(4);
 		range.setUndefinedWithDefault();
 
-		range.setConfidenceDifficultyPairMap(map543);
+		//range.setConfidenceDifficultyPairMap(map543);
 		rangeMap.put(range.getRangeName(),range);
 		//-----------------------------------------------
 		
 		range = new CombinedFilterRange();
 		range.setRangeName(WORKER_SCORE_100_80_DIFFICULTY_5_4);
 		range.setMaxWorkerScore(5);
-		range.setWorkerScoreExclusionList(new int[] {3});
-		range.setWorkerScoreList(new int[]{5,4});
+		range.setMinWorkerScore(4);
 		range.setUndefinedWithDefault();
 
 		//Confidence,Difficulty
 		HashMap<String, Tuple>  map54= new HashMap<String, Tuple>();
-		map54.put(new Tuple(0,5).toString(), new Tuple(0,5));
-		map54.put(new Tuple(1,5).toString(), new Tuple(1,5));
-		map54.put(new Tuple(2,5).toString(), new Tuple(2,5));
-		map54.put(new Tuple(3,5).toString(), new Tuple(3,5));
-		map54.put(new Tuple(4,5).toString(), new Tuple(4,5));
-		map54.put(new Tuple(5,5).toString(), new Tuple(5,5));
-		map54.put(new Tuple(0,4).toString(), new Tuple(0,4));
-		map54.put(new Tuple(1,4).toString(), new Tuple(1,4));
-		map54.put(new Tuple(2,4).toString(), new Tuple(2,4));
-		map54.put(new Tuple(3,4).toString(), new Tuple(3,4));
-		map54.put(new Tuple(4,4).toString(), new Tuple(4,4));
-		map54.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map54.put(new Tuple(0,3).toString(), new Tuple(0,3));
+		map54.put(new Tuple(1,3).toString(), new Tuple(1,3));
+		map54.put(new Tuple(2,3).toString(), new Tuple(2,3));
+		map54.put(new Tuple(3,3).toString(), new Tuple(3,3));
+		map54.put(new Tuple(4,3).toString(), new Tuple(4,3));
+		map54.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map54.put(new Tuple(0,1).toString(), new Tuple(0,1));
+		map54.put(new Tuple(1,1).toString(), new Tuple(1,1));
+		map54.put(new Tuple(2,1).toString(), new Tuple(2,1));
+		map54.put(new Tuple(3,1).toString(), new Tuple(3,1));
+		map54.put(new Tuple(4,1).toString(), new Tuple(4,1));
+		map54.put(new Tuple(5,1).toString(), new Tuple(5,2));
+		map54.put(new Tuple(0,2).toString(), new Tuple(0,2));
+		map54.put(new Tuple(1,2).toString(), new Tuple(1,2));
+		map54.put(new Tuple(2,2).toString(), new Tuple(2,2));
+		map54.put(new Tuple(3,2).toString(), new Tuple(3,2));
+		map54.put(new Tuple(4,2).toString(), new Tuple(4,2));
+		map54.put(new Tuple(5,2).toString(), new Tuple(5,2));
+		
 		
 		range.setConfidenceDifficultyPairMap(map54);
 		rangeMap.put(range.getRangeName(),range);
 		//---------------------------------------------
 		range = new CombinedFilterRange();
 		range.setRangeName(WORKER_SCORE_60_DIFFICULTY_1_2_3); 
-		range.setMaxWorkerScore(4);
-		range.setWorkerScoreExclusionList(new int[] {5,3});
-		range.setWorkerScoreList(new int[]{4});
+		range.setMaxWorkerScore(3);
+		range.setMinWorkerScore(3);
 		range.setUndefinedWithDefault();
 
 
 		//Confidence,Difficulty
 		HashMap<String, Tuple> map123 = new HashMap<String, Tuple>();
-		map123.put(new Tuple(0,1).toString(), new Tuple(0,1));
-		map123.put(new Tuple(1,1).toString(), new Tuple(1,1));
-		map123.put(new Tuple(2,1).toString(), new Tuple(2,1));
-		map123.put(new Tuple(3,1).toString(), new Tuple(3,1));
-		map123.put(new Tuple(4,1).toString(), new Tuple(4,1));
-		map123.put(new Tuple(5,2).toString(), new Tuple(5,1));
-		map123.put(new Tuple(0,2).toString(), new Tuple(0,2));
-		map123.put(new Tuple(1,2).toString(), new Tuple(1,2));
-		map123.put(new Tuple(2,2).toString(), new Tuple(2,2));
-		map123.put(new Tuple(3,2).toString(), new Tuple(3,2));
-		map123.put(new Tuple(4,2).toString(), new Tuple(4,2));
-		map123.put(new Tuple(5,2).toString(), new Tuple(5,2));
-		map123.put(new Tuple(0,3).toString(), new Tuple(0,3));
-		map123.put(new Tuple(1,3).toString(), new Tuple(1,3));
-		map123.put(new Tuple(2,3).toString(), new Tuple(2,3));
-		map123.put(new Tuple(3,3).toString(), new Tuple(3,3));
-		map123.put(new Tuple(4,3).toString(), new Tuple(4,3));
-		map123.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map123.put(new Tuple(0,4).toString(), new Tuple(0,4));
+		map123.put(new Tuple(1,4).toString(), new Tuple(1,4));
+		map123.put(new Tuple(2,4).toString(), new Tuple(2,4));
+		map123.put(new Tuple(3,4).toString(), new Tuple(3,4));
+		map123.put(new Tuple(4,4).toString(), new Tuple(4,4));
+		map123.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map123.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map123.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map123.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map123.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map123.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map123.put(new Tuple(5,5).toString(), new Tuple(5,5));
 
 		range.setConfidenceDifficultyPairMap(map123);
 		rangeMap.put(range.getRangeName(),range);
@@ -986,8 +984,7 @@ public class AttributeRangeGenerator {
 				range = new CombinedFilterRange();
 				range.setRangeName(WORKER_SCORE_60_DIFFICULTY_5_4); 
 				range.setMaxWorkerScore(3);
-				range.setWorkerScoreExclusionList(new int[] {5,4});
-				range.setWorkerScoreList(new int[]{3});
+				range.setMinWorkerScore(3);
 				range.setUndefinedWithDefault();
 		
 				range.setConfidenceDifficultyPairMap(map54);
