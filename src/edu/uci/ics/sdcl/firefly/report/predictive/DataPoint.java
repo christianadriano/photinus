@@ -37,7 +37,13 @@ public class DataPoint {
 
 	public Integer correct_YES=0;
 	public Integer correct_NO=0;
+	public Integer total_YES=0;
+	public Integer total_NO=0;
+	public Integer total_IDK=0;
 	public Integer total_YES_NO=0;
+	public Double averageCorrectTotal=0.0;
+	public Double averageCorrectYES=0.0;
+	public Double averageCorrectNO=0.0;
 	
 	private static String[] header = { 
 		"consensus type", 
@@ -55,8 +61,29 @@ public class DataPoint {
 		"#near positive line count", "near positive lines",
 		"#false positive line count", "false positive lines",
 		"#false negative line count", "false negative lines",
-		"line precision", "line recall"} ;
+		"line precision", "line recall"};
 
+	private static String[] headerCorrectAnswers = { 
+		"consensus type", 
+		"average Precision", 
+		"average Recall",
+		"elapsed Time", 
+		"total Workers",
+		"total Answers", 
+		"faults Located", 
+		"true Positives", 
+		"false Positives", 
+		"false Negatives",		
+		"true Negatives", 
+		"#true positive line count", "true positive lines",
+		"#near positive line count", "near positive lines",
+		"#false positive line count", "false positive lines",
+		"#false negative line count", "false negative lines",
+		"line precision", "line recall",
+		"#Correct YES's","#Correct NO's", 
+		"Total YES", "Total NO", "Total IDK", "Total YES NO",
+		"Average correct YES's","Average correct NO's","Average total correct answers"
+		};
 
 	public DataPoint(){}
 
@@ -75,6 +102,10 @@ public class DataPoint {
 		ArrayList<Double> precision_LineValueList = new ArrayList<Double>();
 		ArrayList<Double> recall_LineValueList = new ArrayList<Double>();
 
+		ArrayList<Double> correctTotalAnswers_averageList = new ArrayList<Double>();
+		ArrayList<Double> correctYESAnswers_averageList = new ArrayList<Double>();
+		ArrayList<Double> correctNOAnswers_averageList = new ArrayList<Double>();
+		
 		for(String key: fileNameOutcomeMap.keySet()){
 			Outcome outcome = fileNameOutcomeMap.get(key);
 			precisionValueList.add(outcome.precision);
@@ -116,7 +147,16 @@ public class DataPoint {
 			
 			this.correct_YES = this.correct_YES + outcome.correct_YES_Answers;
 			this.correct_NO = this.correct_NO + outcome.correct_NO_Answers;
+			
+			this.total_YES = this.total_YES + outcome.total_YES_Answers;
+			this.total_NO = this.total_NO + outcome.total_NO_Answers;
+			this.total_IDK = this.total_IDK + outcome.total_IDK_Answers;
 			this.total_YES_NO = this.total_YES_NO + outcome.total_YESNO_Answers;
+			
+			correctTotalAnswers_averageList.add(outcome.average_Total_Correct_Answers);
+			correctYESAnswers_averageList.add(outcome.average_correctYES_Answers);
+			correctNOAnswers_averageList.add(outcome.average_correctNO_Answers);
+			
 		}
 		
 		this.truePositiveLinesCount = this.truePositiveLineMap.size();
@@ -129,12 +169,15 @@ public class DataPoint {
 		this.numberOfOutcomes =  fileNameOutcomeMap.size();
 		this.averagePrecision = average(precisionValueList);
 		this.averageRecall = average(recallValueList);
+		this.averageCorrectTotal = average(correctTotalAnswers_averageList);
+		this.averageCorrectYES = average(correctYESAnswers_averageList);
+		this.averageCorrectNO = average(correctNOAnswers_averageList);
 	}
 
 	private HashMap<String, Integer> addLines(HashMap<String, Integer> destinationMap,
 			HashMap<String, Integer> sourceMap, String fileName) {
 
-		for(Entry<String, Integer> entity : sourceMap.entrySet() ){
+		for(Entry<String, Integer> entity : sourceMap.entrySet()){
 			String key = entity.getKey();
 			if(destinationMap.containsKey(key)){
 				Integer  destinationCount = destinationMap.get(key);
@@ -152,10 +195,15 @@ public class DataPoint {
 	private Double average(ArrayList<Double> values){
 
 		Double total = 0.0;
+		int size=0;
 		for(int i=0; i<values.size();i++){
-			total = total + values.get(i);
+			double value = values.get(i);
+			if(!Double.isNaN(value)){
+				total = total + value; 
+				size++;
+			}
 		}
-		return total/values.size();
+		return total/size;
 	}
 
 	/**
@@ -173,6 +221,22 @@ public class DataPoint {
 		}
 		return titles.toString();
 	}
+	
+	/**
+	 * Header that includes fields for counting and averaging correct answers
+	 * @param suffix necessary to identify the type of predictor that produced this datapoint
+	 * @return
+	 */
+	public static String getHeaderCorrectAnswers(String suffix){
+
+		StringBuffer titles=new StringBuffer();
+		for(String label: headerCorrectAnswers){
+			titles.append(label);
+			titles.append(suffix);
+			titles.append(",");
+		}
+		return titles.toString();
+	}
 
 	public String toString(){
 		return  this.consensusType+","+
@@ -184,6 +248,21 @@ public class DataPoint {
 				this.falsePositiveLinesCount+","+linesToString(this.falsePositiveLineMap)+","+
 				this.falseNegativeLinesCount+","+linesToString(this.falseNegativeLineMap)+","+
 				this.LinesPrecision + "," + this.LinesRecall;
+	}
+	
+	public String toStringCorrectAnswers(){
+		return  this.consensusType+","+
+				this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
+				this.totalAnswers+","+this.faultsLocated+","+this.truePositives+","+
+				this.falsePositives+","+this.falseNegatives+","+this.trueNegatives+","+
+				this.truePositiveLinesCount+","+linesToString(this.truePositiveLineMap)+","+
+				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+
+				this.falsePositiveLinesCount+","+linesToString(this.falsePositiveLineMap)+","+
+				this.falseNegativeLinesCount+","+linesToString(this.falseNegativeLineMap)+","+
+				this.LinesPrecision+","+this.LinesRecall+","+
+				this.correct_YES+","+this.correct_NO+","+
+				this.total_YES+","+this.total_NO+","+this.total_IDK+","+this.total_YES_NO+","+
+				this.averageCorrectYES+","+this.averageCorrectNO+","+this.averageCorrectTotal;
 	}
 
 	private String linesToString(HashMap<String,Integer> map){
