@@ -11,7 +11,7 @@ public class DataPoint {
 	public Double averageRecall=0.0;
 	public Double elapsedTime=0.0;
 	public Double totalWorkers=0.0;
-	public Double totalAnswers=0.0;
+	public Double maxAnswersHIT=0.0;
 	public Double faultsLocated=0.0;
 	public Double falsePositives=0.0;
 	public Double falseNegatives=0.0;
@@ -51,7 +51,7 @@ public class DataPoint {
 		"average Recall",
 		"elapsed Time", 
 		"total Workers", 
-		"total Answers", 
+		"max answers per HIT", 
 		"faults Located", 
 		"true Positives", 
 		"false Positives", 
@@ -69,7 +69,7 @@ public class DataPoint {
 		"average Recall",
 		"elapsed Time", 
 		"total Workers",
-		"total Answers", 
+		"max answers per HIT", 
 		"faults Located", 
 		"true Positives", 
 		"false Positives", 
@@ -114,8 +114,8 @@ public class DataPoint {
 			if(this.totalWorkers < outcome.differentWorkersAmongHITs)
 				this.totalWorkers =  new Integer(outcome.differentWorkersAmongHITs).doubleValue();
 			
-			if(this.totalAnswers < outcome.totalAnswersObtained)
-				this.totalAnswers =  new Integer(outcome.totalAnswersObtained).doubleValue();
+			if(this.maxAnswersHIT < outcome.totalAnswersObtained)
+				this.maxAnswersHIT =  new Integer(outcome.totalAnswersObtained).doubleValue();
 
 			if(outcome.faultLocated){
 				this.faultsLocated++;
@@ -241,7 +241,7 @@ public class DataPoint {
 	public String toString(){
 		return  this.consensusType+","+
 				this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
-				this.totalAnswers+","+this.faultsLocated+","+this.truePositives+","+
+				this.maxAnswersHIT+","+this.faultsLocated+","+this.truePositives+","+
 				this.falsePositives+","+this.falseNegatives+","+this.trueNegatives+","+
 				this.truePositiveLinesCount+","+linesToString(this.truePositiveLineMap)+","+
 				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+
@@ -253,7 +253,7 @@ public class DataPoint {
 	public String toStringCorrectAnswers(){
 		return  this.consensusType+","+
 				this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
-				this.totalAnswers+","+this.faultsLocated+","+this.truePositives+","+
+				this.maxAnswersHIT+","+this.faultsLocated+","+this.truePositives+","+
 				this.falsePositives+","+this.falseNegatives+","+this.trueNegatives+","+
 				this.truePositiveLinesCount+","+linesToString(this.truePositiveLineMap)+","+
 				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+

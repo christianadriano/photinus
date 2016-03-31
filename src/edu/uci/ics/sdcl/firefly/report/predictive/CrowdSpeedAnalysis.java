@@ -214,8 +214,8 @@ public class CrowdSpeedAnalysis {
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 		}
 		
-		positiveVDataPoint.totalAnswers = MicrotaskMapUtil.countAnswers(microtaskMap);
-		majorityVDataPoint.totalAnswers = positiveVDataPoint.totalAnswers;
+		positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap);
+		majorityVDataPoint.maxAnswersHIT = positiveVDataPoint.maxAnswersHIT;
 		
 		positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
 		majorityVDataPoint.computeAverages();
@@ -273,7 +273,7 @@ public class CrowdSpeedAnalysis {
 						datapointMV.averagePrecision.toString()+","+
 						datapointMV.averageRecall.toString()+","+
 						datapointMV.totalWorkers.toString()+","+
-						datapointMV.totalAnswers.toString()+","+
+						datapointMV.maxAnswersHIT.toString()+","+
 						datapointMV.elapsedTime.toString()+","+
 						datapointPV.faultsLocated.toString()+","+
 						datapointMV.faultsLocated.toString()+","+
@@ -317,7 +317,7 @@ public class CrowdSpeedAnalysis {
 						datapointPV.averagePrecision.toString()+","+
 						datapointPV.averageRecall.toString()+","+
 						datapointPV.totalWorkers.toString()+","+
-						datapointPV.totalAnswers.toString()+","+
+						datapointPV.maxAnswersHIT.toString()+","+
 						datapointPV.elapsedTime.toString()+","+
 						datapointPV.faultsLocated.toString()+","+
 						datapointPV.truePositiveLinesCount.toString()+","+

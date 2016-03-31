@@ -78,8 +78,8 @@ public class MonteCarloSimulator {
 				}
 			}
 
-			positiveVDataPoint.totalAnswers = MicrotaskMapUtil.countAnswers(microtaskMap);
-			majorityVDataPoint.totalAnswers = positiveVDataPoint.totalAnswers;
+			positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap);
+			majorityVDataPoint.maxAnswersHIT = positiveVDataPoint.maxAnswersHIT;
 
 			positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
 			majorityVDataPoint.computeAverages();
@@ -145,7 +145,7 @@ public class MonteCarloSimulator {
 		Integer sumNumberOfOutcomes = 0;
 
 		for(DataPoint data: dataPointList){
-			sumAnswers = sumAnswers + data.totalAnswers;
+			sumAnswers = sumAnswers + data.maxAnswersHIT;
 			sumWorkers = sumWorkers + data.totalWorkers;
 
 			sumTP = sumTP + data.truePositives;
@@ -166,7 +166,7 @@ public class MonteCarloSimulator {
 		//Averages
 		DataPoint averageDataPoint = new DataPoint();
 
-		averageDataPoint.totalAnswers = sumAnswers / size;
+		averageDataPoint.maxAnswersHIT = sumAnswers / size;
 		averageDataPoint.totalWorkers = sumWorkers / size;
 
 		averageDataPoint.falseNegatives = sumFN /size;
