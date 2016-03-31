@@ -1,5 +1,6 @@
 package edu.uci.ics.sdcl.firefly.report.predictive;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
@@ -32,6 +33,10 @@ public class SubCrowd {
 	/** Name of the sub-crowd */
 	public String name;
 	
+	/** Keep all filters that must be applied as an UNION */
+	ArrayList<FilterCombination> OR_FilterList = new ArrayList<FilterCombination>();
+	
+	
 	//------------------------------------------------------------------------
 	
 	/** Results for all Java methods and averages computed with Across-questions consensus*/
@@ -42,4 +47,10 @@ public class SubCrowd {
 	
 	/** Results from combining across and within question Data Points */
 	public DataPoint combinedConsensusDataPoint;
+	
+	
+	/** Add elements to the OR filter */
+	public void addOR_Filter(FilterCombination combination) {
+		this.OR_FilterList.add(combination);
+	}
 }
