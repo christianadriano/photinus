@@ -84,11 +84,11 @@ public class FilterGenerator {
 		combination.addFilterParam(FilterCombination.FIRST_ANSWER_DURATION, range.getMaxFirstAnswerDuration(), range.getMinFirstAnswerDuration());
 		combination.addFilterParam(FilterCombination.SECOND_THIRD_ANSWER_DURATION, range.getMaxSecondThirdAnswerDuration(), range.getMinSecondThirdAnswerDuration());
 		combination.addFilterParam(FilterCombination.CONFIDENCE_DIFFICULTY_PAIRS,range.getConfidenceDifficultyPairList());
-		combination.addFilterParam(FilterCombination.CONFIDENCE_LEVEL, range.getMaxConfidence(), 0);
-		combination.addFilterParam(FilterCombination.DIFFICULTY_LEVEL, 5,range.getMinDifficulty());
-		combination.addFilterParam(FilterCombination.EXPLANATION_SIZE, range.getMaxExplanationSize(), 0);
+		combination.addFilterParam(FilterCombination.CONFIDENCE_LEVEL, range.getMaxConfidence(), range.getMinConfidence());
+		combination.addFilterParam(FilterCombination.DIFFICULTY_LEVEL,range.getMaxDifficulty(),range.getMinDifficulty());
+		combination.addFilterParam(FilterCombination.EXPLANATION_SIZE, range.getMaxExplanationSize(), range.getMinExplanationSize());
 		combination.addFilterParam(FilterCombination.WORKER_SCORE_EXCLUSION, range.getWorkerScoreExclusionList());
-		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), 0);
+		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), range.getMinWorkerScore());
 		combination.addFilterParam(FilterCombination.WORKER_IDK, range.getMaxWorkerIDKPercentage(),range.getMinWorkerIDKPercentage());
 		combination.addFilterParam(FilterCombination.WORKER_PROFESSION, range.getProfessionExclusionList());
 		combination.addFilterParam(FilterCombination.WORKER_YEARS_OF_EXEPERIENCE, range.getMaxYearsOfExperience(), range.getMinWorkerYearsOfExperience());
@@ -105,14 +105,16 @@ public class FilterGenerator {
 		CombinedFilterRange range;
 
 		map = AttributeRangeGenerator.getMostDifficultySkill();
-		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_80_DIFFICULTY_5_4);	
-	
-		FilterCombination combination = generateCombination(range);
 		
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
+		FilterCombination combination = generateCombination(range);
 		ArrayList<FilterCombination> filterList = new ArrayList<FilterCombination>();
 		filterList.add(combination);
 		
-		map = AttributeRangeGenerator.getMostDifficultySkill();
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		filterList.add(combination);
+		
 		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
 		combination = generateCombination(range);
 		filterList.add(combination);
