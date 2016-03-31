@@ -101,19 +101,16 @@ public class MicrotaskMapUtil {
 		for(Microtask task : microtaskMap.values() ){
 
 			if(task.getFileName().compareTo(fileName)==0){
-				System.out.println("fileName: "+fileName+":"+task.getFileName());
+				//System.out.println("fileName: "+fileName+":"+task.getFileName());
 				ArrayList<String> optionList = task.getAnswerOptions();
-				System.out.print("size:"+optionList.size()+ " : ");
-				for(String option: optionList){
-					System.out.print(option+":");
-				}
+				//System.out.print("size:"+optionList.size()+ " : ");
 				resultMap.put(task.getID().toString(),task.getAnswerOptions());
 				answerCount = answerCount+task.getAnswerOptions().size();
 
 			}
 
 		}
-		System.out.println(fileName+" has "+answerCount+" answers");
+		//System.out.println(fileName+" has "+answerCount+" answers");
 		return resultMap;
 	}
 
@@ -225,9 +222,9 @@ public class MicrotaskMapUtil {
 		return count;
 	}
 
-	
+
 	public static void main(String args[]){
-		
+
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 		int yes = MicrotaskMapUtil.countOption(microtaskMap,Answer.YES);
@@ -236,6 +233,32 @@ public class MicrotaskMapUtil {
 		int total = yes + no+ IDK;
 		int totalAnswers = MicrotaskMapUtil.countAnswers(microtaskMap).intValue();
 		System.out.println("Yes:"+yes+", No:"+no+", IDK:"+IDK+", total="+total+", "+totalAnswers);
+	}
+
+
+	/** Merge a list of maps 
+	 * 
+	 * @param microtaskMap
+	 * @param mergeMapList
+	 * @return
+	 */
+	public static HashMap<String, Microtask> mergeMapList(HashMap<String, Microtask> microtaskMap,
+			ArrayList<HashMap<String, Microtask>> mergeMapList) {
+
+		if(mergeMapList.size()==0)
+			return null; //nothing to merge.
+		else
+			if(mergeMapList.size()==1)
+				return mergeMapList.get(0);
+			else{
+				HashMap<String, Microtask> resultMap = mergeMapList.get(0);
+				
+				for(int i=1;i<mergeMapList.size();i++){
+					HashMap<String, Microtask> sourceMap = mergeMapList.get(i);
+					resultMap = mergeMaps(microtaskMap, sourceMap, resultMap);
+				}
+				return resultMap;
+			}
 	}
 
 
