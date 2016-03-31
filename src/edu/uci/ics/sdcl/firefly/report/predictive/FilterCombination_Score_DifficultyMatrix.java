@@ -1,8 +1,11 @@
 package edu.uci.ics.sdcl.firefly.report.predictive;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import edu.uci.ics.sdcl.firefly.Microtask;
 
 /**
  * 
@@ -66,7 +69,7 @@ public class FilterCombination_Score_DifficultyMatrix {
 
 		range.setMaxWorkerScore(score.intValue());
 		range.setMinWorkerScore(score.intValue());
-		//range.setWorkerScoreExclusionList(exclusionList);
+		range.setWorkerScoreExclusionList(exclusionList);
 		range.setWorkerScoreList(new int[]{score.intValue()});
 		range.setUndefinedWithDefault();
 
@@ -145,5 +148,56 @@ public class FilterCombination_Score_DifficultyMatrix {
 			System.out.println("key:"+name+" score:"+scoreList[0] + " excluded: "+excludedList[0]+","+excludedList[1] + ", confidence:difficulty =" + tupleMapToString(tupleMap));
 		}
 	}
+	
+	private static FilterCombination generateCombination (CombinedFilterRange range){
+		FilterCombination combination = new FilterCombination();
+		combination.addFilterParam(FilterCombination.FIRST_ANSWER_DURATION, range.getMaxFirstAnswerDuration(), range.getMinFirstAnswerDuration());
+		combination.addFilterParam(FilterCombination.SECOND_THIRD_ANSWER_DURATION, range.getMaxSecondThirdAnswerDuration(), range.getMinSecondThirdAnswerDuration());
+		combination.addFilterParam(FilterCombination.CONFIDENCE_DIFFICULTY_PAIRS,range.getConfidenceDifficultyPairList());
+		combination.addFilterParam(FilterCombination.CONFIDENCE_LEVEL, range.getMaxConfidence(), range.getMinConfidence());
+		combination.addFilterParam(FilterCombination.DIFFICULTY_LEVEL,range.getMaxDifficulty(),range.getMinDifficulty());
+		combination.addFilterParam(FilterCombination.EXPLANATION_SIZE, range.getMaxExplanationSize(), range.getMinExplanationSize());
+		combination.addFilterParam(FilterCombination.WORKER_SCORE_EXCLUSION, range.getWorkerScoreExclusionList());
+		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), range.getMinWorkerScore());
+		combination.addFilterParam(FilterCombination.WORKER_IDK, range.getMaxWorkerIDKPercentage(),range.getMinWorkerIDKPercentage());
+		combination.addFilterParam(FilterCombination.WORKER_PROFESSION, range.getProfessionExclusionList());
+		combination.addFilterParam(FilterCombination.WORKER_YEARS_OF_EXEPERIENCE, range.getMaxYearsOfExperience(), range.getMinWorkerYearsOfExperience());
+		combination.addFilterParam(FilterCombination.EXCLUDED_QUESTIONS, range.getQuestionsToExcludeMap());
+		combination.addFilterParam(FilterCombination.FIRST_HOURS, range.getMaxDate(),range.getMinDate());
+		combination.addFilterParam(FilterCombination.MAX_ANSWERS, 20, 0);
+		return combination;
+	}
+	
+	public static HashMap<String, SubCrowd> composeSubCrowds(){
+		
+		HashMap<String, SubCrowd> subCrowdMap = new HashMap<String, SubCrowd> ();
+		HashMap<String, CombinedFilterRange> map = AttributeRangeGenerator.getMostDifficultySkill();
+		CombinedFilterRange range;
+		SubCrowd crowd = new SubCrowd();
+		
+		//All 100 score, ignore top difficulty from 80 and 60 score
+		crowd.name = "score100_difAny U score80_diff123 U score60_diff123";
+		
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
+		FilterCombination combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		
+		
+		//
+		crowd = new SubCrowd();
+		
+		return subCrowdMap;
+		
+		
+	}
+	
 
 }

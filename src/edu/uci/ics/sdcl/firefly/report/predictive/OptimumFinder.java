@@ -186,10 +186,24 @@ public class OptimumFinder {
 		microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 		HashMap<String, Microtask> map2 = (HashMap<String, Microtask>) filter2.apply(microtaskMap);
 		
-		HashMap<String, Microtask> map = MicrotaskMapUtil.mergeMaps(microtaskMap, map1, map2); //Elapsed time: 150.0, number of answers: 521, number of workers: 139
-		System.out.println("Map sizes, map1:"+map1.size()+", map2:"+ map2.size()+", map:"+ map.size());
-		return	map;
+		HashMap<String, Microtask> map12 = MicrotaskMapUtil.mergeMaps(microtaskMap, map1, map2); //Elapsed time: 150.0, number of answers: 521, number of workers: 139
+
 		
+		if(filterList.size()==3){
+			FilterCombination combination3 = filterList.get(2);
+			Filter filter3 = combination3.getFilter();
+			microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
+			HashMap<String, Microtask> map3 = (HashMap<String, Microtask>) filter3.apply(microtaskMap);
+			HashMap<String, Microtask> map123 = MicrotaskMapUtil.mergeMaps(microtaskMap, map12, map3);
+			System.out.println("Answers sizes, map1:"+MicrotaskMapUtil.countAnswers(map1)+", map2:"+MicrotaskMapUtil.countAnswers(map2)+
+					", map3:"+ MicrotaskMapUtil.countAnswers(map3)+", union:"+ MicrotaskMapUtil.countAnswers(map123));
+			return map123;
+		}
+		else{
+			System.out.println("Answers, map1:"+MicrotaskMapUtil.countAnswers(map1)+", map2:"+MicrotaskMapUtil.countAnswers(map2)+
+					", union:"+ MicrotaskMapUtil.countAnswers(map12));
+			return	map12;			
+		}
 	}
 
 
@@ -218,7 +232,7 @@ public class OptimumFinder {
 		//Apply filter and extract data by fileName
 		//System.out.println("FilterList size: "+ filterList.size());
 		//for(FilterCombination combination :  filterList){
-			FilterCombination combination =  filterList.get(0);
+			FilterCombination combination =  filterList.get(0);//MAKE THIS MORE ELEGANT
 			FileSessionDTO sessionDTO = new FileSessionDTO();
 			HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 
@@ -245,17 +259,17 @@ public class OptimumFinder {
 		//}
 
 		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
-		finder.addPredictor(new AcrossQuestionsConsensus(1));
+		//finder.addPredictor(new AcrossQuestionsConsensus(1));
 		finder.addPredictor(new AcrossQuestionsConsensus(2));
-		finder.addPredictor(new AcrossQuestionsConsensus(3));
+		//finder.addPredictor(new AcrossQuestionsConsensus(3));
 		
-		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
-		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
-		finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
+		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
+		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
+		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
 
-		for(int minimumYes=1;minimumYes<21;minimumYes++){
-			finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
-		}
+		//for(int minimumYes=1;minimumYes<21;minimumYes++){
+			//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
+		//}
 		finder.run();
 		finder.printResults();
 	}
