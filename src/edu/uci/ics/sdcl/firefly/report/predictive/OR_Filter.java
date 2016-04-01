@@ -16,27 +16,19 @@ import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
  */
 public class OR_Filter {
 
-	/** Used this method to obtain data from disjoints sets, for instance, skill 80 and difficulty 1 OR skill 100, difficulty 5 */
+	/** Used this method to obtain data from disjoint sets, for instance, skill 80 and difficulty 1 OR skill 100, difficulty 5 */
 	public static HashMap<String, Microtask> apply(HashMap<String, Microtask> microtaskMap, ArrayList<FilterCombination> filterList){
 
 		if(filterList.size()<2)
 			return null;
 
+		Filter filter1 = filterList.get(0).getFilter();
+		Filter filter2 = filterList.get(1).getFilter();
+		
 		ArrayList<HashMap<String, Microtask>> mergeMapList = new ArrayList<HashMap<String, Microtask>>(); //Maps that will be merged.
-
-		FilterCombination combination1 = filterList.get(0);
-		FilterCombination combination2 = filterList.get(1);
-		Filter filter1 = combination1.getFilter();
-		Filter filter2 = combination2.getFilter();
-
-		HashMap<String, Microtask> map1 = (HashMap<String, Microtask>) filter1.apply(microtaskMap);
-		mergeMapList.add(map1);
-		FileSessionDTO sessionDTO = new FileSessionDTO();
-		microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
-		HashMap<String, Microtask> map2 = (HashMap<String, Microtask>) filter2.apply(microtaskMap);
-		mergeMapList.add(map2);
-
-		HashMap<String, Microtask> map12 = MicrotaskMapUtil.mergeMaps(microtaskMap, map1, map2); //Elapsed time: 150.0, number of answers: 521, number of workers: 139
+		mergeMapList.add((HashMap<String, Microtask>) filter1.apply(microtaskMap));
+		mergeMapList.add((HashMap<String, Microtask>) filter2.apply(microtaskMap));
+		HashMap<String, Microtask> map12 = MicrotaskMapUtil.mergeMapList(microtaskMap, mergeMapList);
 
 		if(filterList.size()==2){
 			printFilterOutcomes(mergeMapList,map12);
@@ -49,7 +41,6 @@ public class OR_Filter {
 			for(int i=2;i<filterList.size();i++){
 				FilterCombination combination = filterList.get(i);
 				Filter filter = combination.getFilter();
-				microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 				HashMap<String, Microtask> map = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 				mergeMapList.add(map);
 			}
@@ -61,7 +52,8 @@ public class OR_Filter {
 
 
 	/** Just prints the number of answers of each map in the console */
-	private static void printFilterOutcomes(ArrayList<HashMap<String, Microtask>> mergeMapList,HashMap<String, Microtask> finalMerged ){
+	private static void printFilterOutcomes(ArrayList<HashMap<String, Microtask>> mergeMapList,
+											HashMap<String, Microtask> finalMerged ){
 
 		System.out.println("Answers,");
 		int i=0;

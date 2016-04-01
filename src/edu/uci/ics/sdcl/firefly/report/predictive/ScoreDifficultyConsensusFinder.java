@@ -117,7 +117,7 @@ public class ScoreDifficultyConsensusFinder {
 				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.count(answerData.answerMap, Answer.YES),
 				AnswerData.count(answerData.answerMap, Answer.NO),
-						AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)
+				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)
 				);
 
 		return outcome;
@@ -238,11 +238,6 @@ public class ScoreDifficultyConsensusFinder {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 		HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(crowd.microtaskMap,"HIT04_7");
-		
-
-		
-
-		
 	}
 
 	public static void main(String args[]){
