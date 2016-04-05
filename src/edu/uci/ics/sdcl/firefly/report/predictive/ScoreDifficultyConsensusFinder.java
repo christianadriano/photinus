@@ -45,7 +45,7 @@ public class ScoreDifficultyConsensusFinder {
 		//rangeMap = AttributeRangeGenerator.setupNoFilters();
 		//range = rangeMap.get(AttributeRangeGenerator.NO_FILTERS);	
 		
-		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Score_DifficultyMatrix.generate();
+		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Score_DifficultyMatrix.generateFilter();
 		ArrayList<SubCrowd> subCrowdList =  new ArrayList<SubCrowd>();
 
 		for(CombinedFilterRange range: rangeMap.values()){
@@ -83,6 +83,25 @@ public class ScoreDifficultyConsensusFinder {
 		}
 		return subCrowdList;
 	}
+	
+
+	public ArrayList<SubCrowd> generateSubCrowdMicrotasks_ORFilters(
+			ArrayList<SubCrowd> subCrowdList) {
+		FileSessionDTO dto = new FileSessionDTO();
+		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
+
+		for(int i=0; i<subCrowdList.size();i++){
+
+			SubCrowd crowd = subCrowdList.get(i);
+			HashMap<String, Microtask> map = (HashMap<String, Microtask>) OR_Filter.apply(microtaskMap, crowd.OR_FilterList);
+			crowd.microtaskMap = map;
+			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
+			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
+			subCrowdList.set(i, crowd);
+		}
+		return subCrowdList; 
+	}
+
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
@@ -123,10 +142,7 @@ public class ScoreDifficultyConsensusFinder {
 		return outcome;
 	}
 
-	public ArrayList<SubCrowd> run(){
-
-		ArrayList<SubCrowd> subCrowdList =  this.generateScoreDifficultyFilters();
-		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
+	public ArrayList<SubCrowd> run(ArrayList<SubCrowd> subCrowdList){
 
 		for(SubCrowd subcrowd: subCrowdList){
 			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
@@ -221,13 +237,6 @@ public class ScoreDifficultyConsensusFinder {
 	}
 
 
-	public void runFinder(){
-		ArrayList<SubCrowd> list = run();
-		for(SubCrowd subcrowd: list){
-			printJavaOutcomes(subcrowd);
-			printSubCrowdAverages(subcrowd);
-		}
-	}
 
 
 	public static void test(){
@@ -242,7 +251,18 @@ public class ScoreDifficultyConsensusFinder {
 
 	public static void main(String args[]){
 		ScoreDifficultyConsensusFinder finder = new ScoreDifficultyConsensusFinder();
-		finder.runFinder();
+		//ArrayList<SubCrowd> subCrowdList = finder.generateScoreDifficultyFilters();
+		//subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
+		
+		ArrayList<SubCrowd> subCrowdList = FilterCombination_Score_DifficultyMatrix.composeSubCrowds();
+		subCrowdList = finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
+		subCrowdList = finder.run(subCrowdList);
+
+		for(SubCrowd subcrowd: subCrowdList){
+			finder.printJavaOutcomes(subcrowd);
+			finder.printSubCrowdAverages(subcrowd);
+		}
+		
 		//test();
 	}
 

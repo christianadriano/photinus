@@ -98,12 +98,15 @@ public class AttributeRangeGenerator {
 	static final String WORKER_SCORE_100_DIFFICULTY_ALL = "WORKER_SCORE_100_DIFFICULTY_ALL";
 	
 	static final String WORKER_SCORE_100_DIFFICULTY_5_4_3 = "WORKER_SCORE_100_DIFFICULTY_5_4_3";
-
+	static final String WORKER_SCORE_100_DIFFICULTY_1_2_3_4 = "WORKER_SCORE_100_DIFFICULTY_1_2_3_4";
+	static final String WORKER_SCORE_100_DIFFICULTY_1_2_3 = "WORKER_SCORE_100_DIFFICULTY_1_2_3";
+	
 	static final String WORKER_SCORE_60_80_DIFFICULTY_1_2 = "WORKER_SCORE_60_80_DIFFICULTY_1_2";
 	static final String WORKER_SCORE_60_DIFFICULTY_1_2 = "WORKER_SCORE_60_DIFFICULTY_1_2";
 	static final String WORKER_SCORE_100_80_DIFFICULTY_5_4_3 = "WORKER_SCORE_100_80_DIFFICULTY_5_4_3";
 	static final String WORKER_SCORE_100_80_DIFFICULTY_5_4 = "WORKER_SCORE_100_80_DIFFICULTY_5_4";
 	static final String WORKER_SCORE_60_DIFFICULTY_1_2_3 = "WORKER_SCORE_60_DIFFICULTY_1_2_3";
+	static final String WORKER_SCORE_60_DIFFICULTY_1_2_3_4 = "WORKER_SCORE_60_DIFFICULTY_1_2_3_4";
 	
 	static final String WORKER_SCORE_60_DIFFICULTY_5_4 = "WORKER_SCORE_60_DIFFICULTY_5_4";
 	static final String WORKER_SCORE_80_DIFFICULTY_5_4 = "WORKER_SCORE_80_DIFFICULTY_5_4";
@@ -981,6 +984,27 @@ public class AttributeRangeGenerator {
 
 		range.setConfidenceDifficultyPairMap(map543);
 		rangeMap.put(range.getRangeName(),range);
+		
+		
+		//-----------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_SCORE_100_DIFFICULTY_1_2_3_4); 
+		range.setMaxWorkerScore(5);
+		range.setMinWorkerScore(5);
+		range.setUndefinedWithDefault();
+
+		range.setConfidenceDifficultyPairMap(map1234);
+		rangeMap.put(range.getRangeName(),range);
+		
+		//-----------------------------------------------
+				range = new CombinedFilterRange();
+				range.setRangeName(WORKER_SCORE_100_DIFFICULTY_1_2_3); 
+				range.setMaxWorkerScore(5);
+				range.setMinWorkerScore(5);
+				range.setUndefinedWithDefault();
+
+				range.setConfidenceDifficultyPairMap(map123);
+				rangeMap.put(range.getRangeName(),range);
 		//-----------------------------------------------
 		
 		range = new CombinedFilterRange();
@@ -1020,13 +1044,17 @@ public class AttributeRangeGenerator {
 		range.setMinWorkerScore(3);
 		range.setUndefinedWithDefault();
 
-
-		
-
 		range.setConfidenceDifficultyPairMap(map123);
 		rangeMap.put(range.getRangeName(),range);
 		//-----------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_SCORE_60_DIFFICULTY_1_2_3_4); 
+		range.setMaxWorkerScore(3);
+		range.setMinWorkerScore(3);
+		range.setUndefinedWithDefault();
 
+		range.setConfidenceDifficultyPairMap(map1234);
+		rangeMap.put(range.getRangeName(),range);
 		//---------------------------------------------
 				range = new CombinedFilterRange();
 				range.setRangeName(WORKER_SCORE_60_DIFFICULTY_5_4); 

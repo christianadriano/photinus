@@ -9,10 +9,18 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 
 /**
  * 
+ * Generate two types of filters
+ * 
+ * Type-1 
+ * See methods generate
  * Generate filters that select answers by workers' score and
  * questions difficulty. Workers' score consist in the grade 
  * they got in the qualification test. The difficulty of question is
  * the level chosen by each worker. 
+ * 
+ * Type-2
+ * UNION of one or more subcrowds (see method composeSubcrowds)
+ * 
  *  
  * @author adrianoc
  *
@@ -93,7 +101,7 @@ public class FilterCombination_Score_DifficultyMatrix {
 	}
 
 
-	public static String getName(int score, int difficulty){
+	private static String getName(int score, int difficulty){
 
 		String name = "WORKER_SCORE_";
 
@@ -105,8 +113,9 @@ public class FilterCombination_Score_DifficultyMatrix {
 
 		return name;
 	}
+	
 
-	public static HashMap<String,CombinedFilterRange> generate(){
+	public static HashMap<String,CombinedFilterRange> generateFilter(){
 
 		HashMap<String,CombinedFilterRange> rangeMap = new 	HashMap<String,CombinedFilterRange>();
 
@@ -133,22 +142,8 @@ public class FilterCombination_Score_DifficultyMatrix {
 		return result;
 	}
 
-	public static void main(String args[]){
-
-		HashMap<String,CombinedFilterRange> map = FilterCombination_Score_DifficultyMatrix.generate();
-		Iterator<String> iter = map.keySet().iterator();
-		while(iter.hasNext()){
-			String key = iter.next();
-			CombinedFilterRange range = map.get(key);
-			String name = range.getRangeName();
-			int[] scoreList = range.getWorkerScoreList();
-			int[] excludedList = range.getWorkerScoreExclusionList();
-			HashMap<String, Tuple> tupleMap = range.getConfidenceDifficultyPairList();
-
-			System.out.println("key:"+name+" score:"+scoreList[0] + " excluded: "+excludedList[0]+","+excludedList[1] + ", confidence:difficulty =" + tupleMapToString(tupleMap));
-		}
-	}
 	
+
 	private static FilterCombination generateCombination (CombinedFilterRange range){
 		FilterCombination combination = new FilterCombination();
 		combination.addFilterParam(FilterCombination.FIRST_ANSWER_DURATION, range.getMaxFirstAnswerDuration(), range.getMinFirstAnswerDuration());
@@ -167,37 +162,190 @@ public class FilterCombination_Score_DifficultyMatrix {
 		combination.addFilterParam(FilterCombination.MAX_ANSWERS, 20, 0);
 		return combination;
 	}
-	
-	public static HashMap<String, SubCrowd> composeSubCrowds(){
-		
-		HashMap<String, SubCrowd> subCrowdMap = new HashMap<String, SubCrowd> ();
+
+	public static ArrayList<SubCrowd> composeSubCrowds(){
+
+		ArrayList<SubCrowd>  subCrowdList = new ArrayList<SubCrowd>();
 		HashMap<String, CombinedFilterRange> map = AttributeRangeGenerator.getMostDifficultySkill();
 		CombinedFilterRange range;
+
+
+		//------------------------------------------------
+		//All 100 score, ignore 4,5 difficulty from 80 score and 60 score
 		SubCrowd crowd = new SubCrowd();
-		
-		//All 100 score, ignore top difficulty from 80 and 60 score
-		crowd.name = "score100_difAny U score80_diff123 U score60_diff123";
-		
+		crowd.name = "score100_diffAny U score80_diff123 U score60_diff123";
+
 		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
 		FilterCombination combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
-		
+
 		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
-		
+
 		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
-		
-		
-		//
+		subCrowdList.add(crowd);
+
+		//------------------------------------------------
+		//All 100 score, ignore 4,5 difficulty from 80 score and 5 difficulty 60 score
 		crowd = new SubCrowd();
+		crowd.name = "score100_diffAny U score80_diff123 U score60_diff1234";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3_4);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
+
+
+		//------------------------------------------------
+		//All 100 score, ignore top 4 difficulty from 80 and top 4,5  of 60 score
+		crowd = new SubCrowd();
+		crowd.name = "score100_diffAny U score80_diff1234 U score60_diff123";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3_4);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
+
+		//------------------------------------------------
+		//All 100 score, ignore 4,5 difficulty from 80 score and 4,5 difficulty 60 score
+		crowd = new SubCrowd();
+		crowd.name = "score100_diffAny U score80_diff1234 U score60_diff1234";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_ALL);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3_4);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3_4);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
+
+		//------------------------------------------------
+		//All 100 score, all 80 and top 4,5  of 60 score
+		crowd = new SubCrowd();
+		crowd.name = "score100_80diffAny U score60_diff123";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_80_DIFFICULTY_ALL);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
+
+		//------------------------------------------------
+		//Difficult 3,4,5 from 100 or 80 scores + difficulty 123 from 60 score
+		crowd = new SubCrowd();
+		crowd.name = "score100_diff543 U score80_diff543 U score60_diff123";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_80_DIFFICULTY_5_4_3);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
 		
-		return subCrowdMap;
+		//------------------------------------------------
+		//ignore diff 5 from 100 score, ignore 4,5 difficulty from 80 score and 4,5 difficulty 60 score
+		crowd = new SubCrowd();
+		crowd.name = "score100_diff1234 U score80_diff123 U score60_diff123";
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_1_2_3_4);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
 		
-		
+		//------------------------------------------------
+				//ignore diff 5 from 100 score, ignore 5 difficulty from 80 score and5 difficulty 60 score
+				crowd = new SubCrowd();
+				crowd.name = "score100_diff1234 U score80_diff1234 U score60_diff1234";
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_1_2_3_4);			
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3_4);	
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3_4);	
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+				subCrowdList.add(crowd);
+
+				
+				//------------------------------------------------
+				//ignore diff 5 from 100 score, ignore 5 difficulty from 80 score and5 difficulty 60 score
+				crowd = new SubCrowd();
+				crowd.name = "score100_diff123 U score80_diff123 U score60_diff123";
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_100_DIFFICULTY_1_2_3);			
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_80_DIFFICULTY_1_2_3);	
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+
+				range = map.get(AttributeRangeGenerator.WORKER_SCORE_60_DIFFICULTY_1_2_3);	
+				combination = generateCombination(range);
+				crowd.addOR_Filter(combination);
+				subCrowdList.add(crowd);
+				
+		return subCrowdList;
+
 	}
-	
+
+	/** Used for testing */
+	public static void main(String args[]){
+
+		HashMap<String,CombinedFilterRange> map = FilterCombination_Score_DifficultyMatrix.generateFilter();
+		Iterator<String> iter = map.keySet().iterator();
+		while(iter.hasNext()){
+			String key = iter.next();
+			CombinedFilterRange range = map.get(key);
+			String name = range.getRangeName();
+			int[] scoreList = range.getWorkerScoreList();
+			int[] excludedList = range.getWorkerScoreExclusionList();
+			HashMap<String, Tuple> tupleMap = range.getConfidenceDifficultyPairList();
+
+			System.out.println("key:"+name+" score:"+scoreList[0] + " excluded: "+excludedList[0]+","+excludedList[1] + ", confidence:difficulty =" + tupleMapToString(tupleMap));
+		}
+	}
+
 
 }
