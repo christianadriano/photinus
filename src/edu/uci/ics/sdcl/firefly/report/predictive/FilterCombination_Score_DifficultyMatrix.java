@@ -13,7 +13,7 @@ import edu.uci.ics.sdcl.firefly.Microtask;
  * 
  * Type-1 
  * See methods generate
- * Generate filters that select answers by workers' score and
+ * Generate filters that select answers by workers' profession and
  * questions difficulty. Workers' score consist in the grade 
  * they got in the qualification test. The difficulty of question is
  * the level chosen by each worker. 

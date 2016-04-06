@@ -19,15 +19,15 @@ import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 /**
  * This class generates two sets of data.
  * 
- * Set-1: matrix of worker score x difficulty type, where each cell is the accuracy of answers
- * Set-2: consensus for subcrowds grouped by worker score and difficulty 
+ * Set-1: matrix of professions x difficulty type, where each cell is the accuracy of answers
+ * Set-2: consensus for subcrowds grouped by profession and difficulty 
  * 
  * The main method has the two entry points for these analyzes.
  * 
  * @author adrianoc
  *
  */
-public class ScoreDifficultyConsensusFinder {
+public class ProfessionDifficultyConsensusFinder {
 
 	public  String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
@@ -36,7 +36,7 @@ public class ScoreDifficultyConsensusFinder {
 	private HashMap<String, QuestionLinesMap> lineMapping;
 
 
-	public ScoreDifficultyConsensusFinder(){
+	public ProfessionDifficultyConsensusFinder(){
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		this.lineMapping = loader.loadList();
 
@@ -48,15 +48,15 @@ public class ScoreDifficultyConsensusFinder {
 	 * 
 	 * @return list of empty SubCrowd objects only populated the respective filter type
 	 */
-	public ArrayList<SubCrowd> generateScoreDifficultyFilters(){
+	public ArrayList<SubCrowd> generateProfessionDifficultyFilters(){
 
 		//HashMap<String, CombinedFilterRange> rangeMap;
 		//CombinedFilterRange range;
 
 		//rangeMap = AttributeRangeGenerator.setupNoFilters();
 		//range = rangeMap.get(AttributeRangeGenerator.NO_FILTERS);	
-		
-		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Score_DifficultyMatrix.generateFilter();
+
+		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Profession_DifficultyMatrix.generateFilter();
 		ArrayList<SubCrowd> subCrowdList =  new ArrayList<SubCrowd>();
 
 		for(CombinedFilterRange range: rangeMap.values()){
@@ -94,7 +94,7 @@ public class ScoreDifficultyConsensusFinder {
 		}
 		return subCrowdList;
 	}
-	
+
 
 	public ArrayList<SubCrowd> generateSubCrowdMicrotasks_ORFilters(
 			ArrayList<SubCrowd> subCrowdList) {
@@ -159,7 +159,6 @@ public class ScoreDifficultyConsensusFinder {
 			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
 
 			DataPoint acrossQuestionsDataPoint = new DataPoint(subcrowd.name,"Across-Questions Consensus");
-			//DataPoint withinQuestionDataPoint = new DataPoint(subcrowd.name,"Within-Question Consensus");
 
 			for(String fileName: this.fileNameList){//each fileName is a Java method
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(subcrowd.microtaskMap,fileName);
@@ -171,22 +170,13 @@ public class ScoreDifficultyConsensusFinder {
 					Outcome outcome = computeDataPoint(data,consensus,this.lineMapping);
 					acrossQuestionsDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 
-					////consensus = new WithinQuestionConsensus();
-					//outcome = computeDataPoint(data,consensus,lineMapping);
-					//withinQuestionDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 				}
 			}
 
 			acrossQuestionsDataPoint.computeAverages();
 			acrossQuestionsDataPoint.elapsedTime = MicrotaskMapUtil.computeElapsedTimeForAnswerLevels(subcrowd.microtaskMap);
-			//	withinQuestionDataPoint.computeAverages();
-			//	withinQuestionDataPoint.elapsedTime = MicrotaskMapUtil.computeElapsedTimeForAnswerLevels(subcrowd.microtaskMap);
 
 			subcrowd.acrossQuestionsDataPoint = acrossQuestionsDataPoint;
-			//	subcrowd.withinQuestionDataPoint = withinQuestionDataPoint;
-			//		subcrowd.combinedConsensusDataPoint = DataPoint.combineConsensusDataPoints(acrossQuestionsDataPoint,withinQuestionDataPoint);
-			//	subcrowd.combinedConsensusDataPoint.computeAverages();
-			//	subcrowd.combinedConsensusDataPoint.elapsedTime = acrossQuestionsDataPoint.elapsedTime > withinQuestionDataPoint.elapsedTime ? acrossQuestionsDataPoint.elapsedTime : withinQuestionDataPoint.elapsedTime;
 		}
 
 		return subCrowdList;
@@ -195,23 +185,18 @@ public class ScoreDifficultyConsensusFinder {
 
 	public void printJavaOutcomes(SubCrowd subcrowd){
 
-		String destination = "C://firefly//Score_Difficulty_Analysis//Outcomes//"+ subcrowd.name+"_outcomes.csv";
+		String destination = "C://firefly//Profession_Difficulty_Analysis//Outcomes//"+ subcrowd.name+"_outcomes.csv";
 		BufferedWriter log;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
-
 			log.write(Outcome.getHeaderCorrectAnswers()+"\n");
 
 			for(Entry<String, Outcome> entry: subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.entrySet()){
 				String fileName = entry.getKey();
 				Outcome outcome = subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.get(fileName);
 				log.write(outcome.toStringCorrectAnswers()+"\n");
-				//outcome = subcrowd.withinQuestionDataPoint.fileNameOutcomeMap.get(fileName);
-				//	log.write(outcome.toString()+"\n");
-				//	outcome = subcrowd.combinedConsensusDataPoint.fileNameOutcomeMap.get(fileName);
-				//log.write(outcome.toString()+"\n");
 			}
 
 			log.close();
@@ -226,18 +211,14 @@ public class ScoreDifficultyConsensusFinder {
 
 	public void printSubCrowdAverages(SubCrowd subcrowd){
 
-		String destination = "C://firefly//Score_Difficulty_Analysis//Averages//"+ subcrowd.name+"_averages.csv";
+		String destination = "C://firefly//Profession_Difficulty_Analysis//Averages//"+ subcrowd.name+"_averages.csv";
 		BufferedWriter log;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
-
 			log.write(DataPoint.getHeaderCorrectAnswers("")+"\n");
 			log.write(subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
-			//log.write(subcrowd.withinQuestionDataPoint.toString()+"\n"); 
-			//log.write(subcrowd.combinedConsensusDataPoint.toString()+"\n");
-
 			log.close();
 			System.out.println("file written at: "+destination);
 		} 
@@ -248,11 +229,38 @@ public class ScoreDifficultyConsensusFinder {
 	}
 
 
+	public void printSingleFileSubCrowdAverages(ArrayList<SubCrowd> subcrowdList){
+
+		String destination = "C://firefly//Profession_Difficulty_Analysis//Averages//AllSubcrowds_averages.csv";
+		BufferedWriter log;
+
+
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
+			log.write("profession,difficulty,"+DataPoint.getHeaderCorrectAnswers("")+"\n");
+			
+			for(SubCrowd subcrowd:subcrowdList){
+			
+				String[] nameList=subcrowd.name.split("-");
+				String profession = nameList[0];
+				String difficulty = nameList[2];
+				log.write(profession+","+difficulty+","+subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
+			}
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+
+	}
 
 
 	public static void test(){
-		ScoreDifficultyConsensusFinder finder = new ScoreDifficultyConsensusFinder();
-		ArrayList<SubCrowd> list = finder.generateScoreDifficultyFilters();
+		ProfessionDifficultyConsensusFinder finder = new ProfessionDifficultyConsensusFinder();
+		ArrayList<SubCrowd> list = finder.generateProfessionDifficultyFilters();
 		list = finder.generateSubCrowdMicrotasks(list);
 		SubCrowd crowd = list.get(0);
 		FileSessionDTO dto = new FileSessionDTO();
@@ -260,12 +268,13 @@ public class ScoreDifficultyConsensusFinder {
 		HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(crowd.microtaskMap,"HIT04_7");
 	}
 
+
 	public static void main(String args[]){
-		ScoreDifficultyConsensusFinder finder = new ScoreDifficultyConsensusFinder();
-		//ArrayList<SubCrowd> subCrowdList = finder.generateScoreDifficultyFilters(); //Pairs of score/difficulty to evaluate accuracy
+		ProfessionDifficultyConsensusFinder finder = new ProfessionDifficultyConsensusFinder();
+		//ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
 		//subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
-		
-		ArrayList<SubCrowd> subCrowdList = FilterCombination_Score_DifficultyMatrix.composeSubCrowds();
+
+		ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
 		subCrowdList = finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
 		subCrowdList = finder.run(subCrowdList);
 
@@ -273,7 +282,8 @@ public class ScoreDifficultyConsensusFinder {
 			finder.printJavaOutcomes(subcrowd);
 			finder.printSubCrowdAverages(subcrowd);
 		}
-		
+		//finder.printSingleFileSubCrowdAverages(subCrowdList);
+
 		//test();
 	}
 

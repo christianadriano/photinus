@@ -31,7 +31,7 @@ public class OR_Filter {
 		HashMap<String, Microtask> map12 = MicrotaskMapUtil.mergeMapList(microtaskMap, mergeMapList);
 
 		if(filterList.size()==2){
-			printFilterOutcomes(mergeMapList,map12);
+		//	printFilterOutcomes(mergeMapList,map12);
 			return map12;
 		}
 		else{//There are more filters to apply and OR
@@ -45,7 +45,7 @@ public class OR_Filter {
 				mergeMapList.add(map);
 			}
 			HashMap<String, Microtask> resultMap = MicrotaskMapUtil.mergeMapList(microtaskMap, mergeMapList);
-			printFilterOutcomes(mergeMapList,resultMap);
+			//printFilterOutcomes(mergeMapList,resultMap);
 			return resultMap;
 		}
 	}

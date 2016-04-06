@@ -41,17 +41,18 @@ public class DataPoint {
 	public Integer total_NO=0;
 	public Integer total_IDK=0;
 	public Integer total_YES_NO=0;
+	public Integer total_Answers=0;
 	public Double averageCorrectTotal=0.0;
 	public Double averageCorrectYES=0.0;
 	public Double averageCorrectNO=0.0;
 	
 	private static String[] header = { 
-		"consensus type", 
+		"consensus Type", 
 		"average Precision", 
 		"average Recall",
 		"elapsed Time", 
 		"total Workers", 
-		"max answers per HIT", 
+		"max Answers per HIT", 
 		"faults Located", 
 		"true Positives", 
 		"false Positives", 
@@ -64,12 +65,12 @@ public class DataPoint {
 		"line precision", "line recall"};
 
 	private static String[] headerCorrectAnswers = { 
-		"consensus type", 
+		"consensus Type", 
 		"average Precision", 
 		"average Recall",
 		"elapsed Time", 
 		"total Workers",
-		"max answers per HIT", 
+		"total Answers", 
 		"faults Located", 
 		"true Positives", 
 		"false Positives", 
@@ -152,6 +153,7 @@ public class DataPoint {
 			this.total_NO = this.total_NO + outcome.total_NO_Answers;
 			this.total_IDK = this.total_IDK + outcome.total_IDK_Answers;
 			this.total_YES_NO = this.total_YES_NO + outcome.total_YESNO_Answers;
+			this.total_Answers = this.total_YES + this.total_NO + this.total_IDK;
 			
 			correctTotalAnswers_averageList.add(outcome.average_Total_Correct_Answers);
 			correctYESAnswers_averageList.add(outcome.average_correctYES_Answers);
@@ -253,7 +255,7 @@ public class DataPoint {
 	public String toStringCorrectAnswers(){
 		return  this.consensusType+","+
 				this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
-				this.maxAnswersHIT+","+this.faultsLocated+","+this.truePositives+","+
+				this.total_Answers+","+this.faultsLocated+","+this.truePositives+","+
 				this.falsePositives+","+this.falseNegatives+","+this.trueNegatives+","+
 				this.truePositiveLinesCount+","+linesToString(this.truePositiveLineMap)+","+
 				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+
