@@ -97,7 +97,13 @@ public class OptimumFinder {
 							truePositiveLines,
 							nearPositiveLines,
 							falsePositiveLines,
-							falseNegativeLines);
+							falseNegativeLines,
+							AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
+							AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
+							AnswerData.count(answerData.answerMap, Answer.YES),
+							AnswerData.count(answerData.answerMap, Answer.NO),
+							AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)
+							);
 					
 					filterOutcomeList.add(outcome);					
 				}

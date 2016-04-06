@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import edu.uci.ics.sdcl.firefly.Answer;
+
 public class DataPoint {
 
 	public Double averagePrecision=0.0;
@@ -28,7 +30,7 @@ public class DataPoint {
 
 	public Double LinesPrecision;
 	public Double LinesRecall;
-	
+
 	// All lines selected under each category <line number, number of times it was selected> 
 	public HashMap<String, Integer> truePositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> nearPositiveLineMap=new HashMap<String, Integer>();
@@ -45,7 +47,7 @@ public class DataPoint {
 	public Double averageCorrectTotal=0.0;
 	public Double averageCorrectYES=0.0;
 	public Double averageCorrectNO=0.0;
-	
+
 	private static String[] header = { 
 		"consensus Type", 
 		"average Precision", 
@@ -84,7 +86,7 @@ public class DataPoint {
 		"#Correct YES's","#Correct NO's", 
 		"Total YES", "Total NO", "Total IDK", "Total YES NO",
 		"Average correct YES's","Average correct NO's","Average total correct answers"
-		};
+	};
 
 	public DataPoint(){}
 
@@ -106,26 +108,26 @@ public class DataPoint {
 		ArrayList<Double> correctTotalAnswers_averageList = new ArrayList<Double>();
 		ArrayList<Double> correctYESAnswers_averageList = new ArrayList<Double>();
 		ArrayList<Double> correctNOAnswers_averageList = new ArrayList<Double>();
-		
+
 		for(String key: fileNameOutcomeMap.keySet()){
 			Outcome outcome = fileNameOutcomeMap.get(key);
 			precisionValueList.add(outcome.precision);
 			recallValueList.add(outcome.recall);
-			
+
 			if(this.totalWorkers < outcome.differentWorkersAmongHITs)
 				this.totalWorkers =  new Integer(outcome.differentWorkersAmongHITs).doubleValue();
-			
+
 			if(this.maxAnswersHIT < outcome.totalAnswersObtained)
 				this.maxAnswersHIT =  new Integer(outcome.totalAnswersObtained).doubleValue();
 
 			if(outcome.faultLocated){
 				this.faultsLocated++;
 			}
-			
+
 			if(fileNameOutcomeMap.size()>8){
 				System.out.println("fileNameOutcomeMap>8");
 			}
-			
+
 			falsePositives = falsePositives + outcome.falsePositives;
 			falseNegatives = falseNegatives + outcome.falseNegatives;
 			truePositives = truePositives + outcome.truePositives;
@@ -145,22 +147,22 @@ public class DataPoint {
 
 			precision_LineValueList.add(precisionLine);
 			recall_LineValueList.add(recallLine);
-			
+
 			this.correct_YES = this.correct_YES + outcome.correct_YES_Answers;
 			this.correct_NO = this.correct_NO + outcome.correct_NO_Answers;
-			
+
 			this.total_YES = this.total_YES + outcome.total_YES_Answers;
 			this.total_NO = this.total_NO + outcome.total_NO_Answers;
 			this.total_IDK = this.total_IDK + outcome.total_IDK_Answers;
 			this.total_YES_NO = this.total_YES_NO + outcome.total_YESNO_Answers;
 			this.total_Answers = this.total_YES + this.total_NO + this.total_IDK;
-			
+
 			correctTotalAnswers_averageList.add(outcome.average_Total_Correct_Answers);
 			correctYESAnswers_averageList.add(outcome.average_correctYES_Answers);
 			correctNOAnswers_averageList.add(outcome.average_correctNO_Answers);
-			
+
 		}
-		
+
 		this.truePositiveLinesCount = this.truePositiveLineMap.size();
 		this.falsePositiveLinesCount = this.falsePositiveLineMap.size();
 		this.nearPositiveLinesCount = this.nearPositiveLineMap.size();
@@ -223,7 +225,7 @@ public class DataPoint {
 		}
 		return titles.toString();
 	}
-	
+
 	/**
 	 * Header that includes fields for counting and averaging correct answers
 	 * @param suffix necessary to identify the type of predictor that produced this datapoint
@@ -251,7 +253,7 @@ public class DataPoint {
 				this.falseNegativeLinesCount+","+linesToString(this.falseNegativeLineMap)+","+
 				this.LinesPrecision + "," + this.LinesRecall;
 	}
-	
+
 	public String toStringCorrectAnswers(){
 		return  this.consensusType+","+
 				this.averagePrecision+","+this.averageRecall+","+this.elapsedTime+","+this.totalWorkers+","+
@@ -321,10 +323,14 @@ public class DataPoint {
 					truePositiveLines,
 					nearPositiveLines,
 					falsePositiveLines,
-					falseNegativeLines);
-
-
-			combinedDataPoint.fileNameOutcomeMap.put(combinedOutcome.fileName, combinedOutcome);
+					falseNegativeLines,
+					outcome_A.correct_YES_Answers < outcome_B.correct_YES_Answers ? outcome_A.correct_YES_Answers : outcome_B.correct_YES_Answers,
+					outcome_A.correct_NO_Answers < outcome_B.correct_NO_Answers ? outcome_A.correct_NO_Answers : outcome_B.correct_NO_Answers,
+					outcome_A.total_YES_Answers < outcome_B.total_YES_Answers  ? outcome_A.total_YES_Answers  : outcome_B.total_YES_Answers ,
+					outcome_A.total_NO_Answers < outcome_B.total_NO_Answers  ? outcome_A.total_NO_Answers  : outcome_B.total_NO_Answers ,
+					outcome_A.total_IDK_Answers < outcome_B.total_IDK_Answers  ? outcome_A.total_IDK_Answers  : outcome_B.total_IDK_Answers);
+			
+         	combinedDataPoint.fileNameOutcomeMap.put(combinedOutcome.fileName, combinedOutcome);
 		}	
 		return combinedDataPoint;
 	}

@@ -22,10 +22,10 @@ public class AnswerData {
 	Integer differentWorkersAmongHITs;
 
 	/** questionID, list of answer as YES, NO, IDK */
-	HashMap<String, ArrayList<String>> answerMap;
+	public HashMap<String, ArrayList<String>> answerMap;
 
 	/** list of bug-covering question */
-	HashMap<String, String> bugCoveringMap;
+	public HashMap<String, String> bugCoveringMap;
 
 	public AnswerData(String hitFileName,
 			HashMap<String, ArrayList<String>> answers,

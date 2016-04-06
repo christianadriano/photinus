@@ -134,7 +134,7 @@ public class AttributeRangeGenerator {
 		CombinedFilterRange range;
 		HashMap<String, CombinedFilterRange> selectedRangeMap = new HashMap<String, CombinedFilterRange>();
 
-		originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
+	/*	originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);		
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT, range);
 
@@ -153,7 +153,15 @@ public class AttributeRangeGenerator {
 		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
-
+		*/
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_60);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_60, range);
+		
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_80);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_80, range);
+/*
 		originalMap = AttributeRangeGenerator.setupAnswerDurations();
 		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);
 		selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30, range);
@@ -173,7 +181,7 @@ public class AttributeRangeGenerator {
 		originalMap =  AttributeRangeGenerator.setupNoFilters();
 		range = originalMap.get(AttributeRangeGenerator.NO_FILTERS);
 		selectedRangeMap.put(AttributeRangeGenerator.NO_FILTERS, range);
-
+*/
 		//run the first 6h, 9h, 12h, 24h, 48h using the filtered logs. //Or make a filter for that
 		//originalMap =  AttributeRangeGenerator.setupDateInterval();
 		//range = originalMap.get(AttributeRangeGenerator.FIRST_9_HOURS);

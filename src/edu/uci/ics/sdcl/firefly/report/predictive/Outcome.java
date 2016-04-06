@@ -80,36 +80,7 @@ public class Outcome {
 
 	public Outcome(){}
 	
-	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
-			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
-			Integer truePositives, Integer trueNegatives,
-			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
-			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
-			HashMap<String,Integer> falsePositiveLines, HashMap<String, Integer> falseNegativeLines  ) {
-		super();
-		this.filter = filter;
-		this.fileName = new String(fileName.replace("HIT0", "J").replace("_","."));
-		this.predictorType = predictorType;
-		this.faultLocated = faultLocated;
-		this.signalStrength = signalStrength;
-		this.maxWorkerPerQuestion = maxWorkerPerQuestion;
-		this.totalAnswersObtained = totalAnswers;
-		this.threshold = threshold; 
-		this.truePositives = truePositives;
-		this.trueNegatives = trueNegatives;
-		this.falsePositives = falsePositives;
-		this.falseNegatives = falseNegatives;
-		this.differentWorkersPerHIT = differentWorkersPerHIT;
-		this.differentWorkersAmongHITs = differentWorkersAmongHITs;
-		this.precision = this.computePrecision(this.truePositives, this.falsePositives);
-		this.recall = this.computeRecall(this.truePositives, this.falseNegatives);
-		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
-		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>());
-	}
-	
-	
+		
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
 			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
 			Integer truePositives, Integer trueNegatives,

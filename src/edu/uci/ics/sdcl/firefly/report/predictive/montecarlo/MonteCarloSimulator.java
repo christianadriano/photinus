@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
@@ -212,7 +213,12 @@ public class MonteCarloSimulator {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
-				falseNegativeLines);
+				falseNegativeLines,
+				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
+				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
+				AnswerData.count(answerData.answerMap, Answer.YES),
+				AnswerData.count(answerData.answerMap, Answer.NO),
+				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW));
 		
 		return outcome;
 	}
