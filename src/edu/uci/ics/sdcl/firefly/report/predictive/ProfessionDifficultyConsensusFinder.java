@@ -271,11 +271,11 @@ public class ProfessionDifficultyConsensusFinder {
 
 	public static void main(String args[]){
 		ProfessionDifficultyConsensusFinder finder = new ProfessionDifficultyConsensusFinder();
-		//ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
-		//subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
+		ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
+		subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
 
-		ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
-		subCrowdList = finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
+		//ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
+		//subCrowdList = finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
 		subCrowdList = finder.run(subCrowdList);
 
 		for(SubCrowd subcrowd: subCrowdList){
