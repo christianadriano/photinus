@@ -39,7 +39,7 @@ public class SubcrowdConsensusFinder {
 	 */
 	public ArrayList<SubCrowd> generateSubCrowdFilters(){
 
-		HashMap<String, CombinedFilterRange> rangeMap = AttributeRangeGenerator.getSubCrowdFilters();
+		HashMap<String, CombinedFilterRange> rangeMap = AttributeRangeGenerator.getSubCrowdFilters();//getFailed_SubCrowdFilters();
 		ArrayList<SubCrowd> subCrowdList =  new ArrayList<SubCrowd>();
 
 		for(CombinedFilterRange range: rangeMap.values()){
@@ -165,16 +165,16 @@ public class SubcrowdConsensusFinder {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 
-			log.write(Outcome.getHeader()+"\n");
+			log.write(Outcome.getHeaderCorrectAnswers()+"\n");
 
 			for(Entry<String, Outcome> entry: subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.entrySet()){
 				String fileName = entry.getKey();
 				Outcome outcome = subcrowd.acrossQuestionsDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString()+"\n");
+				log.write(outcome.toStringCorrectAnswers()+"\n");
 				outcome = subcrowd.withinQuestionDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString()+"\n");
+				log.write(outcome.toStringCorrectAnswers()+"\n");
 				outcome = subcrowd.combinedConsensusDataPoint.fileNameOutcomeMap.get(fileName);
-				log.write(outcome.toString()+"\n");
+				log.write(outcome.toStringCorrectAnswers()+"\n");
 			}
 
 			log.close();
@@ -196,10 +196,10 @@ public class SubcrowdConsensusFinder {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 
-			log.write(DataPoint.getHeader("")+"\n");
-			log.write(subcrowd.acrossQuestionsDataPoint.toString()+"\n"); 
-			log.write(subcrowd.withinQuestionDataPoint.toString()+"\n"); 
-			log.write(subcrowd.combinedConsensusDataPoint.toString()+"\n");
+			log.write(DataPoint.getHeaderCorrectAnswers("")+"\n");
+			log.write(subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
+			log.write(subcrowd.withinQuestionDataPoint.toStringCorrectAnswers()+"\n"); 
+			log.write(subcrowd.combinedConsensusDataPoint.toStringCorrectAnswers()+"\n");
 
 			log.close();
 			System.out.println("file written at: "+destination);

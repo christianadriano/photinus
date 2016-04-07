@@ -253,6 +253,37 @@ public class FilterCombination_Profession_DifficultyMatrix {
 		crowd.addOR_Filter(combination);
 		subCrowdList.add(crowd);
 		
+		//------------------------------------------------
+		crowd = new SubCrowd();
+		crowd.name = "Non-students difficulty 12";
+
+		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_1);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_2);
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		subCrowdList.add(crowd);
+		
+		//------------------------------------------------
+		crowd = new SubCrowd();
+		crowd.name = "Non-students difficulty 123";
+
+		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_1);			
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_2);
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_3);
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+		
+		subCrowdList.add(crowd);
+		
 		return subCrowdList;
 
 	}

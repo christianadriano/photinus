@@ -26,6 +26,15 @@ public class AttributeRangeGenerator {
 	static String WORKER_GRADUATE_STUDENT ="Graduate Student Only";
 	static String WORKER_UNDERGRADUATE_STUDENT ="Undergraduate Student Only";
 	static String WORKER_HOBBYIST ="Hobbyist Only";
+	static String WORKER_PROFESSIONAL_PROGRAMMER_HOBBYIST= "Professional Programmers and Hobbyists";
+	static String WORKER_PROFESSIONAL_PROGRAMMER_OTHER= "Professional Programmers and Others";
+	static String WORKER_PROFESSIONAL_PROGRAMMER_GRADUATE= "Professional Programmers and Graduates";
+	static String WORKER_PROFESSIONAL_PROGRAMMER_UNDERGRADUATE= "Professional Programmers and Undergraduates";
+	static String WORKER_HOBBYIST_OTHER= "Hobbyists and Others";
+	static String WORKER_HOBBYIST_GRADUATE= "Hobbyists and Graduates";
+	static String WORKER_HOBBYIST_UNDERGRADUATE= "Hobbyists and Undergraduates";
+	static String WORKER_GRADUATE_UNDERGRADUATE_OTHER= "Graduates Undergraduates Others";
+
 	static String WORKER_OTHER ="Other Only";
 	public static String WORKER_NON_STUDENT ="WORKER_NON_STUDENT";
 	static String WORKER_STUDENT ="Student Only";
@@ -122,11 +131,15 @@ public class AttributeRangeGenerator {
 	static final String UNDERGRAD_DIFFICULTY_1_2_3 = "UNDERGRAD_DIFFICULTY_1_2_3";
 	static final String GRAD_STUDENTS_DIFFICULTY_1_2_3_4 = "GRAD_STUDENTS_DIFFICULTY_1_2_3_4";
 	static final String NON_STUDENTS_DIFFICULTY_ALL = "NON_STUDENTS_DIFFICULTY_ALL";
+	static final String NON_STUDENTS_DIFFICULTY_1 = "NON_STUDENTS_DIFFICULTY_1";
+	static final String NON_STUDENTS_DIFFICULTY_2 = "NON_STUDENTS_DIFFICULTY_2";
+	static final String NON_STUDENTS_DIFFICULTY_3 = "NON_STUDENTS_DIFFICULTY_3";
 	static final String STUDENTS_DIFFICULTY_1_2_3 = "STUDENTS_DIFFICULTY_1_2_3";
 	static final String STUDENTS_DIFFICULTY_1_2 = "STUDENTS_DIFFICULTY_1_2";
 
+
 	/**
-	 * These are filters that selected sub-crowds who located all 8 faults.
+	 * These are filters that selected subcrowds who DID locate all 8 faults.
 	 */
 	public static HashMap<String, CombinedFilterRange> getSubCrowdFilters(){
 
@@ -134,13 +147,14 @@ public class AttributeRangeGenerator {
 		CombinedFilterRange range;
 		HashMap<String, CombinedFilterRange> selectedRangeMap = new HashMap<String, CombinedFilterRange>();
 
-	/*	originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
+		originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);		
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT, range);
 
 		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_NON_STUDENT);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_NON_STUDENT, range);
+
 
 		originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT);
@@ -153,15 +167,7 @@ public class AttributeRangeGenerator {
 		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
-		*/
-		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
-		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_60);	
-		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_60, range);
-		
-		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
-		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_80);	
-		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_80, range);
-/*
+
 		originalMap = AttributeRangeGenerator.setupAnswerDurations();
 		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);
 		selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30, range);
@@ -181,10 +187,63 @@ public class AttributeRangeGenerator {
 		originalMap =  AttributeRangeGenerator.setupNoFilters();
 		range = originalMap.get(AttributeRangeGenerator.NO_FILTERS);
 		selectedRangeMap.put(AttributeRangeGenerator.NO_FILTERS, range);
-*/
+
 		//run the first 6h, 9h, 12h, 24h, 48h using the filtered logs. //Or make a filter for that
 		//originalMap =  AttributeRangeGenerator.setupDateInterval();
 		//range = originalMap.get(AttributeRangeGenerator.FIRST_9_HOURS);
+
+		return selectedRangeMap;
+	}
+
+	/**
+	 * These are filters that selected subcrowds who DID NOT locate all 8 faults.
+	 */
+	public static HashMap<String, CombinedFilterRange> getFailed_SubCrowdFilters(){
+
+		HashMap<String, CombinedFilterRange> originalMap;
+		CombinedFilterRange range;
+		HashMap<String, CombinedFilterRange> selectedRangeMap = new HashMap<String, CombinedFilterRange>();
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_HOBBYIST);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_HOBBYIST, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_OTHER);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_OTHER, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_GRADUATE);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_GRADUATE, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_UNDERGRADUATE);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_PROFESSIONAL_PROGRAMMER_UNDERGRADUATE, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_HOBBYIST_OTHER);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_HOBBYIST_OTHER, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_HOBBYIST_GRADUATE);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_HOBBYIST_GRADUATE, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_HOBBYIST_UNDERGRADUATE);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_HOBBYIST_UNDERGRADUATE, range);
+
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_GRADUATE_UNDERGRADUATE_OTHER);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_GRADUATE_UNDERGRADUATE_OTHER, range);
+
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_60);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_60, range);
+
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_80);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_80, range);
+
 
 		return selectedRangeMap;
 	}
@@ -295,6 +354,54 @@ public class AttributeRangeGenerator {
 		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Other"});
 		range.setUndefinedWithDefault();
 		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_PROFESSIONAL_PROGRAMMER_HOBBYIST);
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Undergraduate_Student","Other"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_PROFESSIONAL_PROGRAMMER_OTHER);
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Undergraduate_Student","Hobbyist"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_PROFESSIONAL_PROGRAMMER_GRADUATE);
+		range.setProfessionExclusionList(new String[] {"Undergraduate_Student","Hobbyist","Other"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_PROFESSIONAL_PROGRAMMER_UNDERGRADUATE);
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Hobbyist","Other"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_HOBBYIST_OTHER);
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Graduate_Student","Undergraduate_Student"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_HOBBYIST_GRADUATE);
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Undergraduate_Student","Other"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_HOBBYIST_UNDERGRADUATE);
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Graduate_Student","Other"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);
+
+		range = new CombinedFilterRange();
+		range.setRangeName(WORKER_GRADUATE_UNDERGRADUATE_OTHER);
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist"});
+		range.setUndefinedWithDefault();
+		rangeMap.put(range.getRangeName(),range);	
 
 		return rangeMap;
 	}
@@ -856,6 +963,9 @@ public class AttributeRangeGenerator {
 
 	private static HashMap<String, Tuple>  map543; //Difficulty 5, 4, 3
 	private static HashMap<String, Tuple>  map54;
+	private static HashMap<String, Tuple> map1;
+	private static HashMap<String, Tuple> map2;
+	private static HashMap<String, Tuple> map3;
 	private static HashMap<String, Tuple> map12;
 	private static HashMap<String, Tuple> map123;
 	private static HashMap<String, Tuple> map1234;
@@ -896,6 +1006,87 @@ public class AttributeRangeGenerator {
 		map12.put(new Tuple(3,5).toString(), new Tuple(3,5));
 		map12.put(new Tuple(4,5).toString(), new Tuple(4,5));
 		map12.put(new Tuple(5,5).toString(), new Tuple(5,5));
+
+		//Confidence,Difficulty
+		map1 = new HashMap<String, Tuple>();
+		map1.put(new Tuple(0,2).toString(), new Tuple(0,2));
+		map1.put(new Tuple(1,2).toString(), new Tuple(1,2));
+		map1.put(new Tuple(2,2).toString(), new Tuple(2,2));
+		map1.put(new Tuple(3,2).toString(), new Tuple(3,2));
+		map1.put(new Tuple(4,2).toString(), new Tuple(4,2));
+		map1.put(new Tuple(5,2).toString(), new Tuple(5,2));
+		map1.put(new Tuple(0,3).toString(), new Tuple(0,3));
+		map1.put(new Tuple(1,3).toString(), new Tuple(1,3));
+		map1.put(new Tuple(2,3).toString(), new Tuple(2,3));
+		map1.put(new Tuple(3,3).toString(), new Tuple(3,3));
+		map1.put(new Tuple(4,3).toString(), new Tuple(4,3));
+		map1.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map1.put(new Tuple(0,4).toString(), new Tuple(0,4));
+		map1.put(new Tuple(1,4).toString(), new Tuple(1,4));
+		map1.put(new Tuple(2,4).toString(), new Tuple(2,4));
+		map1.put(new Tuple(3,4).toString(), new Tuple(3,4));
+		map1.put(new Tuple(4,4).toString(), new Tuple(4,4));
+		map1.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map1.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map1.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map1.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map1.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map1.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map1.put(new Tuple(5,5).toString(), new Tuple(5,5));
+
+		//Confidence,Difficulty
+		map2 = new HashMap<String, Tuple>();
+		map2.put(new Tuple(0,1).toString(), new Tuple(0,1));
+		map2.put(new Tuple(1,1).toString(), new Tuple(1,1));
+		map2.put(new Tuple(2,1).toString(), new Tuple(2,1));
+		map2.put(new Tuple(3,1).toString(), new Tuple(3,1));
+		map2.put(new Tuple(4,1).toString(), new Tuple(4,1));
+		map2.put(new Tuple(5,1).toString(), new Tuple(5,1));
+		map2.put(new Tuple(0,3).toString(), new Tuple(0,3));
+		map2.put(new Tuple(1,3).toString(), new Tuple(1,3));
+		map2.put(new Tuple(2,3).toString(), new Tuple(2,3));
+		map2.put(new Tuple(3,3).toString(), new Tuple(3,3));
+		map2.put(new Tuple(4,3).toString(), new Tuple(4,3));
+		map2.put(new Tuple(5,3).toString(), new Tuple(5,3));
+		map2.put(new Tuple(0,4).toString(), new Tuple(0,4));
+		map2.put(new Tuple(1,4).toString(), new Tuple(1,4));
+		map2.put(new Tuple(2,4).toString(), new Tuple(2,4));
+		map2.put(new Tuple(3,4).toString(), new Tuple(3,4));
+		map2.put(new Tuple(4,4).toString(), new Tuple(4,4));
+		map2.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map2.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map2.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map2.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map2.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map2.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map2.put(new Tuple(5,5).toString(), new Tuple(5,5));
+
+		//Confidence,Difficulty
+		map3 = new HashMap<String, Tuple>();
+		map3.put(new Tuple(0,1).toString(), new Tuple(0,1));
+		map3.put(new Tuple(1,1).toString(), new Tuple(1,1));
+		map3.put(new Tuple(2,1).toString(), new Tuple(2,1));
+		map3.put(new Tuple(3,1).toString(), new Tuple(3,1));
+		map3.put(new Tuple(4,1).toString(), new Tuple(4,1));
+		map3.put(new Tuple(5,1).toString(), new Tuple(5,1));
+		map3.put(new Tuple(0,2).toString(), new Tuple(0,2));
+		map3.put(new Tuple(1,2).toString(), new Tuple(1,2));
+		map3.put(new Tuple(2,2).toString(), new Tuple(2,2));
+		map3.put(new Tuple(3,2).toString(), new Tuple(3,2));
+		map3.put(new Tuple(4,2).toString(), new Tuple(4,2));
+		map3.put(new Tuple(5,2).toString(), new Tuple(5,2));
+		map3.put(new Tuple(0,4).toString(), new Tuple(0,4));
+		map3.put(new Tuple(1,4).toString(), new Tuple(1,4));
+		map3.put(new Tuple(2,4).toString(), new Tuple(2,4));
+		map3.put(new Tuple(3,4).toString(), new Tuple(3,4));
+		map3.put(new Tuple(4,4).toString(), new Tuple(4,4));
+		map3.put(new Tuple(5,4).toString(), new Tuple(5,4));
+		map3.put(new Tuple(0,5).toString(), new Tuple(0,5));
+		map3.put(new Tuple(1,5).toString(), new Tuple(1,5));
+		map3.put(new Tuple(2,5).toString(), new Tuple(2,5));
+		map3.put(new Tuple(3,5).toString(), new Tuple(3,5));
+		map3.put(new Tuple(4,5).toString(), new Tuple(4,5));
+		map3.put(new Tuple(5,5).toString(), new Tuple(5,5));
 
 		//Confidence,Difficulty
 		map123 = new HashMap<String, Tuple>();
@@ -1150,6 +1341,31 @@ public class AttributeRangeGenerator {
 		range.setUndefinedWithDefault();
 
 		rangeMap.put(range.getRangeName(),range);
+
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(NON_STUDENTS_DIFFICULTY_1); 
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Undergraduate_Student"});
+		range.setUndefinedWithDefault();
+		range.setConfidenceDifficultyPairMap(map1);
+		rangeMap.put(range.getRangeName(),range);
+
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(NON_STUDENTS_DIFFICULTY_2); 
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Undergraduate_Student"});
+		range.setUndefinedWithDefault();
+		range.setConfidenceDifficultyPairMap(map2);
+		rangeMap.put(range.getRangeName(),range);
+
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(NON_STUDENTS_DIFFICULTY_3); 
+		range.setProfessionExclusionList(new String[] {"Graduate_Student","Undergraduate_Student"});
+		range.setUndefinedWithDefault();
+		range.setConfidenceDifficultyPairMap(map3);
+		rangeMap.put(range.getRangeName(),range);
+
 
 		//------------------------------------------------
 		range = new CombinedFilterRange();
