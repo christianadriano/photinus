@@ -103,13 +103,13 @@ public class FilterCombination_Score_DifficultyMatrix {
 
 	private static String getName(int score, int difficulty){
 
-		String name = "WORKER_SCORE_";
+		String name = "WORKER_SCORE-";
 
 
 		Double percentScore = new Double(score/5.0) * 100;
 		String percentScoreStr = new DecimalFormat("#").format(percentScore);
 
-		name = name+percentScoreStr+"_DIFFICULTY_"+difficulty;
+		name = name+percentScoreStr+"-DIFFICULTY-"+difficulty;
 
 		return name;
 	}

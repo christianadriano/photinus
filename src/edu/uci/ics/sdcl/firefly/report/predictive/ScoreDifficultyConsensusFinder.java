@@ -247,6 +247,33 @@ public class ScoreDifficultyConsensusFinder {
 		}
 	}
 
+	public void printSingleFileSubCrowdAverages(ArrayList<SubCrowd> subcrowdList){
+
+		String destination = "C://firefly//Score_Difficulty_Analysis//Averages//AllSubcrowds_averages.csv";
+		BufferedWriter log;
+
+
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
+			log.write("score,difficulty,"+DataPoint.getHeaderCorrectAnswers("")+"\n");
+			
+			for(SubCrowd subcrowd:subcrowdList){
+			
+				String[] nameList=subcrowd.name.split("-");
+				String score = nameList[1];
+				String difficulty = nameList[3];
+				log.write(score+","+difficulty+","+subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
+			}
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+
+	}
 
 
 
@@ -273,7 +300,7 @@ public class ScoreDifficultyConsensusFinder {
 			finder.printJavaOutcomes(subcrowd);
 			finder.printSubCrowdAverages(subcrowd);
 		}
-		
+		//finder.printSingleFileSubCrowdAverages(subCrowdList);
 		//test();
 	}
 
