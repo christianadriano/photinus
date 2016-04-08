@@ -15,6 +15,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
+import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 
 /**
  * This class generates two sets of data.
@@ -101,15 +102,17 @@ public class ProfessionDifficultyConsensusFinder {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
+
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
 			HashMap<String, Microtask> map = (HashMap<String, Microtask>) OR_Filter.apply(microtaskMap, crowd.OR_FilterList);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
-			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
+			crowd.totalAnswers = MicrotaskMapUtil.countAnswers(map).intValue();
 			subCrowdList.set(i, crowd);
 		}
+
 		return subCrowdList; 
 	}
 
@@ -239,9 +242,9 @@ public class ProfessionDifficultyConsensusFinder {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 			log.write("profession,difficulty,"+DataPoint.getHeaderCorrectAnswers("")+"\n");
-			
+
 			for(SubCrowd subcrowd:subcrowdList){
-			
+
 				String[] nameList=subcrowd.name.split("-");
 				String profession = nameList[0];
 				String difficulty = nameList[2];
@@ -271,11 +274,11 @@ public class ProfessionDifficultyConsensusFinder {
 
 	public static void main(String args[]){
 		ProfessionDifficultyConsensusFinder finder = new ProfessionDifficultyConsensusFinder();
-		ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
-		subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
+		//ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
+		//subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
 
-		//ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
-		//subCrowdList = finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
+		ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
+		subCrowdList =finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
 		subCrowdList = finder.run(subCrowdList);
 
 		for(SubCrowd subcrowd: subCrowdList){

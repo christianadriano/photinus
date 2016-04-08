@@ -206,10 +206,11 @@ public class FilterCombination_Profession_DifficultyMatrix {
 		HashMap<String, CombinedFilterRange> map = AttributeRangeGenerator.getMostDifficultyProfession();
 		CombinedFilterRange range;
 		FilterCombination combination;
+		SubCrowd crowd;
 
 		//------------------------------------------------
 		//
-		SubCrowd crowd = new SubCrowd();
+		crowd = new SubCrowd();
 		crowd.name = "Removed Undergrad_diff45 and Grad_diff5";
 
 		range = map.get(AttributeRangeGenerator.UNDERGRAD_DIFFICULTY_1_2_3);			
@@ -219,13 +220,15 @@ public class FilterCombination_Profession_DifficultyMatrix {
 		range = map.get(AttributeRangeGenerator.GRAD_STUDENTS_DIFFICULTY_1_2_3_4);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
-
+//		
+//		
 		range = map.get(AttributeRangeGenerator.NON_STUDENTS_DIFFICULTY_ALL);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
+		
 		subCrowdList.add(crowd);
 
-		//------------------------------------------------
+//		//------------------------------------------------
 		//Removed students_45
 		crowd = new SubCrowd();
 		crowd.name = "Removed students_45";

@@ -7,6 +7,7 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
+import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 
 /**
  * Applies an OR filter returning the resulting set.
@@ -35,7 +36,7 @@ public class OR_Filter {
 			return map12;
 		}
 		else{//There are more filters to apply and OR
-			
+			mergeMapList = new 	ArrayList<HashMap<String, Microtask>>();
 			mergeMapList.add(map12);
 
 			for(int i=2;i<filterList.size();i++){
@@ -46,7 +47,13 @@ public class OR_Filter {
 			}
 			HashMap<String, Microtask> resultMap = MicrotaskMapUtil.mergeMapList(microtaskMap, mergeMapList);
 			//printFilterOutcomes(mergeMapList,resultMap);
-			return resultMap;
+			
+			//For testing to guarantee that Maps are distinct
+			MicrotaskMapValidator validator =  new MicrotaskMapValidator();
+			if(validator.haveDuplicates(mergeMapList))
+				return null;
+		    else 
+				return resultMap;
 		}
 	}
 

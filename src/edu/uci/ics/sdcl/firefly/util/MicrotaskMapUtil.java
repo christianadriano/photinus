@@ -3,6 +3,7 @@ package edu.uci.ics.sdcl.firefly.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import edu.uci.ics.sdcl.firefly.Answer;
@@ -236,8 +237,8 @@ public class MicrotaskMapUtil {
 	}
 
 
-	/** Merge a list of maps 
-	 * 
+	/** 
+	 * Merge a list of microtask maps 
 	 * @param microtaskMap
 	 * @param mergeMapList
 	 * @return
@@ -256,10 +257,10 @@ public class MicrotaskMapUtil {
 				for(int i=1;i<mergeMapList.size();i++){
 					HashMap<String, Microtask> sourceMap = mergeMapList.get(i);
 					resultMap = mergeMaps(microtaskMap, sourceMap, resultMap);
+					//System.out.println("Answers in resultMap = "+countAnswers(resultMap));
 				}
 				return resultMap;
 			}
 	}
-
 
 }

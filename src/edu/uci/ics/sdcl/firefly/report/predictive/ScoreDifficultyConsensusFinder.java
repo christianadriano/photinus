@@ -15,6 +15,7 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
+import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 
 /**
  * This class generates two sets of data.
@@ -110,6 +111,8 @@ public class ScoreDifficultyConsensusFinder {
 			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
 			subCrowdList.set(i, crowd);
 		}
+		
+		//Run test
 		return subCrowdList; 
 	}
 
