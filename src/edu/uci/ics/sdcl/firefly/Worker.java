@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 
 public class Worker implements Serializable{
+	
 	private static final long serialVersionUID = 1L;
 	private String workerId;
 	private String consentDate;
@@ -23,6 +24,8 @@ public class Worker implements Serializable{
 	private ArrayList<String> quitReasonList = null;
 	private ArrayList<String> quitFileList = null; //Files in which the worker quit
 
+	
+	
 	public Worker(String workerId, String consentDateStr, String currentFileName) {
 		this.workerId = workerId;
 		this.consentDate = consentDateStr;
@@ -120,7 +123,63 @@ public class Worker implements Serializable{
 	public Hashtable<String, String> getSurveyAnswers() {
 		return surveyAnswersMap;
 	}
+	
+	public String getProfession(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Experience");
+		}
+	}
+	
+	public String getAge(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Age");
+		}
+	}
+	
+	public String getGender(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Gender");
+		}
+	}
 
+	public String getCountry(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Country");
+		}
+	}
+	
+	public String getYearsProgramming(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("YearsProgramming");
+		}
+	}
+	
+	public String getLearnedToProgramming(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Learned");
+		}
+	}
+	
+	public String getLanguage(){
+		if(!this.answeredSurvey)
+			return null;
+		else{
+			return this.surveyAnswersMap.get("Language");
+		}
+	}
+	
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;		
 	}

@@ -12,6 +12,7 @@ import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
+import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 public class WorkerSamplePerformance {
@@ -203,9 +204,7 @@ public class WorkerSamplePerformance {
 		int fn=0;
 		int tn=0;
 
-		PropertyManager manager = PropertyManager.initializeSingleton();
-		String bugCoveringList = manager.bugCoveringList;
-		HashMap<String, String> bugCoveringMap = getBugCoveringMap(bugCoveringList);
+		HashMap<String, String> bugCoveringMap = BugCoveringMap.initialize();
 
 		Vector<Microtask> microtaksList = session.getMicrotaskList();
 		for(Microtask microtask: microtaksList){

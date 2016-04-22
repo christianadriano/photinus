@@ -47,7 +47,7 @@ public class ReadWriteFile {
 	 * @param newBuffer
 	 * @param destFileName
 	 */
-	private static void writeBackToBuffer(ArrayList<String> newBuffer, String path, String destFileName){
+	public static void writeBackToBuffer(ArrayList<String> newBuffer, String path, String destFileName){
 
 		String destination = path  + destFileName;
 		BufferedWriter log;
@@ -56,6 +56,7 @@ public class ReadWriteFile {
 			for(String line : newBuffer)
 				log.write(line+"\n");
 			log.close();
+			System.out.println("File written at:"+ path+destFileName);
 		} 
 		catch (Exception e) {
 			System.out.println("ERROR while processing file:" + destination);

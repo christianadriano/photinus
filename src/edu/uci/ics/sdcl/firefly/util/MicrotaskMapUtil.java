@@ -19,6 +19,12 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
  */
 public class MicrotaskMapUtil {
 
+	
+	public static HashMap<String,Microtask> initialize(){
+		FileSessionDTO sessionDTO = new FileSessionDTO();
+		return (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
+	}
+	
 	public static Answer getFirstAnswer(HashMap<String, Microtask> map){
 
 		Answer currentAnswer=null;
