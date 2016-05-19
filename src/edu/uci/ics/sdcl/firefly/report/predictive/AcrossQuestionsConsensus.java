@@ -470,13 +470,13 @@ public class AcrossQuestionsConsensus extends Consensus{
 		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2);
 
 		System.out.println("expected: true, actual: "+ predictor.computeThreshold(data).toString());
-		System.out.println("expected: 3, actual: "+ predictor.getThreshold().toString());
+		System.out.println("expected: 3, actual: "+ predictor.getMinimumNumberYESAnswersThatLocatedFault().toString());
 
 		
 	}
 
 	@Override
-	public Integer getThreshold(){
+	public Integer getMinimumNumberYESAnswersThatLocatedFault(){
 		return this.threshold;
 	}
 

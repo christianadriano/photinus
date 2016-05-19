@@ -131,7 +131,7 @@ public class WithinQuestionConsensus extends Consensus{
 	 * 
 	 * @return number of YES of the bug covering question that has the smallest positive vote. If the fault was not found returns -1.
 	 */
-	public Integer getThreshold(){
+	public Integer getMinimumNumberYESAnswersThatLocatedFault(){
 
 		if (voteMap==null){
 			if(this.computeThreshold(data)==0)

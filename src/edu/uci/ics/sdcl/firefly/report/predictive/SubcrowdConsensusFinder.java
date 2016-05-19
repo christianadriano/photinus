@@ -92,7 +92,7 @@ public class SubcrowdConsensusFinder {
 				predictor.computeSignalStrength(answerData),
 				predictor.computeNumberOfWorkers(answerData),
 				answerData.getTotalAnswers(),
-				predictor.getThreshold(),
+				predictor.getMinimumNumberYESAnswersThatLocatedFault(),
 				predictor.getTruePositives(),
 				predictor.getTrueNegatives(),
 				predictor.getFalsePositives(),

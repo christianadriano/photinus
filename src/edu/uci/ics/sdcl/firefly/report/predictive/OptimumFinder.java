@@ -107,7 +107,7 @@ public class OptimumFinder {
 							predictor.computeSignalStrength(answerData),
 							predictor.computeNumberOfWorkers(answerData),
 							answerData.getTotalAnswers(),
-							predictor.getThreshold(),
+							predictor.getMinimumNumberYESAnswersThatLocatedFault(),
 							predictor.getTruePositives(),
 							predictor.getTrueNegatives(),
 							predictor.getFalsePositives(),
@@ -317,19 +317,35 @@ public class OptimumFinder {
 
 
 	public void addAggregationMechanisms(){
-		//finder.addPredictor(new AcrossQuestionsConsensus(1));
-		//finder.addPredictor(new AcrossQuestionsConsensus(2));
-		//finder.addPredictor(new AcrossQuestionsConsensus(3));
 		
-		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
-		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
-		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
+		
+	
 
 		for(int minimumYes=1;minimumYes<21;minimumYes++){
 			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
 		}
 	}
 	
+	public void addWithinQuestionsAbsolute_Mechanism(){
+		for(int minimumYes=-9;minimumYes<21;minimumYes++){
+			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
+		}
+		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
+		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
+		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
+	}
+	
+	public void addAcrossQuestion_Mechanism(){
+		addPredictor(new AcrossQuestionsConsensus(1));
+		addPredictor(new AcrossQuestionsConsensus(2));
+		addPredictor(new AcrossQuestionsConsensus(3));
+	}
+	
+	public void addWithinQuestionsBalance_Mechanism(){
+		for(int minimumYes=1;minimumYes<21;minimumYes++){
+			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
+		}
+	}
 	
 	/** 
 	 * Orchestrates the execution 

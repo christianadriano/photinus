@@ -21,7 +21,7 @@ public abstract class Consensus {
 	
 	public abstract Integer computeNumberOfWorkers(AnswerData data);
 
-	public abstract Integer getThreshold();
+	public abstract Integer getMinimumNumberYESAnswersThatLocatedFault();
 
 	public abstract Integer getTruePositives();
 	

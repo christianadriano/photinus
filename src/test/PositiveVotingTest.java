@@ -67,7 +67,7 @@ public class PositiveVotingTest {
 		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 		predictor.setCalibrationLevel(2);
 		assertTrue(predictor.computeSignal(this.data));
-		assertEquals(2,predictor.getThreshold().intValue());	
+		assertEquals(2,predictor.getMinimumNumberYESAnswersThatLocatedFault().intValue());	
 
 		
 		assertEquals(2, predictor.getFalsePositives().intValue());
@@ -132,7 +132,7 @@ public class PositiveVotingTest {
 		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus();
 		
 		assertTrue(predictor.computeSignal(this.data));
-		assertEquals(2,predictor.getThreshold().intValue());	
+		assertEquals(2,predictor.getMinimumNumberYESAnswersThatLocatedFault().intValue());	
 				
 		assertEquals(1, predictor.getFalsePositives().intValue());
 		assertEquals(1, predictor.getTruePositives().intValue());
@@ -198,7 +198,7 @@ public class PositiveVotingTest {
 		
 		assertTrue(predictor.computeSignal(this.data));
 		
-		assertEquals(3,predictor.getThreshold().intValue());	
+		assertEquals(3,predictor.getMinimumNumberYESAnswersThatLocatedFault().intValue());	
 		
 		HashMap<String,Integer> truePositiveFaultyLineCount = predictor.getTruePositiveFaultyLines(this.allQuestionLineMaps);
 		printMap("True Positive Faulty", truePositiveFaultyLineCount);
