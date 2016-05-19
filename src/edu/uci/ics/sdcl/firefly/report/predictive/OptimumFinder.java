@@ -39,7 +39,9 @@ import edu.uci.ics.sdcl.firefly.util.mturk.AnswerCounter;
  */
 public class OptimumFinder {
 
-
+	public String[] fileNameList  = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
+			"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
+	
 	ArrayList<HashMap<FilterCombination,AnswerData>> dataList;
 
 	ArrayList<Consensus> predictorList;
@@ -49,10 +51,28 @@ public class OptimumFinder {
 	ArrayList<String> hitFileNameList = new 	ArrayList<String>();
 	
 	HashMap<String, QuestionLinesMap> lineMapping;
+	
+	HashMap<String,String>  bugCoveringMap;
+	
 
-	public OptimumFinder(ArrayList<HashMap<FilterCombination,AnswerData>> dataList, HashMap<String, QuestionLinesMap> lineMapping){
+	public OptimumFinder(){}
+	
+	public void initialize(){
+		
+		//Obtain bug covering question list
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		this.bugCoveringMap = new HashMap<String,String>();
+		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
+		for(String questionID:listOfBugPointingQuestions){
+			bugCoveringMap.put(questionID,questionID);
+		}
+		
+		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
+		this.lineMapping =  loader.loadList();
+	}
+			
+	public void setData(ArrayList<HashMap<FilterCombination,AnswerData>> dataList){
 		this.dataList = dataList;
-		this.lineMapping = lineMapping;
 	}
 
 	public void addPredictor(Consensus pred){
@@ -112,9 +132,9 @@ public class OptimumFinder {
 	}
 
 
-	public void printResults(){	
+	public void printResults(String suffix){	
 
-		String destination = "C://firefly//optimumFinder.csv";
+		String destination = "C://firefly//optimumFinder_"+suffix+".csv";
 		BufferedWriter log;
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
@@ -212,40 +232,69 @@ public class OptimumFinder {
 		}
 	}
 
+	/** 
+	 * Computes the outcomes of aggregation mechanisms (consensus) by using data that was filter by using OR clauses,
+	 * i.e., joined different groups. (e.g., score larger than 100 and profession = hobbyist OR score=60 and profession=student),
+	 */
+	public ArrayList<HashMap<FilterCombination,AnswerData>> applyORFilters(){
 
-	public static void main(String[] args){
-
-		//Obtain bug covering question list
-		PropertyManager manager = PropertyManager.initializeSingleton();
-		HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
-		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
-		for(String questionID:listOfBugPointingQuestions){
-			bugCoveringMap.put(questionID,questionID);
-		}
-
-		//Produce the list of filters
-		//ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
-		ArrayList<FilterCombination> filterList = FilterGenerator.generateSkillDifficultyFilterCombinationList();
-		
-		String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
-				"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
-
-		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
-		HashMap<String, QuestionLinesMap> lineMapping =  loader.loadList();
-		
 		ArrayList<HashMap<FilterCombination,AnswerData>> processingList = new 	ArrayList<HashMap<FilterCombination,AnswerData>> ();
+
+		ArrayList<FilterCombination> filterList = FilterGenerator.generateSkillDifficultyFilterCombinationList();
+
 
 		//Apply filter and extract data by fileName
 		//System.out.println("FilterList size: "+ filterList.size());
 		//for(FilterCombination combination :  filterList){
-			FilterCombination combination =  filterList.get(0);//MAKE THIS MORE ELEGANT
+		FilterCombination combination =  filterList.get(0);//MAKE THIS MORE ELEGANT
+		FileSessionDTO sessionDTO = new FileSessionDTO();
+		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
+
+		//Filter filter = combination.getFilter();
+		//HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
+
+		HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) apply_OR_filter(microtaskMap, filterList);
+
+		Integer totalDifferentWorkersAmongHITs = countWorkers(filteredMicrotaskMap, null);
+
+		System.out.println("Elapsed time: "+ElapsedTimeUtil.getElapseTime(filteredMicrotaskMap)+
+				", number of answers: "+AnswerCounter.countAnswers(filteredMicrotaskMap) + 
+				", number of workers: "+totalDifferentWorkersAmongHITs);
+
+
+		for(String fileName: fileNameList){
+			HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(filteredMicrotaskMap,fileName);
+			Integer workerCountPerHIT = countWorkers(filteredMicrotaskMap,fileName);
+			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
+			HashMap<FilterCombination, AnswerData> map = new HashMap<FilterCombination, AnswerData>();
+			map.put(combination, data);
+			processingList.add(map);
+		}
+		//}
+		return processingList;
+
+	}
+
+	/** 
+	 * Computes the outcomes of aggregation mechanisms (consensus) by using data that was obtained by using AND filters
+	 * on the data attributes (e.g., score larger than 100 and profession = hobbyist),
+	 * i.e., joined different groups.
+	 */
+	public ArrayList<HashMap<FilterCombination,AnswerData>> applyANDFilters(){
+		
+		ArrayList<HashMap<FilterCombination,AnswerData>> processingList = new 	ArrayList<HashMap<FilterCombination,AnswerData>> ();
+
+		//Produce the list of filters
+		ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
+
+		//Apply filter and extract data by fileName
+		//System.out.println("FilterList size: "+ filterList.size());
+		for(FilterCombination combination :  filterList){
 			FileSessionDTO sessionDTO = new FileSessionDTO();
 			HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 
-			//Filter filter = combination.getFilter();
-			//HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
-
-			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) apply_OR_filter(microtaskMap, filterList);
+			Filter filter = combination.getFilter();
+			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 
 			Integer totalDifferentWorkersAmongHITs = countWorkers(filteredMicrotaskMap, null);
 
@@ -254,32 +303,47 @@ public class OptimumFinder {
 					", number of workers: "+totalDifferentWorkersAmongHITs);
 
 
-			for(String fileName: fileNameList){
+			for(String fileName: this.fileNameList){
 				HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(filteredMicrotaskMap,fileName);
 				Integer workerCountPerHIT = countWorkers(filteredMicrotaskMap,fileName);
-				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
+				AnswerData data = new AnswerData(fileName,answerMap,this.bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 				HashMap<FilterCombination, AnswerData> map = new HashMap<FilterCombination, AnswerData>();
 				map.put(combination, data);
 				processingList.add(map);
 			}
-		//}
+		}
+		return processingList;	
+	}
 
-		OptimumFinder finder =  new OptimumFinder(processingList,lineMapping );
+
+	public void addAggregationMechanisms(){
 		//finder.addPredictor(new AcrossQuestionsConsensus(1));
-		finder.addPredictor(new AcrossQuestionsConsensus(2));
+		//finder.addPredictor(new AcrossQuestionsConsensus(2));
 		//finder.addPredictor(new AcrossQuestionsConsensus(3));
 		
 		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
 		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
 		//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
 
-		//for(int minimumYes=1;minimumYes<21;minimumYes++){
-			//finder.addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
-		//}
-		finder.run();
-		finder.printResults();
+		for(int minimumYes=1;minimumYes<21;minimumYes++){
+			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
+		}
 	}
 	
+	
+	/** 
+	 * Orchestrates the execution 
+	 * There are two filter types, one applied AND condiditions, while the other applies an OR.
+	 * */
+	public static void main(String[] args){
+
+		OptimumFinder finder =  new OptimumFinder();
+		finder.initialize();
+		finder.setData(finder.applyANDFilters());
+		finder.addAggregationMechanisms();
+		finder.run();
+		finder.printResults("calibration");
+	}
 	
 	
 }
