@@ -316,47 +316,50 @@ public class OptimumFinder {
 	}
 
 
-	public void addAggregationMechanisms(){
-		
-		
-	
-
-		for(int minimumYes=1;minimumYes<21;minimumYes++){
-			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
-		}
-	}
-	
+	/** 
+	 * Computes the within question consensus for a set of values. 
+	 * These values are the minimum number of YES answers to consider
+	 * the question as covering a fault.
+	 */
 	public void addWithinQuestionsAbsolute_Mechanism(){
-		for(int minimumYes=-9;minimumYes<21;minimumYes++){
-			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
-		}
-		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-1));
-		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0));
-		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,1));
-	}
-	
-	public void addAcrossQuestion_Mechanism(){
-		addPredictor(new AcrossQuestionsConsensus(1));
-		addPredictor(new AcrossQuestionsConsensus(2));
-		addPredictor(new AcrossQuestionsConsensus(3));
-	}
-	
-	public void addWithinQuestionsBalance_Mechanism(){
-		for(int minimumYes=1;minimumYes<21;minimumYes++){
+		for(int minimumYes=0;minimumYes<=19;minimumYes++){
 			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,minimumYes,0));
 		}
 	}
 	
 	/** 
-	 * Orchestrates the execution 
-	 * There are two filter types, one applied AND condiditions, while the other applies an OR.
+	 * Computes the across question consensus for a set of values. 
+	 * These values are the size of the ranking, i.e., how many questions 
+	 * within the TOP N questions should be considered to 
+	 * as covering a fault.
+	 */
+	public void addAcrossQuestion_Mechanism(){
+		for(int rank=1;rank<=19;rank++){
+			addPredictor(new AcrossQuestionsConsensus(rank));
+		}
+	}
+	
+	/** 
+	 * Computes the within question consensus for a set of values. 
+	 * These values are the minimum differences between YES - NO so to consider
+	 * the question as covering a fault.
+	 */
+	public void addWithinQuestionsMajority_Mechanism(){
+		for(int calibration=-9;calibration<=9;calibration++){
+			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,calibration));
+		}
+	}
+	
+	/** 
+	 * Controls the execution 
+	 * There are two filter types, one applied AND conditions, while the other applies an OR.
 	 * */
 	public static void main(String[] args){
 
 		OptimumFinder finder =  new OptimumFinder();
 		finder.initialize();
 		finder.setData(finder.applyANDFilters());
-		finder.addAggregationMechanisms();
+		finder.addAcrossQuestion_Mechanism();
 		finder.run();
 		finder.printResults("calibration");
 	}
