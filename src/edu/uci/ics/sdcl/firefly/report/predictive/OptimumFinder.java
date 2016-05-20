@@ -334,7 +334,7 @@ public class OptimumFinder {
 	 * as covering a fault.
 	 */
 	public void addAcrossQuestion_Mechanism(){
-		for(int rank=1;rank<=19;rank++){
+		for(int rank=1;rank<=20;rank++){
 			addPredictor(new AcrossQuestionsConsensus(rank));
 		}
 	}
