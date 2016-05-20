@@ -83,12 +83,37 @@ public class AcrossQuestionsConsensus extends Consensus{
 	public Integer computeThreshold(AnswerData data){
 		
 		this.data = data;
-	
+		
 		this.questionYESCountMap = this.computeNumberOfAnswers(Answer.YES);
-		this.threshold =   this.computeThreshold(this.calibration);
-		return threshold;
+		int numberOfQuestions = data.answerMap.size();
+		if(this.calibration>=numberOfQuestions){ //Consider the smallest number of YES
+			this.threshold = this.smallestNumberOfYesAnswers();
+		}
+		else
+			this.threshold = this.computeThreshold(this.calibration);
+		return this.threshold;
 	}
 	
+	/** 
+	 * The smallest number of answers that a question has received 
+	 * The the smallest number larger than zero. 
+	 * If all questions received zero number of Yes answers then returns zero
+	 */
+	private Integer smallestNumberOfYesAnswers() {
+	
+		TreeMap<String, Integer> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
+	
+		//Starts with the largest number of YES answers
+		int smallestCount= this.questionYESCountMap.get(sortedYESMap.firstKey()); 
+		
+		for(Map.Entry<String, Integer> entry : sortedYESMap.entrySet()){
+			int yesCount = entry.getValue();
+			if(yesCount>0 && yesCount<smallestCount )
+				smallestCount = yesCount;
+		}
+		return smallestCount;
+	}
+
 	@Override
 	public void setCalibration(int calibrationLevel){
 		this.calibration = calibrationLevel;
@@ -134,7 +159,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 	@Override
 	public Integer getTruePositives() {
-
+	
 		if(this.threshold<=0)
 			return 0;
 		else{
@@ -230,7 +255,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		if(this.questionYESCountMap.isEmpty())
 			return -1;
 		
-		TreeMap<String, Integer> sortedYESMap = this.sortByValue(this.questionYESCountMap);
+		TreeMap<String, Integer> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
 		this.maxYES = this.questionYESCountMap.get(sortedYESMap.firstKey());
 				
 		Integer yesCount_at_Level=0;
@@ -251,7 +276,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 			return -1;
 	}
 	
-	private  TreeMap<String, Integer> sortByValue(HashMap<String, Integer> map) {
+	/**
+	 * Descending sort, so largest value is at the beginning of the map.
+	 * @param map
+	 * @return
+	 */
+	private  TreeMap<String, Integer> sortByDescendingValue(HashMap<String, Integer> map) {
 		ValueComparator vc =  new ValueComparator(map);
 		TreeMap<String,Integer> sortedMap = new TreeMap<String,Integer>(vc);
 		sortedMap.putAll(map);
