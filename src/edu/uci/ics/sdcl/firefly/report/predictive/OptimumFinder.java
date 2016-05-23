@@ -345,9 +345,15 @@ public class OptimumFinder {
 	 * the question as covering a fault.
 	 */
 	public void addWithinQuestionsMajority_Mechanism(){
-		for(int calibration=-9;calibration<=9;calibration++){
+		for(int calibration=-21;calibration<=20;calibration++){
 			addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,calibration));
 		}
+	}
+	
+	public void addChosenCalibrations(){
+		addPredictor(new AcrossQuestionsConsensus(2));
+		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-4));
+		addPredictor(new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0));
 	}
 	
 	/** 
@@ -359,9 +365,9 @@ public class OptimumFinder {
 		OptimumFinder finder =  new OptimumFinder();
 		finder.initialize();
 		finder.setData(finder.applyANDFilters());
-		finder.addAcrossQuestion_Mechanism();
+		finder.addChosenCalibrations();
 		finder.run();
-		finder.printResults("calibration");
+		finder.printResults("all_calibrated");
 	}
 	
 	
