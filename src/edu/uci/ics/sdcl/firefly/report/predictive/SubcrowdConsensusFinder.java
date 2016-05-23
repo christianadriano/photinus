@@ -54,6 +54,30 @@ public class SubcrowdConsensusFinder {
 
 		return subCrowdList;
 	}
+	
+	/**
+	 * 1- Generate number of answers filters 
+	 * Each subcrowd is actually a subset of answers, e.g., first 10 answers, first 11 answers, etc.
+	 * 
+	 * @return list of empty SubCrowd objects only populated the respective filter type
+	 */
+	public ArrayList<SubCrowd> generateAnswersPerQuestion_Filters(){
+
+		HashMap<String, CombinedFilterRange> rangeMap = AttributeRangeGenerator.setupMaxAnswers(20);
+		ArrayList<SubCrowd> subCrowdList =  new ArrayList<SubCrowd>();
+
+		for(CombinedFilterRange range: rangeMap.values()){
+
+			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
+			Filter filter = combination.getFilter();
+			SubCrowd crowd =  new SubCrowd();
+			crowd.name = range.getRangeName();
+			crowd.filter = filter;
+			subCrowdList.add(crowd);
+		}
+
+		return subCrowdList;
+	}
 
 	public ArrayList<SubCrowd> generateSubCrowdMicrotasks(ArrayList<SubCrowd> subCrowdList){
 
@@ -113,11 +137,21 @@ public class SubcrowdConsensusFinder {
 		return outcome;
 	}
 
-	public ArrayList<SubCrowd> run(){
-
+	public ArrayList<SubCrowd> runAnswerPerQuestionFilters(){
+		ArrayList<SubCrowd> subCrowdList =  this.generateAnswersPerQuestion_Filters();
+		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
+		return run(subCrowdList);
+	}
+	
+	
+	public ArrayList<SubCrowd> runSubCrowdFilters(){
 		ArrayList<SubCrowd> subCrowdList =  this.generateSubCrowdFilters();
 		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
-
+		return run(subCrowdList);
+	}
+	
+	public ArrayList<SubCrowd> run(ArrayList<SubCrowd> subCrowdList){
+		
 		for(SubCrowd subcrowd: subCrowdList){
 			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
 
@@ -212,7 +246,7 @@ public class SubcrowdConsensusFinder {
 
 	public static void main(String args[]){
 		SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
-		ArrayList<SubCrowd> list = finder.run();
+		ArrayList<SubCrowd> list = finder.runSubCrowdFilters();
 		for(SubCrowd subcrowd: list){
 			finder.printJavaOutcomes(subcrowd);
 			finder.printSubCrowdAverages(subcrowd);
