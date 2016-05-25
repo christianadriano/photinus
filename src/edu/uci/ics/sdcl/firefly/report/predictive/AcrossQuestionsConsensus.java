@@ -510,6 +510,18 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return this.threshold;
 	}
 
+	@Override
+	public void setMinimumAnswersPerQuestion(int minimum) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setIncludeIDK(boolean includeIDK) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	//----------------------------------------------------------------------------------------------------------------
 	

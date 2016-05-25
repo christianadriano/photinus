@@ -230,6 +230,8 @@ public class LinesToInspectController {
 				AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
 				consensus.setData(data);
+				consensus.setIncludeIDK(false);
+				consensus.setMinimumAnswersPerQuestion(Math.abs(consensus.getCalibration()));
 				Outcome outcome = this.computeDataPoint(data,consensus,linesMapping);
 				ArrayList<Outcome> list = outcomeMap.get(fileName);
 				list.add(outcome);
@@ -249,8 +251,8 @@ public class LinesToInspectController {
 		//AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
 
 		//Compute within-question consensus
-		//WithinQuestionConsensus withinQuestionConsensus = new  WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-4);
-		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
+		WithinQuestionConsensus withinQuestionConsensus = new  WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-4);
+		//WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
 
 		controller.run((Consensus)withinQuestionConsensus);
 	}

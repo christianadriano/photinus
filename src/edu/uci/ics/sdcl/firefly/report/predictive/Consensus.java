@@ -15,6 +15,10 @@ public abstract class Consensus {
 	
 	public abstract void setData(AnswerData data);
 	
+	public abstract void setMinimumAnswersPerQuestion(int minimum);
+	
+	public abstract void setIncludeIDK(boolean includeIDK);
+	
 	public abstract Integer computeThreshold(AnswerData data);
 	
 	public abstract Integer computeSignalStrength(AnswerData data);
