@@ -41,7 +41,7 @@ public class LinesToInspectController {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
+		
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		HashMap<String, HashMap<String, Integer>> questionMap = predictor.getNearPositiveLinesQuestions(lineMapping);
@@ -64,7 +64,7 @@ public class LinesToInspectController {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
-				falseNegativeLines,
+				predictor.getQuestionsBelowMinimalAnswers(),
 				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.count(answerData.answerMap, Answer.YES),
@@ -108,10 +108,10 @@ public class LinesToInspectController {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 			ArrayList<Outcome> list= this.outcomeMap.get(fileName);
-			log.write("#answers,"+list.get(0).getHeader()+"\n");
+			log.write("#answers,"+list.get(0).getHeaderAllLineTypes()+"\n");
 			for(int i=0;i<list.size();i++){
 				Outcome outcome = list.get(i);
-				String line= outcome.toString();
+				String line= outcome.toStringAllLineTypes();
 				log.write(i+1+","+line+"\n");
 			}
 			log.close();
@@ -248,13 +248,13 @@ public class LinesToInspectController {
 		LinesToInspectController controller = new LinesToInspectController();
 
 		//Compute across-questions consensus
-		//AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
+		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
 
 		//Compute within-question consensus
-		WithinQuestionConsensus withinQuestionConsensus = new  WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-4);
+		//WithinQuestionConsensus withinQuestionConsensus = new  WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-5);
 		//WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
 
-		controller.run((Consensus)withinQuestionConsensus);
+		controller.run((Consensus)acrossQuestionsConsensus);
 	}
 
 }

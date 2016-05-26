@@ -13,6 +13,8 @@ public abstract class Consensus {
 	
 	public abstract int getCalibration();
 	
+	public abstract int getQuestionsBelowMinimalAnswers();
+	
 	public abstract void setData(AnswerData data);
 	
 	public abstract void setMinimumAnswersPerQuestion(int minimum);

@@ -28,10 +28,12 @@ public class WithinQuestionConsensus extends Consensus{
 	private HashMap<String, Integer> questionYESCountMap;
 
 	private AnswerData data;
-	
+
 	private boolean includeIDK = true;
-	
+
 	private Integer minimumAnswersPerQuestion = 20;
+
+	private Integer questionsBelowMinimalAnswers=0;
 
 	/** Difference between number of YES's and NO's. Default is 1.*/
 	private int calibration=0;
@@ -62,7 +64,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 
 	}
-	
+
 	/**
 	 * 
 	 * @param type one of the two consensus types available in the class (see static attributes)
@@ -72,7 +74,7 @@ public class WithinQuestionConsensus extends Consensus{
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
-		
+
 		this.minimumAnswersPerQuestion = minimumAnswersPerQuestion;
 		this.includeIDK = includeIDK;
 
@@ -117,7 +119,7 @@ public class WithinQuestionConsensus extends Consensus{
 			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap);
 
 		return this.computeTruePositives();
-			
+
 	}
 
 	@Override
@@ -324,7 +326,7 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return voteMap;
 	}
-	
+
 	/** Check if question has at list minimum answers to evaluate the rule
 	 * The minimum can come from the calibration level, e.g., Y - N >4 , then need at least 4 answers to compute. 
 	 * @param minimum number of answers
@@ -332,7 +334,7 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @return
 	 */
 	private Boolean checkIfQuestionReceivedMinimumNumberOfAnswers(String questionID){
-		
+
 		if(this.minimumAnswersPerQuestion==0){
 			return true;
 		}
@@ -341,13 +343,28 @@ public class WithinQuestionConsensus extends Consensus{
 			if(answerList.size()>=this.minimumAnswersPerQuestion){
 				if(!this.includeIDK){
 					int IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
-					
-					if(answerList.size()-IDKCount<this.minimumAnswersPerQuestion)
+
+					if(answerList.size()-IDKCount<this.minimumAnswersPerQuestion){
 						System.out.print("["+answerList.size()+"],"+IDKCount+" / ");
-					return ((answerList.size()-IDKCount)>=this.minimumAnswersPerQuestion);
+					}
+
+					if((answerList.size()-IDKCount)>=this.minimumAnswersPerQuestion){
+						return true;
+					}
+					else{
+						this.questionsBelowMinimalAnswers++;
+						return false;
+					}
 				}
-				else{ 
-					return ((answerList.size())>=this.minimumAnswersPerQuestion);
+				else{
+					if((answerList.size())>=this.minimumAnswersPerQuestion){
+						return true;
+					}
+					else{
+						this.questionsBelowMinimalAnswers++;
+						return false;
+					}
+
 				}
 			}
 			else
@@ -569,7 +586,10 @@ public class WithinQuestionConsensus extends Consensus{
 				Integer vote = voteMap.get(questionID);
 				if(vote!=null && vote<=this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-					map = loadLines(map,questionLinesMap.nonFaultyLines);
+					if(questionLinesMap.nonFaultyLines==null) 
+						System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
+					else
+						map = loadLines(map,questionLinesMap.nonFaultyLines);
 				}
 			}
 		}
@@ -635,17 +655,24 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return questionMap;
 	}
-	
+
 
 	public void setMinimumAnswersPerQuestion(int minimum){
 		this.minimumAnswersPerQuestion = minimum;
 	}
-	
+
 	public void setIncludeIDK(boolean includeIDK){
 		this.includeIDK = includeIDK;
 	}
-	
-	
+
+	@Override
+	public int getQuestionsBelowMinimalAnswers() {
+		int value = this.questionsBelowMinimalAnswers;
+		this.questionsBelowMinimalAnswers = 0;
+		return value;
+	}
+
+
 }
 
 

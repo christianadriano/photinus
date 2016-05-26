@@ -62,8 +62,8 @@ public class Outcome {
 	//Lines counts per consensus outcome
   	public HashMap<String,Integer> falseNegativeLines;
 	public HashMap<String, Integer> truePositiveLines;
+	public HashMap<String, Integer> trueNegativeLines;
 	public HashMap<String,Integer> falsePositiveLines;
-
 	public HashMap<String, Integer> nearPositiveLines; //Only the true positive lines that are not actually faulty
 
 	public Double precision;
@@ -78,6 +78,8 @@ public class Outcome {
 	/** Maps which flagged lines came from which questions */
 	public HashMap<String, HashMap<String, Integer>> questionMap;
 
+	private int questionBelowMinimumAnswers;
+
 	public Outcome(){}
 	
 		
@@ -86,7 +88,7 @@ public class Outcome {
 			Integer truePositives, Integer trueNegatives,
 			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
 			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
-			HashMap<String,Integer> falsePositiveLines, HashMap<String, Integer> falseNegativeLines,
+			HashMap<String,Integer> falsePositiveLines, int questionsBelowMinimumAnswers,
 			Integer correctYES, Integer correctNO, Integer totalYES, Integer totalNO,Integer totalIDK) {
 		super();
 		this.filter = filter;
@@ -109,6 +111,7 @@ public class Outcome {
 		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.questionBelowMinimumAnswers =   questionsBelowMinimumAnswers; 
 		this.correct_YES_Answers = correctYES;
 		this.correct_NO_Answers = correctNO;
 		this.total_YES_Answers = totalYES;
@@ -149,6 +152,19 @@ public class Outcome {
 				+"Different Workers among all HITs,Precision,Recall";
 		return header;
 	}
+	
+	public static String getHeaderAllLineTypes(){
+
+		String header =  "HIT,Consensus,Fault located?,"
+				+ "True Positive Lines," + "#True Positive Lines,"
+				+ "Near Positive Lines," + "#Near Positive Lines,"
+				+ "False Positive Lines,"+ "#False Positive Lines,"
+				+ "Questions Below Minimum Answers,"
+				+ "Signal strength,#Maximum workers per question,#Total answers obtained, #YES needed ,"
+				+"True positives,True negatives,False positives,False negatives,Different workers in HIT,"
+				+"Different Workers among all HITs,Precision,Recall";
+		return header;
+	}
 
 	public static String getHeaderCorrectAnswers(){
 
@@ -177,6 +193,22 @@ public class Outcome {
 				","+differentWorkersAmongHITs+","+this.precision+","+this.recall;
 		return output;	
 	}
+	
+	
+	public String toStringAllLineTypes(){
+		
+		String output = fileName +","+ predictorType +","+ faultLocated + 
+				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
+				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
+				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
+				","+ this.questionBelowMinimumAnswers+
+
+				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
+				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
+				","+differentWorkersAmongHITs+","+this.precision+","+this.recall;
+		return output;	
+	}
+	
 	
 	
 	public String toStringCorrectAnswers(){
