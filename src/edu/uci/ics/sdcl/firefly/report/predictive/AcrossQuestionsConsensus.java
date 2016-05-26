@@ -67,7 +67,13 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
-	private int calibration=2; 
+	private int calibration=2;
+
+	private int questionsBelowMinimalAnswers;
+
+	private boolean includeIDK;
+
+	private int minimumAnswersPerQuestion; 
 
 	public AcrossQuestionsConsensus(int calibration){
 		super();
@@ -167,7 +173,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.threshold){
+					if((yesCount!=null && yesCount>=this.threshold) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 						count++;
 					}
 				}
@@ -186,7 +192,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.threshold){
+					if((yesCount<this.threshold) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 						count++;
 					}
 				}
@@ -202,7 +208,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Integer yesCount = this.questionYESCountMap.get(questionID);
-				if(yesCount>=this.threshold || this.threshold<=0){
+				if((yesCount>=this.threshold || this.threshold<=0) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 					count++;
 				}
 			}
@@ -217,7 +223,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Integer yesCount = this.questionYESCountMap.get(questionID);
-				if(yesCount<this.threshold || this.threshold<=0){
+				if( (yesCount<this.threshold || this.threshold<=0) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 					count++;
 				}
 			}
@@ -322,7 +328,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){
+					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
@@ -343,7 +349,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){
+					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nearFaultyLines);
 					}
@@ -360,7 +366,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){
+					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap.nonFaultyLines==null) 
 							System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
@@ -379,7 +385,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.threshold || this.threshold<=0){
+					if(yesCount<this.threshold || this.threshold<=0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
 					}
@@ -395,7 +401,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.threshold || this.threshold<=0){
+					if(yesCount<this.threshold || this.threshold<=0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nonFaultyLines);
 					}
@@ -439,7 +445,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 				HashMap<String, Integer> map =  new HashMap<String,Integer>();
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Integer yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0){
+					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nearFaultyLines);
 						if(map.size()>0){
@@ -504,23 +510,76 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		
 	}
+	
+	
 
 	@Override
 	public Integer getMinimumNumberYESAnswersThatLocatedFault(){
 		return this.threshold;
 	}
 
-	@Override
-	public void setMinimumAnswersPerQuestion(int minimum) {
-		// TODO Auto-generated method stub
-		
+	/** Check if question has at list minimum answers to evaluate the rule
+	 * The minimum can come from the calibration level, e.g., Y - N >4 , then need at least 4 answers to compute. 
+	 * @param minimum number of answers
+	 * @param includeIDK if true, means that we should count the IDK towards the minimum number of answers, false otherwise 
+	 * @return
+	 */
+	private Boolean checkIfQuestionReceivedMinimumNumberOfAnswers(String questionID){
+
+		if(this.minimumAnswersPerQuestion==0){
+			return true;
+		}
+		else{
+			ArrayList<String> answerList = data.answerMap.get(questionID);
+			if(answerList.size()>=this.minimumAnswersPerQuestion){
+				if(!this.includeIDK){
+					int IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
+
+					if(answerList.size()-IDKCount<this.minimumAnswersPerQuestion){
+						System.out.print("["+answerList.size()+"],"+IDKCount+" / ");
+					}
+
+					if((answerList.size()-IDKCount)>=this.minimumAnswersPerQuestion){
+						return true;
+					}
+					else{
+						this.questionsBelowMinimalAnswers++;
+						return false;
+					}
+				}
+				else{
+					if((answerList.size())>=this.minimumAnswersPerQuestion){
+						return true;
+					}
+					else{
+						this.questionsBelowMinimalAnswers++;
+						return false;
+					}
+
+				}
+			}
+			else
+				return false;
+		}
+	}
+	
+	
+	
+	public void setMinimumAnswersPerQuestion(int minimum){
+		this.minimumAnswersPerQuestion = minimum;
+	}
+
+	public void setIncludeIDK(boolean includeIDK){
+		this.includeIDK = includeIDK;
 	}
 
 	@Override
-	public void setIncludeIDK(boolean includeIDK) {
-		// TODO Auto-generated method stub
-		
+	public int getQuestionsBelowMinimalAnswers() {
+		int value = this.questionsBelowMinimalAnswers;
+		this.questionsBelowMinimalAnswers = 0;
+		return value;
 	}
+
 
 
 	//----------------------------------------------------------------------------------------------------------------
