@@ -248,13 +248,13 @@ public class LinesToInspectController {
 		LinesToInspectController controller = new LinesToInspectController();
 
 		//Compute across-questions consensus
-		AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
+		//AcrossQuestionsConsensus acrossQuestionsConsensus = new AcrossQuestionsConsensus(2);
 
 		//Compute within-question consensus
 		//WithinQuestionConsensus withinQuestionConsensus = new  WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-5);
-		//WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
+		WithinQuestionConsensus withinQuestionConsensus = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
 
-		controller.run((Consensus)acrossQuestionsConsensus);
+		controller.run((Consensus)withinQuestionConsensus);
 	}
 
 }
