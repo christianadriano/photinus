@@ -27,24 +27,6 @@ import edu.uci.ics.sdcl.firefly.Microtask;
  */
 public class FilterCombination_Profession_DifficultyMatrix {
 
-	public static String WORKER_SCORE_100_DIFFICULTY_5 =  "WORKER_SCORE_100_DIFFICULTY_5";
-	public static String WORKER_SCORE_100_DIFFICULTY_4 =  "WORKER_SCORE_100_DIFFICULTY_4";
-	public static String WORKER_SCORE_100_DIFFICULTY_3 =  "WORKER_SCORE_100_DIFFICULTY_3";
-	public static String WORKER_SCORE_100_DIFFICULTY_2 =  "WORKER_SCORE_100_DIFFICULTY_2";
-	public static String WORKER_SCORE_100_DIFFICULTY_1 =  "WORKER_SCORE_100_DIFFICULTY_1";
-
-	public static String WORKER_SCORE_80_DIFFICULTY_5 =  "WORKER_SCORE_100_DIFFICULTY_5";
-	public static String WORKER_SCORE_80_DIFFICULTY_4 =  "WORKER_SCORE_100_DIFFICULTY_4";
-	public static String WORKER_SCORE_80_DIFFICULTY_3 =  "WORKER_SCORE_100_DIFFICULTY_3";
-	public static String WORKER_SCORE_80_DIFFICULTY_2 =  "WORKER_SCORE_100_DIFFICULTY_2";
-	public static String WORKER_SCORE_80_DIFFICULTY_1 =  "WORKER_SCORE_100_DIFFICULTY_1";
-
-	public static String WORKER_SCORE_60_DIFFICULTY_5 =  "WORKER_SCORE_60_DIFFICULTY_5";
-	public static String WORKER_SCORE_60_DIFFICULTY_4 =  "WORKER_SCORE_60_DIFFICULTY_4";
-	public static String WORKER_SCORE_60_DIFFICULTY_3 =  "WORKER_SCORE_60_DIFFICULTY_3";
-	public static String WORKER_SCORE_60_DIFFICULTY_2 =  "WORKER_SCORE_60_DIFFICULTY_2";
-	public static String WORKER_SCORE_60_DIFFICULTY_1 =  "WORKER_SCORE_60_DIFFICULTY_1";
-
 	
 	public static String[] STUDENT_LIST = {"Graduate_Student","Undergraduate_Student"};
 	public static String[] NON_STUDENT_LIST = {"Professional_Developer","Hobbyist","Other"};
