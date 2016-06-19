@@ -137,6 +137,18 @@ public class AttributeRangeGenerator {
 	static final String STUDENTS_DIFFICULTY_1_2_3 = "STUDENTS_DIFFICULTY_1_2_3";
 	static final String STUDENTS_DIFFICULTY_1_2 = "STUDENTS_DIFFICULTY_1_2";
 
+	//Profession and Years of Experience
+	static final String UNDERGRAD_YoE_QT_2_UP = "UNDERGRAD_YoE_QT_2_UP";
+	static final String GRAD_YoE_QT_2_UP = "GRAD_YoE_QT_2_UP";
+	static final String PROFESSIONALS_YoE_QT_2_UP = "PROFESSIONALS_YoE_QT_2_UP";
+	static final String HOBBYIST_YoE_QT_2_UP = "HOBBYIST_YoE_QT_2_UP";
+	static final String OTHER_YoE_QT_2_UP = "OTHER_YoE_QT_2_UP";
+	static final String STUDENTS_YoE_QT_2_UP = "STUDENTS_YoE_QT_2_UP";
+	static final String NON_STUDENTS_YoE_QT_2_UP = "NON_STUDENTS_YoE_QT_2_UP";
+	static final String NON_STUDENTS_YoE_ALL = "NON_STUDENTS_YoE_ALL";
+
+	
+	
 
 	/**
 	 * These are filters that selected subcrowds who DID locate all 8 faults.
