@@ -127,8 +127,7 @@ public class FilterCombination_Profession_DifficultyMatrix {
 			}
 		}
 		return rangeMap;
-	}	
-
+	}
 	
 	private static HashMap<String,CombinedFilterRange> generateProfesssionSETfilter(String[] exclusionList,String name){
 		
