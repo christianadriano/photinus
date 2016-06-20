@@ -108,8 +108,8 @@ public class FilterCombination_Profession_DifficultyMatrix {
 	
 	public static HashMap<String,CombinedFilterRange> generateFilter(){
 		 HashMap<String,CombinedFilterRange> filterMap = generateProfessionFilters();
-		 filterMap.putAll(generateProfesssionSETfilter(STUDENT_LIST,"non_students"));
-		 filterMap.putAll(generateProfesssionSETfilter(NON_STUDENT_LIST,"students"));
+		 filterMap.putAll(generateProfesssionSETfilter(STUDENT_LIST,"students"));
+		 filterMap.putAll(generateProfesssionSETfilter(NON_STUDENT_LIST,"non_students"));
 		 return filterMap;
 	}
 
