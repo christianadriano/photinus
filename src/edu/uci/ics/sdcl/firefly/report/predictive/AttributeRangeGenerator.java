@@ -138,17 +138,13 @@ public class AttributeRangeGenerator {
 	static final String STUDENTS_DIFFICULTY_1_2 = "STUDENTS_DIFFICULTY_1_2";
 
 	//Profession and Years of Experience
-	static final String UNDERGRAD_YoE_QT_2_UP = "UNDERGRAD_YoE_QT_2_UP";
-	static final String GRAD_YoE_QT_2_UP = "GRAD_YoE_QT_2_UP";
-	static final String PROFESSIONALS_YoE_QT_2_UP = "PROFESSIONALS_YoE_QT_2_UP";
+	static final String UNDERGRADUATE_STUDENT_YoE_QT_2_UP = "UNDERGRADUATE_STUDENT_YoE_QT_2_UP";
+	static final String GRADUATE_STUDENT_YoE_QT_2_UP = "GRADUATE_STUDENT_YoE_QT_2_UP";
+	static final String PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP = "PROFESSIONALS_YoE_QT_2_UP";
 	static final String HOBBYIST_YoE_QT_2_UP = "HOBBYIST_YoE_QT_2_UP";
 	static final String OTHER_YoE_QT_2_UP = "OTHER_YoE_QT_2_UP";
-	static final String STUDENTS_YoE_QT_2_UP = "STUDENTS_YoE_QT_2_UP";
-	static final String NON_STUDENTS_YoE_QT_2_UP = "NON_STUDENTS_YoE_QT_2_UP";
 	static final String NON_STUDENTS_YoE_ALL = "NON_STUDENTS_YoE_ALL";
 
-	
-	
 
 	/**
 	 * These are filters that selected subcrowds who DID locate all 8 faults.
@@ -1402,20 +1398,10 @@ public class AttributeRangeGenerator {
 		return rangeMap;
 	}
 
-	//HIGH DIFFICULTY 60
-	//HIG CONFIDENCE 60
-
-	//HIGH DIFFICULTY 80
-	//HIG CONFIDENCE 80
-
-	//HIGH DIFFICULTY 100
-	//HIG CONFIDENCE 100
-
 
 	static HashMap<String,CombinedFilterRange> setupMaxAnswers(int max){
 
 		HashMap<String,CombinedFilterRange> rangeMap = new 	HashMap<String,CombinedFilterRange>();
-
 		CombinedFilterRange range = new CombinedFilterRange();
 		range.setRangeName(MAX_ANSWERS);
 		range.setMaxAnswers(max);
@@ -1427,5 +1413,81 @@ public class AttributeRangeGenerator {
 		rangeMap.put(range.getRangeName(), range);
 		return rangeMap;
 	}
+
+
+	public static HashMap<String, CombinedFilterRange> getMostExperiencedByProfession() {
+
+
+		CombinedFilterRange range = new CombinedFilterRange();
+		FilterCombination_Profession_YoE.initializeProfessionsYoEQuartileMap();
+
+		HashMap<String, CombinedFilterRange> rangeMap =  new HashMap<String, CombinedFilterRange>();
+
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(UNDERGRADUATE_STUDENT_YoE_QT_2_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Other","Graduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Undergraduate_Student", 1));
+		range.setUndefinedWithDefault();
+
+		rangeMap.put(range.getRangeName(), range);
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(GRADUATE_STUDENT_YoE_QT_2_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Other","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Graduate_Student", 1));
+		range.setUndefinedWithDefault();
+
+		rangeMap.put(range.getRangeName(), range);
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(NON_STUDENTS_YoE_ALL); 
+		range.setProfessionExclusionList(new String[] {"Undergraduate_Student","Graduate_Student"});
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP); 
+		range.setProfessionExclusionList(new String[] {"Hobbyist","Other","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Professional_Developer", 1));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(HOBBYIST_YoE_QT_2_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Other","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Hobbyist", 1));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(OTHER_YoE_QT_2_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Other", 1));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		
+		return rangeMap;
+	}
+
+
 
 }
