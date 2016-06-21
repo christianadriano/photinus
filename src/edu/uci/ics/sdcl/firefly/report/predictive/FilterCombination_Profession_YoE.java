@@ -39,15 +39,11 @@ public class FilterCombination_Profession_YoE {
 
 	public static HashMap<String,HashMap<Integer,Double>> professionsYoEQuartileMap = new HashMap<String,HashMap<Integer,Double>>();
 
-	//Eliminate the first quartile of all professions
+	//--------------------------------------------------------------------
 
-	//Compute all
-	//Compute each profession
-
-	//non-students without the first quartile
-	//students without the first quartile
-
-
+	public static double getQuartileLevel(String profession, int level){
+		return professionsYoEQuartileMap.get(profession).get(level);
+	}
 
 	public static void initializeProfessionsYoEQuartileMap(){
 
@@ -99,12 +95,35 @@ public class FilterCombination_Profession_YoE {
 
 		for(int i =0;i<ALL_PROFESSIONS_LIST.length;i++){
 			String profession = ALL_PROFESSIONS_LIST[i];
-			for(int quartile=1;quartile<=3;quartile++){
+			for(int quartile=1;quartile<=5;quartile++){
 				CombinedFilterRange range = getRangeProfessions(profession);
 				range.setRangeName(getName(profession,quartile));
-				Double minYoE = professionsYoEQuartileMap.get(profession).get(quartile);
-				range.setMinWorkerYearsOfExperience(minYoE);
-				range.setMaxWorkerYearsOfExperience(100.0); //No limit to the maximum years of experience
+				
+				if(quartile==1){
+					range.setMinWorkerYearsOfExperience(0);
+					range.setMaxWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(1));
+				}
+				else
+				if(quartile==2){
+					range.setMinWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(1));
+					range.setMaxWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(2));
+				}
+				else
+				if(quartile==3){
+					range.setMinWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(2));
+					range.setMaxWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(3));
+				}
+				else
+				if(quartile==4){
+					range.setMinWorkerYearsOfExperience(professionsYoEQuartileMap.get(profession).get(3));
+					range.setMaxWorkerYearsOfExperience(100.0); //No limit to the maximum years of experience
+				}
+				else
+				if(quartile==5){//Consider all quartiles, no filtering
+					range.setMinWorkerYearsOfExperience(0.0);
+					range.setMaxWorkerYearsOfExperience(100.0); //No limit to the maximum years of experience
+				}
+
 				rangeMap.put(range.getRangeName(),range);
 			}
 		}
@@ -115,7 +134,7 @@ public class FilterCombination_Profession_YoE {
 		return  profession+"-quartile-"+quartile;
 	}
 
-	
+
 	/**  
 	 * @param profession the profession name that has to be kept, hence it will not be in the list
 	 * @return the list of all professions but the one provided as parameter
@@ -181,11 +200,11 @@ public class FilterCombination_Profession_YoE {
 		crowd = new SubCrowd();
 		crowd.name = "Removed Undergrad_YoE_1stQT and Grad_YoE_1stQT";
 
-		range = map.get(AttributeRangeGenerator.UNDERGRAD_YoE_QT_2_UP);			
+		range = map.get(AttributeRangeGenerator.UNDERGRADUATE_STUDENT_YoE_QT_2_UP);			
 		combination = generateCombination(range);	
 		crowd.addOR_Filter(combination);
 
-		range = map.get(AttributeRangeGenerator.GRAD_YoE_QT_2_UP);	
+		range = map.get(AttributeRangeGenerator.GRADUATE_STUDENT_YoE_QT_2_UP);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
 
@@ -199,21 +218,23 @@ public class FilterCombination_Profession_YoE {
 		crowd = new SubCrowd();
 		crowd.name = "Removed All_YoE_1stQT";
 
-		range = map.get(AttributeRangeGenerator.STUDENTS_YoE_QT_2_UP);			
+		range = map.get(AttributeRangeGenerator.UNDERGRADUATE_STUDENT_YoE_QT_2_UP);			
 		combination = generateCombination(range);	
 		crowd.addOR_Filter(combination);
 
-		range = map.get(AttributeRangeGenerator.NON_STUDENTS_YoE_QT_2_UP);	
+		range = map.get(AttributeRangeGenerator.GRADUATE_STUDENT_YoE_QT_2_UP);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
 
-		subCrowdList.add(crowd);
+		range = map.get(AttributeRangeGenerator.PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
 
-		//------------------------------------------------
-		crowd = new SubCrowd();
-		crowd.name = "Removed ALL Students and Non_Students_YoE_1stQT";
+		range = map.get(AttributeRangeGenerator.HOBBYIST_YoE_QT_2_UP);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
 
-		range = map.get(AttributeRangeGenerator.NON_STUDENTS_YoE_QT_2_UP);	
+		range = map.get(AttributeRangeGenerator.OTHER_YoE_QT_2_UP);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
 
@@ -223,11 +244,30 @@ public class FilterCombination_Profession_YoE {
 		crowd = new SubCrowd();
 		crowd.name = "Removed ALL but professionals above YoE 1stQT";
 
-		range = map.get(AttributeRangeGenerator.PROFESSIONALS_YoE_QT_2_UP);	
+		range = map.get(AttributeRangeGenerator.PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP);	
 		combination = generateCombination(range);
 		crowd.addOR_Filter(combination);
 
 		subCrowdList.add(crowd);
+
+		//------------------------------------------------
+		crowd = new SubCrowd();
+		crowd.name = "Only non-students above YoE 1stQT";
+
+		range = map.get(AttributeRangeGenerator.PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.HOBBYIST_YoE_QT_2_UP);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		range = map.get(AttributeRangeGenerator.OTHER_YoE_QT_2_UP);	
+		combination = generateCombination(range);
+		crowd.addOR_Filter(combination);
+
+		subCrowdList.add(crowd);
+
 		return subCrowdList;
 
 	}
