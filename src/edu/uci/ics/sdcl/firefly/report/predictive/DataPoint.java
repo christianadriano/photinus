@@ -133,16 +133,16 @@ public class DataPoint {
 			truePositives = truePositives + outcome.truePositives;
 			trueNegatives = trueNegatives + outcome.trueNegatives;
 
-			this.truePositiveLineMap = addLines(this.truePositiveLineMap, outcome.truePositiveLines, key);
-			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearPositiveLines, key);
-			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLines, key);
-			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLines, key);
+			this.truePositiveLineMap = addLines(this.truePositiveLineMap, outcome.truePositiveLinesMap, key);
+			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearPositiveLinesMap, key);
+			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLinesMap, key);
+			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLinesMap, key);
 
 			Double precisionLine = 0.0;
 			Double recallLine = 0.0;
-			if(outcome.truePositiveLines.size()>0){
-				precisionLine = new Integer(outcome.truePositiveLines.size() /(outcome.truePositiveLines.size() + outcome.falsePositiveLines.size())).doubleValue();
-				recallLine = new Integer(outcome.truePositiveLines.size() /(outcome.truePositiveLines.size() + outcome.falseNegativeLines.size())).doubleValue();
+			if(outcome.truePositiveLinesMap.size()>0){
+				precisionLine = new Integer(outcome.truePositiveLinesMap.size() /(outcome.truePositiveLinesMap.size() + outcome.falsePositiveLinesMap.size())).doubleValue();
+				recallLine = new Integer(outcome.truePositiveLinesMap.size() /(outcome.truePositiveLinesMap.size() + outcome.falseNegativeLinesMap.size())).doubleValue();
 			}
 
 			precision_LineValueList.add(precisionLine);
@@ -300,10 +300,10 @@ public class DataPoint {
 			Outcome outcome_A = entry.getValue();
 			Outcome outcome_B =  dataPoint_W.fileNameOutcomeMap.get(key);
 
-			HashMap<String,Integer> truePositiveLines = intersectionMap(outcome_A.truePositiveLines, outcome_B.truePositiveLines);
-			HashMap<String,Integer> nearPositiveLines = intersectionMap(outcome_A.nearPositiveLines, outcome_B.nearPositiveLines);
-			HashMap<String,Integer> falsePositiveLines = intersectionMap(outcome_A.falsePositiveLines, outcome_B.falsePositiveLines);
-			HashMap<String, Integer> falseNegativeLines = intersectionMap(outcome_A.falseNegativeLines, outcome_B.falseNegativeLines);
+			HashMap<String,Integer> truePositiveLines = intersectionMap(outcome_A.truePositiveLinesMap, outcome_B.truePositiveLinesMap);
+			HashMap<String,Integer> nearPositiveLines = intersectionMap(outcome_A.nearPositiveLinesMap, outcome_B.nearPositiveLinesMap);
+			HashMap<String,Integer> falsePositiveLines = intersectionMap(outcome_A.falsePositiveLinesMap, outcome_B.falsePositiveLinesMap);
+			HashMap<String, Integer> falseNegativeLines = intersectionMap(outcome_A.falseNegativeLinesMap, outcome_B.falseNegativeLinesMap);
 
 			Outcome combinedOutcome = new Outcome(
 					new FilterCombination(),

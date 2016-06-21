@@ -60,11 +60,11 @@ public class Outcome {
 	
 
 	//Lines counts per consensus outcome
-  	public HashMap<String,Integer> falseNegativeLines;
-	public HashMap<String, Integer> truePositiveLines;
-	public HashMap<String, Integer> trueNegativeLines;
-	public HashMap<String,Integer> falsePositiveLines;
-	public HashMap<String, Integer> nearPositiveLines; //Only the true positive lines that are not actually faulty
+  	public HashMap<String,Integer> falseNegativeLinesMap;
+	public HashMap<String, Integer> truePositiveLinesMap;
+	public HashMap<String, Integer> trueNegativeLinesMap;
+	public HashMap<String,Integer> falsePositiveLinesMap;
+	public HashMap<String, Integer> nearPositiveLinesMap; //Only the true positive lines that are not actually faulty
 
 	public Double precision;
 	public Double recall;
@@ -107,10 +107,10 @@ public class Outcome {
 		this.differentWorkersAmongHITs = differentWorkersAmongHITs;
 		this.precision = this.computePrecision(this.truePositives, this.falsePositives);
 		this.recall = this.computeRecall(this.truePositives, this.falseNegatives);
-		this.falsePositiveLines =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
-		this.nearPositiveLines =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.truePositiveLines =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
-		this.falseNegativeLines =   (HashMap<String, Integer>) ((falseNegativeLines!=null) ? falseNegativeLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.falsePositiveLinesMap =   (HashMap<String, Integer>) ((falsePositiveLines!=null) ? falsePositiveLines.clone() : new HashMap<String,QuestionLinesMap>());
+		this.nearPositiveLinesMap =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.truePositiveLinesMap =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
+		this.falseNegativeLinesMap =   new HashMap<String,Integer>(); //I am not computing the false negative lines.
 		this.questionBelowMinimumAnswers =   questionsBelowMinimumAnswers; 
 		this.correct_YES_Answers = correctYES;
 		this.correct_NO_Answers = correctNO;
@@ -184,9 +184,9 @@ public class Outcome {
 	public String toString(){
 		
 		String output = fileName +","+ predictorType +","+ faultLocated + 
-				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
-				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
-				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
+				","+ this.linesToString(this.truePositiveLinesMap) + ","+ this.truePositiveLinesMap.size()+
+				","+ this.linesToString(this.nearPositiveLinesMap) + ","+ this.nearPositiveLinesMap.size()+
+				","+ this.linesToString(this.falsePositiveLinesMap) + ","+ this.falsePositiveLinesMap.size()+
 
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
 				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +
@@ -198,9 +198,9 @@ public class Outcome {
 	public String toStringAllLineTypes(){
 		
 		String output = fileName +","+ predictorType +","+ faultLocated + 
-				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
-				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
-				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
+				","+ this.linesToString(this.truePositiveLinesMap) + ","+ this.truePositiveLinesMap.size()+
+				","+ this.linesToString(this.nearPositiveLinesMap) + ","+ this.nearPositiveLinesMap.size()+
+				","+ this.linesToString(this.falsePositiveLinesMap) + ","+ this.falsePositiveLinesMap.size()+
 				","+ this.questionBelowMinimumAnswers+
 
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
@@ -214,9 +214,9 @@ public class Outcome {
 	public String toStringCorrectAnswers(){
 		
 		String output = fileName +","+ predictorType +","+ faultLocated + 
-				","+ this.linesToString(this.truePositiveLines) + ","+ this.truePositiveLines.size()+
-				","+ this.linesToString(this.nearPositiveLines) + ","+ this.nearPositiveLines.size()+
-				","+ this.linesToString(this.falsePositiveLines) + ","+ this.falsePositiveLines.size()+
+				","+ this.linesToString(this.truePositiveLinesMap) + ","+ this.truePositiveLinesMap.size()+
+				","+ this.linesToString(this.nearPositiveLinesMap) + ","+ this.nearPositiveLinesMap.size()+
+				","+ this.linesToString(this.falsePositiveLinesMap) + ","+ this.falsePositiveLinesMap.size()+
 
 				","+ signalStrength +","+ maxWorkerPerQuestion +","+ totalAnswersObtained+
 				","+threshold +","+	truePositives +","+ trueNegatives +","+ falsePositives +","+ falseNegatives +","+ differentWorkersPerHIT +

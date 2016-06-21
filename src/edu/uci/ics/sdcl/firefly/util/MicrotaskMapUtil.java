@@ -83,9 +83,9 @@ public class MicrotaskMapUtil {
 		return workerMap.size();
 	}
 
-	public static Double countAnswers(HashMap<String, Microtask> map){
+	public static Integer countAnswers(HashMap<String, Microtask> map){
 
-		double count=0.0;
+		int count=0;
 		for(Microtask microtask: map.values()){
 			count = count + microtask.getNumberOfAnswers();
 		}

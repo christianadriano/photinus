@@ -608,6 +608,10 @@ public class Filter {
 	public void setMaxAnswers(int maxAnswers) {
 		this.maxAnswers = maxAnswers;
 	}
+	
+	public double getMinYoE(){
+		return this.yearsOfExperience[0];
+	}
 
 	public static HashMap<String,Microtask> selectMicrotaskFromFileName(HashMap<String, Microtask> originalMicrotaskMap, 
 																	String fileName){

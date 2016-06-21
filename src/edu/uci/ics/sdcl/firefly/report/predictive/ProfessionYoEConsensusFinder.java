@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import edu.uci.ics.sdcl.firefly.Answer;
@@ -15,20 +14,19 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
-import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 
 /**
  * This class generates two sets of data.
  * 
- * Set-1: matrix of professions x difficulty type, where each cell is the accuracy of answers
- * Set-2: consensus for subcrowds grouped by profession and difficulty 
+ * Set-1: matrix of professions x Years of Experience (YoE), where each cell is the accuracy of answers
+ * Set-2: consensus for subcrowds grouped by profession and YoE 
  * 
  * The main method has the two entry points for these analyzes.
  * 
  * @author adrianoc
  *
  */
-public class ProfessionDifficultyConsensusFinder {
+public class ProfessionYoEConsensusFinder {
 
 	public  String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
@@ -37,7 +35,7 @@ public class ProfessionDifficultyConsensusFinder {
 	private HashMap<String, QuestionLinesMap> lineMapping;
 
 
-	public ProfessionDifficultyConsensusFinder(){
+	public ProfessionYoEConsensusFinder(){
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		this.lineMapping = loader.loadList();
 
@@ -49,23 +47,16 @@ public class ProfessionDifficultyConsensusFinder {
 	 * 
 	 * @return list of empty SubCrowd objects only populated the respective filter type
 	 */
-	public ArrayList<SubCrowd> generateProfessionDifficultyFilters(){
+	public ArrayList<SubCrowd> generateProfessionYoEFilters(){
 
-		//HashMap<String, CombinedFilterRange> rangeMap;
-		//CombinedFilterRange range;
-
-		//rangeMap = AttributeRangeGenerator.setupNoFilters();
-		//range = rangeMap.get(AttributeRangeGenerator.NO_FILTERS);	
-
-		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Profession_DifficultyMatrix.generateFilter();
+		HashMap<String, CombinedFilterRange> rangeMap = FilterCombination_Profession_YoE.generateFilter();
 		ArrayList<SubCrowd> subCrowdList =  new ArrayList<SubCrowd>();
 
 		for(CombinedFilterRange range: rangeMap.values()){
 
-			//	Iterator<CombinedFilterRange> iter = rangeMap.values().iterator();
-			//	CombinedFilterRange range = (CombinedFilterRange) iter.next();
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
 			Filter filter = combination.getFilter();
+			System.out.println("Filter: "+ range.getRangeName() + " minYoE : "+ filter.getMinYoE());
 			//System.out.println(combination.getFilterHeaders());
 			//System.out.println(combination.toString(combination.headerList));
 
@@ -90,7 +81,10 @@ public class ProfessionDifficultyConsensusFinder {
 			HashMap<String, Microtask> map = (HashMap<String, Microtask>) crowd.filter.apply(microtaskMap);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
-			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
+			crowd.maxCommonAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
+			crowd.totalAnswers = MicrotaskMapUtil.countAnswers(map);
+			System.out.println("totalWorkers: "+ crowd.totalWorkers+", total answers: "+crowd.totalAnswers);
+			
 			subCrowdList.set(i, crowd);
 		}
 		return subCrowdList;
@@ -102,7 +96,6 @@ public class ProfessionDifficultyConsensusFinder {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
-
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
@@ -112,7 +105,6 @@ public class ProfessionDifficultyConsensusFinder {
 			crowd.totalAnswers = MicrotaskMapUtil.countAnswers(map).intValue();
 			subCrowdList.set(i, crowd);
 		}
-
 		return subCrowdList; 
 	}
 
@@ -123,34 +115,35 @@ public class ProfessionDifficultyConsensusFinder {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
+		int questionsBelowMinimumAnswers = predictor.getQuestionsBelowMinimalAnswers();
 
-		Outcome outcome = new Outcome(null,
-				answerData.getHitFileName(),
-				predictor.getName(),
-				faultLocated,
-				predictor.computeSignalStrength(answerData),
-				predictor.computeNumberOfWorkers(answerData),
-				answerData.getTotalAnswers(),
-				predictor.getMinimumNumberYESAnswersThatLocatedFault(),
-				predictor.getTruePositives(),
-				predictor.getTrueNegatives(),
-				predictor.getFalsePositives(),
-				predictor.getFalseNegatives(),
-				answerData.getWorkerCount(),
-				answerData.getDifferentWorkersAmongHITs(),
-				truePositiveLines,
-				nearPositiveLines,
-				falsePositiveLines,
-				falseNegativeLines,
-				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
-				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
-				AnswerData.count(answerData.answerMap, Answer.YES),
-				AnswerData.count(answerData.answerMap, Answer.NO),
-				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)
+		Outcome outcome = new Outcome(
+				null, //FilterCombination filter
+				answerData.getHitFileName(), //fileName
+				predictor.getName(), //predictorType
+				faultLocated, //faultLocated
+				predictor.computeSignalStrength(answerData), //signalStrength
+				predictor.computeNumberOfWorkers(answerData), //maxWorkerPerQuestion
+				answerData.getTotalAnswers(), //totalAnswers
+				predictor.getMinimumNumberYESAnswersThatLocatedFault(), //threshold
+				predictor.getTruePositives(), //truePositives
+				predictor.getTrueNegatives(), //trueNegatives
+				predictor.getFalsePositives(), //falsePositives
+				predictor.getFalseNegatives(), //falseNegatives
+				answerData.getWorkerCount(), //differentWorkersPerHIT
+				answerData.getDifferentWorkersAmongHITs(), //differentWorkersAmongHITs
+				truePositiveLines, //truePositiveLines
+				nearPositiveLines, //nearPositiveLines
+				falsePositiveLines, //falsePositiveLines
+				questionsBelowMinimumAnswers, //questionsBelowMinimumAnswers
+				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),  //correctYES
+				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap), //correctNO
+				AnswerData.count(answerData.answerMap, Answer.YES), //totalYES
+				AnswerData.count(answerData.answerMap, Answer.NO), //totalNO
+				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW) //totalIDK
 				);
 
 		return outcome;
@@ -188,7 +181,7 @@ public class ProfessionDifficultyConsensusFinder {
 
 	public void printJavaOutcomes(SubCrowd subcrowd){
 
-		String destination = "C://firefly//Profession_Difficulty_Analysis//Outcomes//"+ subcrowd.name+"_outcomes.csv";
+		String destination = "C://firefly//Profession_YoE_Analysis//Outcomes//"+ subcrowd.name+"_outcomes.csv";
 		BufferedWriter log;
 
 		try {
@@ -214,7 +207,7 @@ public class ProfessionDifficultyConsensusFinder {
 
 	public void printSubCrowdAverages(SubCrowd subcrowd){
 
-		String destination = "C://firefly//Profession_Difficulty_Analysis//Averages//"+ subcrowd.name+"_averages.csv";
+		String destination = "C://firefly//Profession_YoE_Analysis//Averages//"+ subcrowd.name+"_averages.csv";
 		BufferedWriter log;
 
 		try {
@@ -232,23 +225,22 @@ public class ProfessionDifficultyConsensusFinder {
 	}
 
 
-	public void printSingleFileSubCrowdAverages(ArrayList<SubCrowd> subcrowdList){
+	public void printProfessionYoE_pairs(ArrayList<SubCrowd> subcrowdList){
 
-		String destination = "C://firefly//Profession_Difficulty_Analysis//Averages//AllSubcrowds_averages.csv";
+		String destination = "C://firefly//Profession_YoE_Analysis//Averages//AllProfessionYoE_pairs.csv";
 		BufferedWriter log;
-
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
-			log.write("profession,difficulty,"+DataPoint.getHeaderCorrectAnswers("")+"\n");
+			log.write("profession,YoE,"+DataPoint.getHeaderCorrectAnswers("")+"\n");
 
 			for(SubCrowd subcrowd:subcrowdList){
 
 				String[] nameList=subcrowd.name.split("-");
 				String profession = nameList[0];
-				String difficulty = nameList[2];
-				log.write(profession+","+difficulty+","+subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
+				String YoE = nameList[2];
+				log.write(profession+","+YoE+","+subcrowd.acrossQuestionsDataPoint.toStringCorrectAnswers()+"\n"); 
 			}
 			log.close();
 			System.out.println("file written at: "+destination);
@@ -257,13 +249,12 @@ public class ProfessionDifficultyConsensusFinder {
 			System.out.println("ERROR while processing file:" + destination);
 			e.printStackTrace();
 		}
-
 	}
 
 
-	public static void test(){
+	public static void smokeTest(){
 		ProfessionYoEConsensusFinder finder = new ProfessionYoEConsensusFinder();
-		ArrayList<SubCrowd> list = finder.generateProfessionDifficultyFilters();
+		ArrayList<SubCrowd> list = finder.generateProfessionYoEFilters();
 		list = finder.generateSubCrowdMicrotasks(list);
 		SubCrowd crowd = list.get(0);
 		FileSessionDTO dto = new FileSessionDTO();
@@ -271,23 +262,35 @@ public class ProfessionDifficultyConsensusFinder {
 		HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(crowd.microtaskMap,"HIT04_7");
 	}
 
+	
+	public void computeAccuracyMatrix(){
+		ArrayList<SubCrowd> subCrowdList = generateProfessionYoEFilters(); //Pairs of profession/YoEto evaluate accuracy
+		subCrowdList = generateSubCrowdMicrotasks(subCrowdList);
+		subCrowdList = run(subCrowdList);
+		printProfessionYoE_pairs(subCrowdList);
+	}
+	
+	public void computeSubcrowdsOutcomes(){
+		ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_YoE.composeSubCrowds();
+		subCrowdList = generateSubCrowdMicrotasks_ORFilters(subCrowdList);
+		subCrowdList = run(subCrowdList);
+
+		for(SubCrowd subcrowd: subCrowdList){
+			printJavaOutcomes(subcrowd);
+			printSubCrowdAverages(subcrowd);
+		}
+	}
 
 	public static void main(String args[]){
 		ProfessionYoEConsensusFinder finder = new ProfessionYoEConsensusFinder();
-		//ArrayList<SubCrowd> subCrowdList = finder.generateProfessionDifficultyFilters(); //Pairs of profession/difficulty to evaluate accuracy
-		//subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
-
-		ArrayList<SubCrowd> subCrowdList = FilterCombination_Profession_DifficultyMatrix.composeSubCrowds();
-		subCrowdList =finder.generateSubCrowdMicrotasks_ORFilters(subCrowdList);
-		subCrowdList = finder.run(subCrowdList);
-
-		for(SubCrowd subcrowd: subCrowdList){
-			finder.printJavaOutcomes(subcrowd);
-			finder.printSubCrowdAverages(subcrowd);
-		}
-		//finder.printSingleFileSubCrowdAverages(subCrowdList);
-
-		//test();
+		
+		//Print accuracy matrix to inspect how well each profession and YoE answered the questions
+		finder.computeAccuracyMatrix();
+		
+		//Print the list of subcrowds to investigate which located all faults
+		//finder.computeSubcrowdsOutcomes();
+		
+		//smokeTest();
 	}
 
 
