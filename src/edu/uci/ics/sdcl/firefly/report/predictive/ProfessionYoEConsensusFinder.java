@@ -99,7 +99,8 @@ public class ProfessionYoEConsensusFinder {
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
-			HashMap<String, Microtask> map = (HashMap<String, Microtask>) OR_Filter.apply(microtaskMap, crowd.OR_FilterList);
+			HashMap<String, Microtask> map =null;
+			map = (HashMap<String, Microtask>) OR_Filter.apply(microtaskMap, crowd.OR_FilterList);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
 			crowd.totalAnswers = MicrotaskMapUtil.countAnswers(map).intValue();
@@ -285,10 +286,10 @@ public class ProfessionYoEConsensusFinder {
 		ProfessionYoEConsensusFinder finder = new ProfessionYoEConsensusFinder();
 		
 		//Print accuracy matrix to inspect how well each profession and YoE answered the questions
-		finder.computeAccuracyMatrix();
+		//finder.computeAccuracyMatrix();
 		
 		//Print the list of subcrowds to investigate which located all faults
-		//finder.computeSubcrowdsOutcomes();
+		finder.computeSubcrowdsOutcomes();
 		
 		//smokeTest();
 	}

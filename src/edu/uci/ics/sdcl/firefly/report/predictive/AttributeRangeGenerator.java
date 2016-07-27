@@ -138,6 +138,11 @@ public class AttributeRangeGenerator {
 	static final String STUDENTS_DIFFICULTY_1_2 = "STUDENTS_DIFFICULTY_1_2";
 
 	//Profession and Years of Experience
+	static final String UNDERGRADUATE_STUDENT_YoE_QT_4_UP = "UNDERGRADUATE_STUDENT_YoE_QT_4_UP";
+	static final String GRADUATE_STUDENT_YoE_QT_4_UP = "GRADUATE_STUDENT_YoE_QT_4_UP";
+	static final String PROFESSIONAL_DEVELOPERS_YoE_QT_4_UP = "PROFESSIONALS_YoE_QT_4_UP";
+	static final String HOBBYIST_YoE_QT_4_UP = "HOBBYIST_YoE_QT_4_UP";
+	static final String OTHER_YoE_QT_4_UP = "OTHER_YoE_QT_4_UP";
 	static final String UNDERGRADUATE_STUDENT_YoE_QT_2_UP = "UNDERGRADUATE_STUDENT_YoE_QT_2_UP";
 	static final String GRADUATE_STUDENT_YoE_QT_2_UP = "GRADUATE_STUDENT_YoE_QT_2_UP";
 	static final String PROFESSIONAL_DEVELOPERS_YoE_QT_2_UP = "PROFESSIONALS_YoE_QT_2_UP";
@@ -1423,6 +1428,61 @@ public class AttributeRangeGenerator {
 
 		HashMap<String, CombinedFilterRange> rangeMap =  new HashMap<String, CombinedFilterRange>();
 
+
+
+
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(UNDERGRADUATE_STUDENT_YoE_QT_4_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Other","Graduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Undergraduate_Student", 3));
+		range.setUndefinedWithDefault();
+
+		rangeMap.put(range.getRangeName(), range);
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(GRADUATE_STUDENT_YoE_QT_4_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Other","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Graduate_Student", 3));
+		range.setUndefinedWithDefault();
+
+		rangeMap.put(range.getRangeName(), range);
+		//------------------------------------------------
+		range = new CombinedFilterRange();
+		range.setRangeName(PROFESSIONAL_DEVELOPERS_YoE_QT_4_UP); 
+		range.setProfessionExclusionList(new String[] {"Hobbyist","Other","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Professional_Developer", 3));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(HOBBYIST_YoE_QT_4_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Other","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Hobbyist", 3));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+		//------------------------------------------------
+
+		range = new CombinedFilterRange();
+		range.setRangeName(OTHER_YoE_QT_4_UP); 
+		range.setProfessionExclusionList(new String[] {"Professional_Developer","Hobbyist","Graduate_Student","Undergraduate_Student"});
+		range.setMaxWorkerYearsOfExperience(100.0);
+		range.setMinWorkerYearsOfExperience(FilterCombination_Profession_YoE.getQuartileLevel("Other", 3));
+		range.setUndefinedWithDefault();	
+
+		rangeMap.put(range.getRangeName(), range);
+
+
 		//------------------------------------------------
 		range = new CombinedFilterRange();
 		range.setRangeName(UNDERGRADUATE_STUDENT_YoE_QT_2_UP); 
@@ -1484,7 +1544,7 @@ public class AttributeRangeGenerator {
 
 		rangeMap.put(range.getRangeName(), range);
 
-		
+
 		return rangeMap;
 	}
 
