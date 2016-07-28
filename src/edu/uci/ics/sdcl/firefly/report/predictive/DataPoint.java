@@ -303,7 +303,6 @@ public class DataPoint {
 			HashMap<String,Integer> truePositiveLines = intersectionMap(outcome_A.truePositiveLinesMap, outcome_B.truePositiveLinesMap);
 			HashMap<String,Integer> nearPositiveLines = intersectionMap(outcome_A.nearPositiveLinesMap, outcome_B.nearPositiveLinesMap);
 			HashMap<String,Integer> falsePositiveLines = intersectionMap(outcome_A.falsePositiveLinesMap, outcome_B.falsePositiveLinesMap);
-			HashMap<String, Integer> falseNegativeLines = intersectionMap(outcome_A.falseNegativeLinesMap, outcome_B.falseNegativeLinesMap);
 
 			Outcome combinedOutcome = new Outcome(
 					new FilterCombination(),
@@ -323,7 +322,7 @@ public class DataPoint {
 					truePositiveLines,
 					nearPositiveLines,
 					falsePositiveLines,
-					falseNegativeLines,
+					0,
 					outcome_A.correct_YES_Answers < outcome_B.correct_YES_Answers ? outcome_A.correct_YES_Answers : outcome_B.correct_YES_Answers,
 					outcome_A.correct_NO_Answers < outcome_B.correct_NO_Answers ? outcome_A.correct_NO_Answers : outcome_B.correct_NO_Answers,
 					outcome_A.total_YES_Answers < outcome_B.total_YES_Answers  ? outcome_A.total_YES_Answers  : outcome_B.total_YES_Answers ,

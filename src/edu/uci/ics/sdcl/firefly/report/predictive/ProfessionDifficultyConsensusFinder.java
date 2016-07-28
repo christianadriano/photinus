@@ -123,10 +123,10 @@ public class ProfessionDifficultyConsensusFinder {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
-		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
+		int questionsBelowMinimumAnswers = predictor.getQuestionsBelowMinimalAnswers();
+
 
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
@@ -145,7 +145,7 @@ public class ProfessionDifficultyConsensusFinder {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
-				falseNegativeLines,
+				questionsBelowMinimumAnswers,
 				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.count(answerData.answerMap, Answer.YES),
@@ -263,7 +263,7 @@ public class ProfessionDifficultyConsensusFinder {
 
 	public static void test(){
 		ProfessionYoEConsensusFinder finder = new ProfessionYoEConsensusFinder();
-		ArrayList<SubCrowd> list = finder.generateProfessionDifficultyFilters();
+		ArrayList<SubCrowd> list = finder.generateProfessionYoEFilters();
 		list = finder.generateSubCrowdMicrotasks(list);
 		SubCrowd crowd = list.get(0);
 		FileSessionDTO dto = new FileSessionDTO();

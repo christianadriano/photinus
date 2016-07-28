@@ -119,10 +119,9 @@ public class CrowdSpeedAnalysis {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);;
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
-		falsePositiveLines = Consensus.removeFalsePositiveDuplications(truePositiveLines,falsePositiveLines);
 		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
+		int questionsBelowMinimumAnswers = predictor.getQuestionsBelowMinimalAnswers();
 		
 		Outcome outcome = new Outcome(null,
 				answerData.getHitFileName(),
@@ -141,7 +140,7 @@ public class CrowdSpeedAnalysis {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
-				falseNegativeLines,
+				questionsBelowMinimumAnswers,
 				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.count(answerData.answerMap, Answer.YES),
@@ -219,7 +218,7 @@ public class CrowdSpeedAnalysis {
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 		}
 		
-		positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap);
+		positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 		majorityVDataPoint.maxAnswersHIT = positiveVDataPoint.maxAnswersHIT;
 		
 		positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
