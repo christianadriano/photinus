@@ -31,9 +31,9 @@ public class WithinQuestionConsensus extends Consensus{
 
 	private boolean includeIDK = true;
 
-	private Integer minimumAnswersPerQuestion = 20;
+	private Integer minimumAnswersPerQuestion = 0;
 
-	private Integer questionsBelowMinimalAnswers=0;
+	private Integer questionsBelowMinimalAnswers = 0;
 
 	/** Difference between number of YES's and NO's. Default is 1.*/
 	private int calibration=0;

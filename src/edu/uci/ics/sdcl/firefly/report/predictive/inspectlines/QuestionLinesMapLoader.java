@@ -16,7 +16,7 @@ public class QuestionLinesMapLoader {
 
 	private String sourceFileName = "QuestionLinesMapping.csv";
 	
-	private String path = "C://firefly//InspectLinesAnalysis//";
+	private String path = "C://firefly//";
 	
 	/** Keeps the number of lines per question */
 	public static HashMap<String, Integer> questionLineCount;
