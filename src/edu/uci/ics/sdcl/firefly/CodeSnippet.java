@@ -31,10 +31,13 @@ public class CodeSnippet implements Serializable
 	protected MethodSignature methodSignature;		// parsed method declaration
 	protected Vector<CodeElement> elements;	// list of statements
 	
+	//Metrics to evaluate code snippets
+	protected Integer CyclomaticComplexity; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
+	protected Integer sizeCharacters; //Don't consider empty spaces
+	private Integer LOCS;
 	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
 	private HashMap<String, CodeSnippet> calleesMap;
-	private Integer LOCS;
 
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -284,5 +287,10 @@ public class CodeSnippet implements Serializable
 	public Integer getLOCS() {
 		return this.LOCS;
 	}
+	
+	public ArrayList<String> extractLines(){
+		
+	}
+	
 		
 }
