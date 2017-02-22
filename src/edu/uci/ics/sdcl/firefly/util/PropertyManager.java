@@ -10,7 +10,7 @@ public class PropertyManager {
 
 	private String fileName="firefly.properties";
 
-	private String devPropertyPath= "C:/Users/adrianoc/Documents/GitHub/photinus/"; 
+	private String devPropertyPath= "C:/users/chris/OneDrive/Documentos/GitHub/photinus/"; 
 
 	public String serverPropertyPath ="/var/lib/tomcat7/webapps/";   
 	
@@ -20,7 +20,7 @@ public class PropertyManager {
 	
 	public String fileUploadSourcePath;
 	
-	public String skillTestUploadPath = "C:/Users/adrianoc/Documents/GitHub/photinus";	
+	public String skillTestUploadPath = "C:/users/chris/OneDrive/Documentos/GitHub/photinus";	
 	
 	public String serializationPath;
 
