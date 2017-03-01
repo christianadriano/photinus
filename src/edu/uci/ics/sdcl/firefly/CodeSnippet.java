@@ -295,20 +295,15 @@ public class CodeSnippet implements Serializable
 	public ArrayList<String> extractLines(){
 		String[] lineList = this.codeSnippetFromFileContent.split("\r\n|\r|\n");
 		
-		int start = this.elementStartingLine;
-		int end =  this.elementEndingLine;
+		int start = 0;
+		int end =  this.elementEndingLine - this.elementStartingLine;
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
-		for(int i=start+1;i<end;i++){
+		for(int i=start;i<end;i++){
 			list.add(lineList[i]);
 		}
 		return list;
-	}
-	
-	public void initializeCyclomaticComplexity(){
-		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
-		this.CyclomaticComplexity = comp.compute(this.extractLines());
 	}
 	
 		

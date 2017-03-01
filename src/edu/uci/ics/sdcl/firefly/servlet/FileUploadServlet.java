@@ -361,7 +361,7 @@ public class FileUploadServlet extends HttpServlet {
 	 * Loads files in bulk. The files must be in the local folder (typically ./samples/bulkLoadPhotinus) 
 	 * @return
 	 */
-	private String bulkUpload(){
+	public String bulkUpload(){
 	
 		Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 		PropertyManager manager = PropertyManager.initializeSingleton();
@@ -415,6 +415,11 @@ public class FileUploadServlet extends HttpServlet {
 			message = message + methodName+ ", " ;
 		}
 		return  "<b>Loaded methods: </b>" + message.substring(0, message.length()-2);
+	}
+	
+	public static void main(String args[]){
+		FileUploadServlet servlet = new FileUploadServlet();
+		servlet.bulkUpload();
 	}
 }
 
