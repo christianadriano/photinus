@@ -341,17 +341,44 @@ public class Microtask implements Serializable
 	public Integer getCyclomaticComplexity() {
 		return cyclomaticComplexity;
 	}
+
+	/** 
+	 * @param method
+	 * @return the line just after the Javadoc comment section
+	 */
+	private int lineAfterComments(CodeSnippet method){
+		
+		int position=0;
+		boolean hasJavadoc=false;
+		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
+		
+		for(String line:lineList){
+			if(line.indexOf("*/")>=0){
+				hasJavadoc = true;
+				break;
+			}
+			position++;
+		}
+		
+		if(hasJavadoc)
+			return position+1; //skip the javadoc ending line
+		else
+			return 0; //assumes code starts at the first line
+	}
 	
 	private ArrayList<String> extractLines(CodeSnippet method){
 
 		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
 
-		int start = 0;
-		int end =  this.endingLine - this.startingLine+1;
-
+		int methodDeclarationStartingLine = lineAfterComments(method) + method.getElementStartingLine();
+		
+		//normalize lines
+		int start = this.startingLine - methodDeclarationStartingLine;
+		int end = this.endingLine - methodDeclarationStartingLine;
+		
 		ArrayList<String> list = new ArrayList<String>();
 
-		for(int i=start;i<end;i++){
+		for(int i=start;i<=end;i++){
 			list.add(lineList[i]);
 		}
 		
