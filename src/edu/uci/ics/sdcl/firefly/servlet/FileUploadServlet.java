@@ -249,6 +249,8 @@ public class FileUploadServlet extends HttpServlet {
 				Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; CodeSnippets="+generatedCodeSnippets+"; Microtasks="+generatedMicrotasks);
 				
+				printMicrotasksDetails(microtaskMap);
+				
 				System.out.println("Results: "+results);
 			}
 			else
@@ -263,6 +265,16 @@ public class FileUploadServlet extends HttpServlet {
 		return results;
 	}
 	
+	private void printMicrotasksDetails(Hashtable<Integer, Microtask> microtaskMap) {
+		
+		Enumeration<Microtask> e = microtaskMap.elements();
+		System.out.println("ID, Complexity");
+		while(e.hasMoreElements()){
+			Microtask microtask = e.nextElement();
+			System.out.println(microtask.getID()+", "+microtask.getCyclomaticComplexity());
+		}
+	}
+
 	private int countSessionsInMap(Hashtable<String, Stack<WorkerSession>> newSessionsMap){
 		int counter=0;
 		Iterator<String> iter = newSessionsMap.keySet().iterator();
@@ -416,6 +428,7 @@ public class FileUploadServlet extends HttpServlet {
 		}
 		return  "<b>Loaded methods: </b>" + message.substring(0, message.length()-2);
 	}
+	
 	
 	public static void main(String args[]){
 		FileUploadServlet servlet = new FileUploadServlet();

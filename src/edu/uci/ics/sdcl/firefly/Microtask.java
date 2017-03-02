@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.uci.ics.sdcl.firefly.lite.MicrotaskLite;
+import edu.uci.ics.sdcl.firefly.util.CyclomaticComplexityCounter;
 
 public class Microtask implements Serializable
 {	
@@ -34,8 +35,9 @@ public class Microtask implements Serializable
 	protected String fileName;
 	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
-	
+
 	private String questionType;
+	private Integer cyclomaticComplexity;
 
 
 	/**
@@ -69,6 +71,7 @@ public class Microtask implements Serializable
 		this.failureDescription = failureDescription;
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
+		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
@@ -79,8 +82,8 @@ public class Microtask implements Serializable
 		this.fileName = fileName;
 		this.LOC_CoveredByQuestion = LOC_Covered;
 	}
-	
-	
+
+
 	/** Light version used during microtask execution */
 	public Microtask(int microtaskId, String question,
 			String failureDescription, String testCase, String snippetHightlights,
@@ -88,7 +91,7 @@ public class Microtask implements Serializable
 			int startingColumn, int endingLine, int endingColumn,
 			String calleeFileContent, int calleeLOCS, String callerFileContent,
 			int callerLOCS, String fileName) {
-		
+
 		this.ID = new Integer(microtaskId);
 		this.question = question;
 		this.failureDescription = failureDescription;
@@ -105,7 +108,7 @@ public class Microtask implements Serializable
 		this.callerLOCS = callerLOCS;
 		this.fileName = fileName;
 	}
-	
+
 	public Microtask getSimpleVersion(){
 		Vector<Answer> answerListCopy = new Vector<Answer>();
 		for(Answer answer: this.getAnswerList()){
@@ -117,7 +120,7 @@ public class Microtask implements Serializable
 	public Integer getID(){
 		return this.ID;
 	}
-	
+
 	public String getQuestion()
 	{
 		return question;
@@ -127,7 +130,7 @@ public class Microtask implements Serializable
 	{
 		this.question = question;
 	}
-	
+
 	public String getCodeElementType()
 	{
 		return codeElementType;
@@ -146,7 +149,7 @@ public class Microtask implements Serializable
 	public CodeElement getCodeElement() {
 		return codeElement;
 	}
-	
+
 	public void setCodeSnippet(CodeSnippet method)
 	{
 		this.method = method;
@@ -161,11 +164,11 @@ public class Microtask implements Serializable
 	{
 		this.answerList = answerList;
 	}
-	
+
 	public void addAnswer(Answer answer){
 		this.answerList.add(answer);
 	}
-	
+
 	/* getters for the position */
 	public Integer getStartingLine() {
 		return startingLine;
@@ -190,7 +193,7 @@ public class Microtask implements Serializable
 	public String getFailureDescription() {
 		return failureDescription;
 	}
-	
+
 	public String getTestCase(){
 		return testCase;
 	}
@@ -229,11 +232,11 @@ public class Microtask implements Serializable
 	public String getCallerFileContent(){
 		return this.callerFileContent;
 	}
-	
+
 	public Integer getCallerLOCS(){
 		return this.callerLOCS;
 	}
-	
+
 	public void setCalleeFileContent(String fileContent){
 		this.calleeFileContent = fileContent;
 		String contentLines[] = calleeFileContent.toString().split("\r\n|\r|\n");
@@ -243,7 +246,7 @@ public class Microtask implements Serializable
 	public String getCalleeFileContent(){
 		return this.calleeFileContent;
 	}
-	
+
 	public Integer getCalleeLOCS(){
 		return this.calleeLOCS;
 	}
@@ -258,7 +261,7 @@ public class Microtask implements Serializable
 		}
 		return foundAnswer;
 	}
-	
+
 	public int getAnswerCountByUserId(String workerId) {
 		int count = 0;
 		for(Answer answer: answerList){
@@ -268,7 +271,7 @@ public class Microtask implements Serializable
 		}
 		return count;
 	}
-	
+
 	public List<String> getWorkerIds(){
 		List<String> workerIDs = new ArrayList<String>();
 		for (Answer answer : answerList) {
@@ -278,7 +281,7 @@ public class Microtask implements Serializable
 		}
 		return workerIDs;
 	}
-	
+
 	public Microtask getLiteVersion(){
 		return new Microtask(
 				this.ID,
@@ -310,7 +313,7 @@ public class Microtask implements Serializable
 	public void setQuestionType(String questionType) {
 		this.questionType = questionType;
 	}
-	
+
 	public ArrayList<String> getAnswerOptions(){
 		ArrayList<String> list = new ArrayList<String>();
 		for(Answer answer : this.answerList){
@@ -326,7 +329,7 @@ public class Microtask implements Serializable
 	public void setLOC_CoveredByQuestion(Integer locs) {
 		this.LOC_CoveredByQuestion = locs;
 	}
-	
+
 	public Integer getLOC_Trimmed() {
 		return LOC_Trimmed;
 	}
@@ -334,5 +337,42 @@ public class Microtask implements Serializable
 	public void setLOC_Trimmed(Integer locs) {
 		this.LOC_Trimmed = locs;
 	}
+
+	public Integer getCyclomaticComplexity() {
+		return cyclomaticComplexity;
+	}
 	
+	private ArrayList<String> extractLines(CodeSnippet method){
+
+		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
+
+		int start = 0;
+		int end =  this.endingLine - this.startingLine+1;
+
+		ArrayList<String> list = new ArrayList<String>();
+
+		for(int i=start;i<end;i++){
+			list.add(lineList[i]);
+		}
+		
+ /**Not trimming columns, considering entire lines.
+		//now trim columns
+		String firstLineStr = list.get(0);
+		//if(firstLineStr.length()>1)
+		firstLineStr = firstLineStr.substring(this.startingColumn, firstLineStr.length()-1);
+		list.set(0,firstLineStr);
+		
+		String lastLineStr = list.get(list.size()-1);
+		lastLineStr = lastLineStr.substring(0, this.endingColumn);
+		list.set(list.size()-1, lastLineStr);		
+	*/	
+		return list;
+	}
+
+
+	private int computeCyclomaticComplexity(CodeSnippet snippet){
+		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
+		return comp.compute(extractLines(snippet));
+	}
+
 }
