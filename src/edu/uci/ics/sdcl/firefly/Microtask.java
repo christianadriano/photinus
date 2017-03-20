@@ -81,6 +81,7 @@ public class Microtask implements Serializable
 		this.ID = ID;
 		this.question = question;
 		this.fileName = fileName;
+		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
 		this.LOC_CoveredByQuestion = LOC_Covered;
 	}
 
@@ -343,6 +344,10 @@ public class Microtask implements Serializable
 		return cyclomaticComplexity;
 	}
 
+	public void setCyclomaticComplexity(Integer complexity) {
+		this.cyclomaticComplexity = complexity;
+	}
+	
 	/** 
 	 * @param method
 	 * @return the line just after the Javadoc comment section
@@ -402,5 +407,7 @@ public class Microtask implements Serializable
 		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
 		return comp.compute(extractLines(snippet));
 	}
+
+
 
 }
