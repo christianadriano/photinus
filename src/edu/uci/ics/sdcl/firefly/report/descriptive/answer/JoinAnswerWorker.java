@@ -65,7 +65,7 @@ public class JoinAnswerWorker {
 		boolean isEmpty = false;	
 
 		String answerOrder=null;
-		
+
 		public static final String header = "javaMethod,questionID,duration,confidence,difficulty,TP,TN,FN,FP,answerOption,answerOrder,explanation,locs,complexity,workerID,workerScore,workerProfession,yearsOfExperience,age,gender,whereLearnedToCode,country,programmingLanguage";
 
 
@@ -87,7 +87,7 @@ public class JoinAnswerWorker {
 	 * @param microtaskMap
 	 * @param workerMap 
 	 */
-	public void buildDurationsByOrder(HashMap<String, Microtask> microtaskMap, HashMap<String, Worker> workerMap){
+	public void instantiateTuples(HashMap<String, Microtask> microtaskMap, HashMap<String, Worker> workerMap){
 
 		for(Microtask microtask: microtaskMap.values()){
 			Vector<Answer> answerList = microtask.getAnswerList();
@@ -103,8 +103,13 @@ public class JoinAnswerWorker {
 				tuple.difficulty = new Integer(answer.getDifficulty()).toString();
 				tuple.explanation = answer.getExplanation();
 				tuple.explanation = tuple.explanation.replace(",", ";");
-				tuple.loc = microtask.getLOC_CoveredByQuestion().toString();
+
+				if(microtask.getCyclomaticComplexity()==null){
+					System.out.println("Microtask null, key="+microtask.getID());
+					System.out.println();
+				}
 				tuple.complexity = microtask.getCyclomaticComplexity().toString();
+				tuple.loc = microtask.getLOC_CoveredByQuestion().toString();
 
 				tuple.workerID = answer.getWorkerId();
 				Worker worker = workerMap.get(tuple.workerID);
@@ -114,13 +119,13 @@ public class JoinAnswerWorker {
 				tuple.age = worker.getAge();
 				tuple.gender = worker.getGender();
 				tuple.country = worker.getCountry();
-				
+
 				tuple.programmingLanguage = worker.getLanguage();
 				tuple.programmingLanguage = tuple.programmingLanguage.replace(",", ";");
 
 				tuple.whereLearnedToCode = worker.getLearnedToProgram();
 				tuple.whereLearnedToCode = tuple.whereLearnedToCode.replace(",", ";");
-				
+
 				this.tupleList.add(tuple);
 			}
 		}
@@ -180,13 +185,23 @@ public class JoinAnswerWorker {
 	}
 
 	public void printData(){
-
-		FileSessionDTO sessionDTO = new FileSessionDTO();
-		
 		FileConsentDTO consentDTO =  new FileConsentDTO();
 		HashMap<String, Worker> workerMap = consentDTO.getWorkers();
+		instantiateTuples(initializedMicrotaskMap(),workerMap);
+		printLists();//CSV FILE	
+	}
+
+	/**
+	 * Retrieve answers from log file and the microtasks from the serialized files.
+	 * Instantiate the attributes of size and complexity that are stored in the serialized microtasks
+	 * 
+	 * @return
+	 */
+	private HashMap<String, Microtask> initializedMicrotaskMap(){
+
+		FileSessionDTO sessionDTO = new FileSessionDTO();
 		HashMap<String,Microtask> microtaskMap =  (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
-		
+
 		MicrotaskStorage microtaskStorage = MicrotaskStorage.initializeSingleton();
 		Set<String> sessionNames = microtaskStorage.retrieveDebuggingSessionNames();
 		Iterator<String> iter = sessionNames.iterator();
@@ -195,32 +210,29 @@ public class JoinAnswerWorker {
 			Hashtable<String,FileDebugSession> map = microtaskStorage.readAllDebugSessions();
 			FileDebugSession  debugSession = map.get(key);
 			Hashtable<Integer, Microtask> serializedMicrotaskMap = debugSession.getMicrotaskMap();
-			
 			microtaskMap = complementMicrotasks(microtaskMap,serializedMicrotaskMap);
-			
 		}
-				
-		buildDurationsByOrder(microtaskMap,workerMap);
-		printLists();//CSV FILE	
+		return microtaskMap;
 	}
-	
-	
+
 
 	private HashMap<String, Microtask> complementMicrotasks(HashMap<String, Microtask> microtaskMap,
 			Hashtable<Integer, Microtask> serializedMicrotaskMap) {
-		
-		
+
+
+
 		Iterator<Integer> iter = serializedMicrotaskMap.keySet().iterator();
 		while(iter.hasNext()){
 			Integer key = iter.next();
 			String keyStr = key.toString();
 			Microtask microtask = microtaskMap.get(keyStr);
-			Microtask serializedMicrotask = serializedMicrotaskMap.get(key);
-			microtask.setLOC_CoveredByQuestion(serializedMicrotask.getLOC_CoveredByQuestion());
-			microtask.setCyclomaticComplexity(serializedMicrotask.getCyclomaticComplexity());
-			microtaskMap.put(keyStr, microtask);
+			if(microtask!=null){
+				Microtask serializedMicrotask = serializedMicrotaskMap.get(key);
+				microtask.setLOC_CoveredByQuestion(serializedMicrotask.getLOC_CoveredByQuestion());
+				microtask.setCyclomaticComplexity(serializedMicrotask.getCyclomaticComplexity());
+				microtaskMap.put(keyStr, microtask);
+			}
 		}
-		
 		return microtaskMap;
 	}
 

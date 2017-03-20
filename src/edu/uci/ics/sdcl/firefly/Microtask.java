@@ -33,11 +33,11 @@ public class Microtask implements Serializable
 	private String callerFileContent;
 	private Integer callerLOCS;
 	protected String fileName;
-	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
+	private Integer LOC_CoveredByQuestion=0; //lines of code covered by the question
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
-	private Integer cyclomaticComplexity;
+	private Integer cyclomaticComplexity=0;
 
 
 	/**
@@ -76,13 +76,11 @@ public class Microtask implements Serializable
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
-	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName,Integer LOC_Covered)	{
+	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName)	{
 		this.answerList = answerList;
 		this.ID = ID;
 		this.question = question;
-		this.fileName = fileName;
-		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
-		this.LOC_CoveredByQuestion = LOC_Covered;
+		this.fileName = fileName; 
 	}
 
 
@@ -109,6 +107,9 @@ public class Microtask implements Serializable
 		this.callerFileContent = callerFileContent;
 		this.callerLOCS = callerLOCS;
 		this.fileName = fileName;
+		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
+		this.LOC_CoveredByQuestion = this.startingLine - this.endingLine +1;
+		
 	}
 
 	public Microtask getSimpleVersion(){
@@ -116,7 +117,7 @@ public class Microtask implements Serializable
 		for(Answer answer: this.getAnswerList()){
 			answerListCopy.add(answer);
 		}
-		return new Microtask(this.getQuestion(),this.getID(),answerListCopy,this.getFileName(), this.LOC_CoveredByQuestion);
+		return new Microtask(this.getQuestion(),this.getID(),answerListCopy,this.getFileName());
 	}
 
 	public Integer getID(){
@@ -284,26 +285,6 @@ public class Microtask implements Serializable
 		return workerIDs;
 	}
 
-	public Microtask getLiteVersion(){
-		return new Microtask(
-				this.ID,
-				this.question,
-				this.failureDescription,
-				this.testCase,
-				this.snippetHightlights,
-				this.callerHightlights,
-				this.calleeHightlights,
-				this.startingColumn,
-				this.endingLine,
-				this.endingColumn,
-				this.calleeFileContent,
-				this.calleeLOCS,
-				this.callerFileContent,
-				this.callerLOCS,
-				this.fileName
-				);
-	}
-
 	public String getFileName() {
 		return this.fileName;
 	}
@@ -381,6 +362,7 @@ public class Microtask implements Serializable
 		//normalize lines
 		int start = this.startingLine - methodDeclarationStartingLine;
 		int end = this.endingLine - methodDeclarationStartingLine;
+		this.LOC_CoveredByQuestion = start - end +1;
 		
 		ArrayList<String> list = new ArrayList<String>();
 
