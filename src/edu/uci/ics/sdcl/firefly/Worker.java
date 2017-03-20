@@ -164,7 +164,7 @@ public class Worker implements Serializable{
 		}
 	}
 	
-	public String getLearnedToProgramming(){
+	public String getLearnedToProgram(){
 		if(!this.answeredSurvey)
 			return null;
 		else{
