@@ -72,6 +72,7 @@ public class Microtask implements Serializable
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
 		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
+		this.LOC_CoveredByQuestion = this.startingLine - this.endingLine +1;
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
