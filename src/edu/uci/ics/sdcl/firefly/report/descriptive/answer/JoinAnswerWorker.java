@@ -67,7 +67,8 @@ public class JoinAnswerWorker {
 
 		String answerOrder=null;
 
-		public static final String header = "javaMethod,questionID,duration,confidence,difficulty,TP,TN,FN,FP,answerOption,answerOrder,explanation,locs,complexity,workerID,workerScore,workerProfession,yearsOfExperience,age,gender,whereLearnedToCode,country,programmingLanguage";
+		public static final String header = "FailingMethod,Question.ID,Answer.duration,Answer.confidence,Answer.difficulty,TP,TN,FN,FP,Answer.option,Answer.order,"
+				+ "Answer.explanation,Code.LOC,Code.complexity,Worker.ID,Worker.score,Worker.profession,Worker.yearsOfExperience,Worker.age,Worker.gender,Worker.whereLearnedToCode,Worker.country,Worker.programmingLanguage";
 
 
 		public String toString(){
@@ -110,6 +111,11 @@ public class JoinAnswerWorker {
 				tuple.workerID = answer.getWorkerId();
 				Worker worker = workerMap.get(tuple.workerID);
 				tuple.workerProfession =  worker.getSurveyAnswer("Experience");
+
+				if(tuple.workerProfession.contains("Other")){
+					tuple.workerProfession = "Other";
+				}
+				
 				tuple.workerScore = worker.getGrade().toString();
 				tuple.yearsOfExperience = worker.getYearsProgramming();
 				tuple.age = worker.getAge();
@@ -156,6 +162,7 @@ public class JoinAnswerWorker {
 
 	}
 
+	
 	public void printLists(){	
 
 		String destination = "C://firefly//answerList_data.csv";
