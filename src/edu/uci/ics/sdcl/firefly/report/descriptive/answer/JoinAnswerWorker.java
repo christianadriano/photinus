@@ -16,6 +16,7 @@ import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.answer.IDKAnswerAnalysis.Tuple;
+import edu.uci.ics.sdcl.firefly.servlet.FileUploadServlet;
 import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
 
 /**
@@ -76,7 +77,7 @@ public class JoinAnswerWorker {
 				return ", , , , , , , ";
 			}
 			else
-				return javaMethod+","+questionID+","+duration+","+confidence+","+difficulty+","+TP+","+TN+","+FN+","+FP+","+answerOption+","+answerOrder+","+explanation+","+","+loc+","+","+complexity+","+workerID+","+workerScore+","+workerProfession+","+yearsOfExperience+","+age+","+gender+","+whereLearnedToCode+","+country+","+programmingLanguage;
+				return javaMethod+","+questionID+","+duration+","+confidence+","+difficulty+","+TP+","+TN+","+FN+","+FP+","+answerOption+","+answerOrder+","+explanation+","+loc+","+complexity+","+workerID+","+workerScore+","+workerProfession+","+yearsOfExperience+","+age+","+gender+","+whereLearnedToCode+","+country+","+programmingLanguage;
 
 		}
 	}
@@ -103,13 +104,8 @@ public class JoinAnswerWorker {
 				tuple.difficulty = new Integer(answer.getDifficulty()).toString();
 				tuple.explanation = answer.getExplanation();
 				tuple.explanation = tuple.explanation.replace(",", ";");
-
-				if(microtask.getCyclomaticComplexity()==null){
-					System.out.println("Microtask null, key="+microtask.getID());
-					System.out.println();
-				}
-				tuple.complexity = microtask.getCyclomaticComplexity().toString();
 				tuple.loc = microtask.getLOC_CoveredByQuestion().toString();
+				tuple.complexity = microtask.getCyclomaticComplexity().toString();
 
 				tuple.workerID = answer.getWorkerId();
 				Worker worker = workerMap.get(tuple.workerID);
@@ -185,6 +181,8 @@ public class JoinAnswerWorker {
 	}
 
 	public void printData(){
+		FileUploadServlet servlet = new FileUploadServlet();
+		servlet.bulkUpload();
 		FileConsentDTO consentDTO =  new FileConsentDTO();
 		HashMap<String, Worker> workerMap = consentDTO.getWorkers();
 		instantiateTuples(initializedMicrotaskMap(),workerMap);
@@ -204,8 +202,8 @@ public class JoinAnswerWorker {
 
 		MicrotaskStorage microtaskStorage = MicrotaskStorage.initializeSingleton();
 		Set<String> sessionNames = microtaskStorage.retrieveDebuggingSessionNames();
-		Iterator<String> iter = sessionNames.iterator();
-		if(iter.hasNext()){
+		Iterator<String> iter = sessionNames.iterator(); 
+		while(iter.hasNext()){
 			String key = iter.next();
 			Hashtable<String,FileDebugSession> map = microtaskStorage.readAllDebugSessions();
 			FileDebugSession  debugSession = map.get(key);
