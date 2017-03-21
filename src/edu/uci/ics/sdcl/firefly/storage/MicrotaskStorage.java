@@ -90,7 +90,7 @@ public class MicrotaskStorage {
 	}
 
 	/** Retrieves a map with all FileDebugSessions indexed by file name
-	 * 
+	 * Each FileDebugSession corresponds to a buggy file (e.g., HIT02_24)
 	 * @param 
 	 * @return  HashMap<String,FileDebugSession>
 	 */
