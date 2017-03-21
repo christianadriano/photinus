@@ -249,7 +249,7 @@ public class FileUploadServlet extends HttpServlet {
 				Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; CodeSnippets="+generatedCodeSnippets+"; Microtasks="+generatedMicrotasks);
 				
-				printMicrotasksDetails(microtaskMap);
+				//printMicrotasksDetails(microtaskMap);
 				System.out.println("Results: "+results);
 			}
 			else
@@ -365,12 +365,23 @@ public class FileUploadServlet extends HttpServlet {
 	 */
 	
 	
+	private void cleanUpRepositories(){
+		MicrotaskStorage microtaskStorage = MicrotaskStorage.initializeSingleton();
+		microtaskStorage.cleanUp();
+		
+		WorkerSessionStorage sessionStorage = WorkerSessionStorage.initializeSingleton();
+		sessionStorage.cleanUp();
+	}
+	
 	
 	/**
 	 * Loads files in bulk. The files must be in the local folder (typically ./samples/bulkLoadPhotinus) 
 	 * @return
 	 */
 	public String bulkUpload(){
+		
+		//First clean up the repositories
+		cleanUpRepositories();
 	
 		Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 		PropertyManager manager = PropertyManager.initializeSingleton();
