@@ -33,11 +33,11 @@ public class Microtask implements Serializable
 	private String callerFileContent;
 	private Integer callerLOCS;
 	protected String fileName;
-	private Integer LOC_CoveredByQuestion=0; //lines of code covered by the question
+	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
-	private Integer cyclomaticComplexity=0;
+	private Integer cyclomaticComplexity;
 
 
 	/**
@@ -72,7 +72,7 @@ public class Microtask implements Serializable
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
 		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
-		this.LOC_CoveredByQuestion = this.startingLine - this.endingLine +1;
+		this.LOC_CoveredByQuestion = this.endingLine - this.startingLine + 1;
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
@@ -85,7 +85,7 @@ public class Microtask implements Serializable
 
 
 	/** Light version used during microtask execution */
-	public Microtask(int microtaskId, String question,
+/*	public Microtask(int microtaskId, String question,
 			String failureDescription, String testCase, String snippetHightlights,
 			String callerHightlights, String calleeHightlights,
 			int startingColumn, int endingLine, int endingColumn,
@@ -107,10 +107,8 @@ public class Microtask implements Serializable
 		this.callerFileContent = callerFileContent;
 		this.callerLOCS = callerLOCS;
 		this.fileName = fileName;
-		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
-		this.LOC_CoveredByQuestion = this.startingLine - this.endingLine +1;
 		
-	}
+	}*/
 
 	public Microtask getSimpleVersion(){
 		Vector<Answer> answerListCopy = new Vector<Answer>();
@@ -362,8 +360,7 @@ public class Microtask implements Serializable
 		//normalize lines
 		int start = this.startingLine - methodDeclarationStartingLine;
 		int end = this.endingLine - methodDeclarationStartingLine;
-		this.LOC_CoveredByQuestion = start - end +1;
-		
+				
 		ArrayList<String> list = new ArrayList<String>();
 
 		for(int i=start;i<=end;i++){
