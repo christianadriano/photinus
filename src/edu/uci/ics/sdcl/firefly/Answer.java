@@ -24,12 +24,13 @@ public class Answer implements Serializable, Comparable{
 	private String elapsedTime; // duration of the answer
 	private String timeStamp;
 	private int difficulty;
-	private int orderInWorkerSession; //1 = first, 2=second, 3=third. T
+	private int orderInWorkerSession; //1=first, 2=second, 3=third
+	private String sessionID;
 	private Date timeStampDate;
 
 
 	public Answer(String option, int confidenceOption, String explanation, String workerId, 
-			String elapsedTime, String timeStamp, int difficulty, int orderInWorkerSession){
+			String elapsedTime, String timeStamp, int difficulty, int orderInWorkerSession, String sessionID){
 		
 		this.option = option;
 		this.confidenceOption = confidenceOption;
@@ -39,6 +40,7 @@ public class Answer implements Serializable, Comparable{
 		this.timeStamp = timeStamp;
 		this.difficulty = difficulty;
 		this.orderInWorkerSession = orderInWorkerSession;
+		this.setSessionID(sessionID); //So we know from which session this answer came (3 answers per session)
 		
 		this.timeStampDate = convertDateTime(timeStamp);
 		if(timeStampDate!=null)
@@ -162,6 +164,14 @@ public class Answer implements Serializable, Comparable{
 	      return 0;
 	    return getTimeStampDate().compareTo(((Answer) o).getTimeStampDate());
 	  }
+
+	public String getSessionID() {
+		return sessionID;
+	}
+
+	public void setSessionID(String sessionID) {
+		this.sessionID = sessionID;
+	}
 
 
 

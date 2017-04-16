@@ -164,7 +164,7 @@ public class FileSessionDTO extends SessionDTO{
 		{
 			currentNumberMicrotasks = session.getMicrotaskListSize() + 1;//how many microtasks are there = index +1;
 
-			answerList.add(new Answer(answer,confidenceLevel, explanation, workerID, duration, questionTimestamp,diffculty,currentNumberMicrotasks));
+			answerList.add(new Answer(answer,confidenceLevel, explanation, workerID, duration, questionTimestamp,diffculty,currentNumberMicrotasks,session.getId()));
 			microtask = new Microtask(question, microtaskID, answerList , fileName);
 			microtask.setQuestionType(questionType);
 
@@ -187,7 +187,7 @@ public class FileSessionDTO extends SessionDTO{
 		{
 			//The microtask already exists so add the answer to it
 			answerList = this.microtasks.get(microtaskID.toString()).getAnswerList();
-			answerList.add(new Answer(answer,confidenceLevel, explanation, workerID, duration, questionTimestamp,diffculty,currentNumberMicrotasks));
+			answerList.add(new Answer(answer,confidenceLevel, explanation, workerID, duration, questionTimestamp,diffculty,currentNumberMicrotasks,sessionID));
 		}
 	}
 

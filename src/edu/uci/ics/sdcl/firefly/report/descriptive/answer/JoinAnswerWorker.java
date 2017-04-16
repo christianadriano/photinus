@@ -15,7 +15,6 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.answer.IDKAnswerAnalysis.Tuple;
 import edu.uci.ics.sdcl.firefly.servlet.FileUploadServlet;
 import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
 
@@ -32,8 +31,8 @@ public class JoinAnswerWorker {
 	HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
 
 	/**
-	 * Keeps track of the line that will be written to in a csv file 
-	 * @author christian adriano
+	 * Keeps track of the line that will be written into a csv file 
+	 * @author Christian Adriano
 	 * 
 	 */
 	public class Tuple{
@@ -43,6 +42,8 @@ public class JoinAnswerWorker {
 		double FN=0.0;
 		double FP=0.0;
 
+		int counter=0; //sequential identifier of an answer
+		String sessionID=null; //session within which the worker answered the questions, the pair <sessionID,workerID> is unique.
 		String questionID=null;
 		String javaMethod=null;
 		String workerID=null;
@@ -59,6 +60,7 @@ public class JoinAnswerWorker {
 		String confidence=null;
 		String explanation=null;
 		double duration=0.0;
+		String timestamp=null;
 		String answerOption=null;
 		String complexity="";
 		String loc="";
@@ -67,7 +69,7 @@ public class JoinAnswerWorker {
 
 		String answerOrder=null;
 
-		public static final String header = "FailingMethod,Question.ID,Answer.duration,Answer.confidence,Answer.difficulty,TP,TN,FN,FP,Answer.option,Answer.order,"
+		public static final String header = "counter,Session.ID,FailingMethod,Question.ID,Answer.duration_seconds,Answer.timestamp,Answer.confidence,Answer.difficulty,TP,TN,FN,FP,Answer.option,Answer.order,"
 				+ "Answer.explanation,Code.LOC,Code.complexity,Worker.ID,Worker.score,Worker.profession,Worker.yearsOfExperience,Worker.age,Worker.gender,Worker.whereLearnedToCode,Worker.country,Worker.programmingLanguage";
 
 
@@ -78,7 +80,7 @@ public class JoinAnswerWorker {
 				return ", , , , , , , ";
 			}
 			else
-				return javaMethod+","+questionID+","+duration+","+confidence+","+difficulty+","+TP+","+TN+","+FN+","+FP+","+answerOption+","+answerOrder+","+explanation+","+loc+","+complexity+","+workerID+","+workerScore+","+workerProfession+","+yearsOfExperience+","+age+","+gender+","+whereLearnedToCode+","+country+","+programmingLanguage;
+				return counter+"," +sessionID+","+javaMethod+","+questionID+","+duration+","+timestamp+","+confidence+","+difficulty+","+TP+","+TN+","+FN+","+FP+","+answerOption+","+answerOrder+","+explanation+","+loc+","+complexity+","+workerID+","+workerScore+","+workerProfession+","+yearsOfExperience+","+age+","+gender+","+whereLearnedToCode+","+country+","+programmingLanguage;
 
 		}
 	}
@@ -97,8 +99,10 @@ public class JoinAnswerWorker {
 				String order = new Integer(answer.getOrderInWorkerSession()).toString();
 				Double duration = new Double(answer.getElapsedTime())/1000; //In seconds
 				Tuple tuple = computeCorrectness(microtask.getID().toString(),answer.getOption());
+				tuple.sessionID = answer.getSessionID();
 				tuple.answerOrder = order;
 				tuple.duration = duration;
+				tuple.timestamp = answer.getTimeStamp();
 				tuple.javaMethod = microtask.getFileName();
 				tuple.answerOption = answer.getShortOption();
 				tuple.confidence = new Integer(answer.getConfidenceOption()).toString();					
@@ -158,8 +162,6 @@ public class JoinAnswerWorker {
 		tuple.questionID = questionID;
 
 		return tuple;
-
-
 	}
 
 	
@@ -174,8 +176,11 @@ public class JoinAnswerWorker {
 
 			log.write(Tuple.header+"\n");
 
+			int counter = 1; //counts the number of answers
 			for(Tuple tuple: this.tupleList){
+				tuple.counter = counter; //associates each answer with a unique sequential identifier
 				log.write(tuple.toString()+"\n");
+				counter++;
 			}
 
 			log.close();
@@ -224,8 +229,6 @@ public class JoinAnswerWorker {
 	private HashMap<String, Microtask> complementMicrotasks(HashMap<String, Microtask> microtaskMap,
 			Hashtable<Integer, Microtask> serializedMicrotaskMap) {
 
-
-
 		Iterator<Integer> iter = serializedMicrotaskMap.keySet().iterator();
 		while(iter.hasNext()){
 			Integer key = iter.next();
@@ -243,12 +246,14 @@ public class JoinAnswerWorker {
 
 
 
-
+	/** 
+	 * Entry point to generate the CSV file 
+	 * @param args
+	 */
 	public static void main(String args[]){
 
 		JoinAnswerWorker joiner = new JoinAnswerWorker();
 		joiner.printData();
-
 	}
 
 
