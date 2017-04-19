@@ -17,6 +17,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.servlet.FileUploadServlet;
 import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
+import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 
 /**
  * Joins the data from the microtasks with the attributes of workers
@@ -28,8 +29,12 @@ import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
 public class JoinAnswerWorker {
 
 	protected ArrayList<Tuple> tupleList= new ArrayList<Tuple>();
-	HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
+	protected HashMap<String,String> bugCoveringMap = new HashMap<String,String>();
 
+	public JoinAnswerWorker(){
+		this.bugCoveringMap = BugCoveringMap.initialize();
+	}
+	
 	/**
 	 * Keeps track of the line that will be written into a csv file 
 	 * @author Christian Adriano
@@ -98,7 +103,7 @@ public class JoinAnswerWorker {
 			for(Answer answer : answerList){
 				String order = new Integer(answer.getOrderInWorkerSession()).toString();
 				Double duration = new Double(answer.getElapsedTime())/1000; //In seconds
-				Tuple tuple = computeCorrectness(microtask.getID().toString(),answer.getOption());
+				Tuple tuple = computeAnswerCorrectness(microtask.getID().toString(),answer.getOption());
 				tuple.sessionID = answer.getSessionID();
 				tuple.answerOrder = order;
 				tuple.duration = duration;
@@ -138,25 +143,23 @@ public class JoinAnswerWorker {
 	}
 
 
-
-
-	private Tuple computeCorrectness(String questionID, String answerOption){
+	private Tuple computeAnswerCorrectness(String questionID, String answerOption){
 
 		Tuple tuple = new Tuple();
 
 		if(this.bugCoveringMap.containsKey(questionID)){
 			if(answerOption.compareTo(Answer.YES)==0)
-				tuple.TP++;
+				tuple.TP=1;
 			else
 				if(answerOption.compareTo(Answer.NO)==0) //Ignores IDK	
-					tuple.FN++;
+					tuple.FN=1;
 		}
 		else{
 			if(answerOption.compareTo(Answer.NO)==0)
-				tuple.TN++;
+				tuple.TN=1;
 			else
 				if(answerOption.compareTo(Answer.YES)==0)	 //Ignores IDK				
-					tuple.FP++;
+					tuple.FP=1;
 		}
 
 		tuple.questionID = questionID;
