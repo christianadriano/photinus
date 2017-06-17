@@ -199,11 +199,13 @@ public class RandomSampler {
 		String explanation = "explanation";
 		String timeStamp = null;
 		String elapsedTime = "00:00:00.000";
+		String sessionID="sessionID";
 
 		Vector<Answer> answerList = new Vector<Answer>();
 
 		for(int i=0; i<this.populationSize;i++){
-			answerList.add(new Answer("YES", confidence, explanation, new Integer(i).toString(),elapsedTime, timeStamp,difficulty,orderInWorkerSession));
+			answerList.add(new Answer("YES", confidence, explanation, new Integer(i).toString(), 
+					elapsedTime, timeStamp, difficulty, orderInWorkerSession,sessionID));
 		}
 
 		ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswers(answerList);

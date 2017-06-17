@@ -3,6 +3,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;;
 /**
@@ -82,7 +83,6 @@ public class Outcome {
 
 	public Outcome(){}
 	
-		
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
 			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
 			Integer truePositives, Integer trueNegatives,
@@ -122,6 +122,7 @@ public class Outcome {
 		this.average_correctNO_Answers = this.correct_NO_Answers.doubleValue() / this.total_NO_Answers.doubleValue();
 		this.average_Total_Correct_Answers = (this.correct_YES_Answers.doubleValue()+this.correct_NO_Answers.doubleValue())/this.total_YESNO_Answers.doubleValue();
 	}
+
 
 	private Double computePrecision(int tp, int fp){
 		Double tpD = new Double(tp);

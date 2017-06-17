@@ -83,13 +83,14 @@ public class MicrotaskMapUtil {
 		return workerMap.size();
 	}
 
-	public static Integer countAnswers(HashMap<String, Microtask> map){
+	public static Double countAnswers(HashMap<String, Microtask> map){
 
-		int count=0;
+		Integer count=0;
 		for(Microtask microtask: map.values()){
 			count = count + microtask.getNumberOfAnswers();
 		}
-		return count;
+		
+		return count.doubleValue();
 	}
 
 	public static Double computeElapsedTimeForAnswerLevels(HashMap<String, Microtask> map){

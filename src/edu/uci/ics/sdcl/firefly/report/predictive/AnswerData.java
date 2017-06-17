@@ -149,7 +149,7 @@ public class AnswerData {
 	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
 	 * @return number of answers of that type.
 	 */
-	public static int count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
+	public static Integer count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
 
 		int count=0;
 		Iterator<String> iter = answerMap.keySet().iterator();

@@ -156,7 +156,8 @@ public class SimulationController {
 		for(SubCrowd crowd: subCrowdList){
 
 			MonteCarloSimulator simulator = new MonteCarloSimulator(crowd.name);
-			simulator.generateSimulations(crowd.maxCommonAnswers, this.numberOfSamples,	crowd.microtaskMap, crowd.name);
+			FilterCombination filter = new FilterCombination();
+			simulator.generateSimulations(filter, crowd.maxCommonAnswers, this.numberOfSamples,	crowd.microtaskMap, crowd.name);
 		}
 	}
 

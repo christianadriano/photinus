@@ -9,8 +9,10 @@ import java.util.Iterator;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
+import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
+import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
@@ -47,7 +49,7 @@ public class MonteCarloSimulator {
 	}
 
 
-	private void computeVoting(ArrayList<HashMap<String,Microtask>> listOfMicrotaskMaps, int sampleSize){
+	private void computeVoting(FilterCombination filter, ArrayList<HashMap<String,Microtask>> listOfMicrotaskMaps, int sampleSize){
 		this.outcomes_PositiveVoting = new ArrayList<DataPoint>();
 		this.outcomes_MajorityVoting = new ArrayList<DataPoint>();
 		
@@ -70,11 +72,11 @@ public class MonteCarloSimulator {
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 					Consensus predictor = new AcrossQuestionsConsensus(2);
-					Outcome outcome = computeDataPoint(data,predictor,lineMapping);
+					Outcome outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
 					predictor = new WithinQuestionConsensus();
-					outcome = computeDataPoint(data,predictor,lineMapping);
+					outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}
 			}
@@ -187,38 +189,40 @@ public class MonteCarloSimulator {
 		return averageDataPoint;
 	}
 
-	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
+	private Outcome computeDataPoint(FilterCombination filter, AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 		
 		
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
-		HashMap<String, Integer> falseNegativeLines = predictor.getFalseNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
-
-		Outcome outcome = new Outcome(null,
-				answerData.getHitFileName(),
-				predictor.getName(),
-				predictor.getTruePositives()>0,
-				predictor.computeSignalStrength(answerData),
-				predictor.computeNumberOfWorkers(answerData),
-				answerData.getTotalAnswers(),
-				predictor.getMinimumNumberYESAnswersThatLocatedFault(),
-				predictor.getTruePositives(),
-				predictor.getTrueNegatives(),
-				predictor.getFalsePositives(),
-				predictor.getFalseNegatives(),
-				answerData.getWorkerCount(),
-				answerData.getDifferentWorkersAmongHITs(),
-				truePositiveLines,
-				nearPositiveLines,
-				falsePositiveLines,
-				falseNegativeLines,
-				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
-				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
-				AnswerData.count(answerData.answerMap, Answer.YES),
-				AnswerData.count(answerData.answerMap, Answer.NO),
-				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW));
+	 
+		Outcome outcome = new Outcome(filter, //FilterCombination
+				answerData.getHitFileName(), //fileName
+				predictor.getName(), //predictorType
+				predictor.getTruePositives()>0, //faultLocated
+				predictor.computeSignalStrength(answerData),//signalStrength
+				predictor.computeNumberOfWorkers(answerData), //maxWorkerPerQuestion
+				answerData.getTotalAnswers(),//totalAnswers
+				predictor.getMinimumNumberYESAnswersThatLocatedFault(),//threshold
+				predictor.getTruePositives(),//truePositives
+				predictor.getTrueNegatives(),//trueNegatives
+				predictor.getFalsePositives(),//falsePositives
+				predictor.getFalseNegatives(),//falseNegatives
+				answerData.getWorkerCount(),//differentWorkersPerHIT
+				answerData.getDifferentWorkersAmongHITs(),//differentWorkersAmongHITs
+				truePositiveLines,//truePositiveLines
+				nearPositiveLines,//nearPositiveLines
+				falsePositiveLines,//falsePositiveLines
+				predictor.getQuestionsBelowMinimalAnswers(),//questionsBelowMinimumAnswers
+				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap), //correctYES
+				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap), //correctNO
+				AnswerData.count(answerData.answerMap, Answer.YES),//totalYES
+				AnswerData.count(answerData.answerMap, Answer.NO), //totalNO
+				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)//totalIDK
+				);
+		
+		 
 		
 		return outcome;
 	}
@@ -285,7 +289,7 @@ public class MonteCarloSimulator {
 
 	//------------------------------------------------------------------------------------------------------
 
-	public void generateSimulations(int populationSize, int numberOfSamples, 
+	public void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
 			HashMap<String, Microtask> microtaskMap, String crowdName){
 
 		for(int i=1;i<=populationSize;i++){
@@ -298,7 +302,7 @@ public class MonteCarloSimulator {
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
 
 			//Compute statistics for each sample
-			computeVoting(listOfMicrotaskMaps,sampleSize);
+			computeVoting(filter, listOfMicrotaskMaps, sampleSize);
 
 			//Save samples with statistics to files
 			printDataPointsToFile(sampleSize);
@@ -322,7 +326,9 @@ public class MonteCarloSimulator {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
-		sim.generateSimulations(populationSize, numberOfSamples, microtaskMap, "all workers");
+		FilterCombination filter = new FilterCombination();
+		
+		sim.generateSimulations(filter, populationSize, numberOfSamples, microtaskMap, "all workers");
 	}
 
 }
