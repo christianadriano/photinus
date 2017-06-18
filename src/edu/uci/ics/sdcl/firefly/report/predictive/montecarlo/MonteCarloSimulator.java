@@ -15,6 +15,8 @@ import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
+import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;
+import edu.uci.ics.sdcl.firefly.report.predictive.SubcrowdConsensusFinder;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
@@ -326,8 +328,12 @@ public class MonteCarloSimulator {
 		FileSessionDTO dto = new FileSessionDTO();
 		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
 
-		FilterCombination filter = new FilterCombination();
+		//Inspect how to combine subcrowd generator with the Montecarlo simulation.
 		
+		FilterCombination filter = new FilterCombination();
+		//SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
+		//ArrayList<SubCrowd> filterList = finder.generateSubCrowdFilters();
+		//filter ((SubCrowd)filterList.get(0).;
 		sim.generateSimulations(filter, populationSize, numberOfSamples, microtaskMap, "all workers");
 	}
 
