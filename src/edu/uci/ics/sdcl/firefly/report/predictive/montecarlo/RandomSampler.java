@@ -104,7 +104,6 @@ public class RandomSampler {
 		
 		int minimumAnswersPerMicrotask = 20;
 		for(Microtask task: microtaskMap.values()){
-			String questionID = task.getID().toString();
 			Vector<Answer> answerList = task.getAnswerList();
 			if(answerList.size()<minimumAnswersPerMicrotask)
 				minimumAnswersPerMicrotask = answerList.size();
