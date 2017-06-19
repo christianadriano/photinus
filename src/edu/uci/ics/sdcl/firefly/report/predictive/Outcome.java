@@ -3,7 +3,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;;
 /**

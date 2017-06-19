@@ -40,7 +40,7 @@ public class GenerateFilteredReports {
 		FilterCombination combination  = new FilterCombination();
 		combination.addFilterParam(FilterCombination.WORKER_PROFESSION, range.getProfessionExclusionList());
 
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -59,7 +59,7 @@ public class GenerateFilteredReports {
 		combination.addFilterParam(FilterCombination.WORKER_SCORE_EXCLUSION, range.getWorkerScoreExclusionList());
 		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), 3);
 
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -80,7 +80,7 @@ public class GenerateFilteredReports {
 		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), 3);
 		combination.addFilterParam(FilterCombination.WORKER_PROFESSION, range.getProfessionExclusionList());
 
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -99,7 +99,7 @@ public class GenerateFilteredReports {
 		combination.addFilterParam(FilterCombination.WORKER_SCORE_EXCLUSION, range.getWorkerScoreExclusionList());
 		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), 5);
 
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -121,7 +121,7 @@ public class GenerateFilteredReports {
 		combination.addFilterParam(FilterCombination.WORKER_SCORE, range.getMaxWorkerScore(), 4);
 		combination.addFilterParam(FilterCombination.WORKER_PROFESSION, range.getProfessionExclusionList());
 
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -143,7 +143,7 @@ public class GenerateFilteredReports {
 		FilterCombination combination  = new FilterCombination();
 		combination.addFilterParam(FilterCombination.FIRST_ANSWER_DURATION, range.getMaxFirstAnswerDuration(), range.getMinFirstAnswerDuration());
 		combination.addFilterParam(FilterCombination.SECOND_THIRD_ANSWER_DURATION, range.getMaxSecondThirdAnswerDuration(), range.getMinSecondThirdAnswerDuration());
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -158,7 +158,7 @@ public class GenerateFilteredReports {
 
 		FilterCombination combination  = new FilterCombination();
 		combination.addFilterParam(FilterCombination.EXPLANATION_SIZE, range.getMaxExplanationSize(),57);
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -169,7 +169,7 @@ public class GenerateFilteredReports {
 		CombinedFilterRange range = new CombinedFilterRange();
 		range.setUndefinedWithDefault();
 		FilterCombination combination  = new FilterCombination();
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();
@@ -198,7 +198,7 @@ public class GenerateFilteredReports {
 		
 		FilterCombination combination  = new FilterCombination();
 		combination.addFilterParam(FilterCombination.CONFIDENCE_DIFFICULTY_PAIRS,range.getConfidenceDifficultyPairList());
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 
 		ReportApplication reportApplication = new ReportApplication(filter, new ExcelExporter());
 		reportApplication.runAnswerOptionReport();

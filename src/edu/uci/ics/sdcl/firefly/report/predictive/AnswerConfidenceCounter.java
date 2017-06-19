@@ -11,7 +11,7 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.CodeElement;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLinesData;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLOCs;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
@@ -177,7 +177,7 @@ public class AnswerConfidenceCounter {
 		//Produce the list of filters
 		ArrayList<FilterCombination> filterList = FilterGenerator.generateAnswerFilterCombinationList();
 		FilterCombination combination =  filterList.get(0);
-		Filter filter = combination.getFilter();
+		FilterCombination filter = combination.getFilter();
 	
 		HashMap<String,Microtask> microtaskMap =  (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 		

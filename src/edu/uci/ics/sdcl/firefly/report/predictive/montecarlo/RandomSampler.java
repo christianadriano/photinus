@@ -93,6 +93,24 @@ public class RandomSampler {
 		return sampledAnswerByQuestion;
 	}
 
+	/**
+	 * When dealing with filtered data, Microtasks will have different number of answers each.
+	 * Therefore, we should set the maximum sample size to the size of the minimum number of answers per microtask.
+	 * This was we avoid over-sampling microtasks that have fewer answers.
+	 * @param microtaskMap
+	 * @return the size of the microtasks with fewer answers
+	 */
+	public static int computeMaximumSampleSize(HashMap<String, Microtask> microtaskMap){
+		
+		int minimumAnswersPerMicrotask = 20;
+		for(Microtask task: microtaskMap.values()){
+			String questionID = task.getID().toString();
+			Vector<Answer> answerList = task.getAnswerList();
+			if(answerList.size()<minimumAnswersPerMicrotask)
+				minimumAnswersPerMicrotask = answerList.size();
+		}
+		return minimumAnswersPerMicrotask;
+	}
 
 	private void printSamples(String questionID, ArrayList<Vector<Answer>> sampleAnswerList) {
 		

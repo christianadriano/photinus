@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 
@@ -23,8 +23,8 @@ public class OR_Filter {
 		if(filterList.size()<2)
 			return null;
 
-		Filter filter1 = filterList.get(0).getFilter();
-		Filter filter2 = filterList.get(1).getFilter();
+		FilterCombination filter1 = filterList.get(0).getFilter();
+		FilterCombination filter2 = filterList.get(1).getFilter();
 		
 		ArrayList<HashMap<String, Microtask>> mergeMapList = new ArrayList<HashMap<String, Microtask>>(); //Maps that will be merged.
 		mergeMapList.add((HashMap<String, Microtask>) filter1.apply(microtaskMap));
@@ -41,7 +41,7 @@ public class OR_Filter {
 
 			for(int i=2;i<filterList.size();i++){
 				FilterCombination combination = filterList.get(i);
-				Filter filter = combination.getFilter();
+				FilterCombination filter = combination.getFilter();
 				HashMap<String, Microtask> map = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 				mergeMapList.add(map);
 			}

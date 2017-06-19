@@ -22,7 +22,7 @@ public class AverageWorkerProfileReport extends CountReport{
 	}
 
 	@Override
-	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, Filter filter) {
+	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter) {
 		Map<String, List<String>> content = mergeContent(headerReport, answerReport);
 		SessionDTO database = new FileSessionDTO();
 		Map<String, Microtask> microtasks = filter.apply((HashMap<String, Microtask>) database.getMicrotasks());

@@ -18,7 +18,7 @@ public class SessionDuration extends AnswerReport {
 	}
 
 	@Override
-	public Map<String, List<String>> generateReport( Map<String, List<String>> content, Filter filter) {
+	public Map<String, List<String>> generateReport( Map<String, List<String>> content, FilterCombination filter) {
 		calculateSessionsDuration(filter);
 
 		SessionDTO database = new FileSessionDTO();
@@ -59,7 +59,7 @@ public class SessionDuration extends AnswerReport {
 		return test.toString();
 	}
 
-	private void calculateSessionsDuration(Filter filter)
+	private void calculateSessionsDuration(FilterCombination filter)
 	{
 		FileSessionDTO dto = new FileSessionDTO();
 		Map<String, WorkerSession> sessions = dto.getSessions();

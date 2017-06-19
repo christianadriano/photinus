@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
@@ -55,7 +55,7 @@ public class ProfessionYoEConsensusFinder {
 		for(CombinedFilterRange range: rangeMap.values()){
 
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
-			Filter filter = combination.getFilter();
+			FilterCombination filter = combination.getFilter();
 			System.out.println("Filter: "+ range.getRangeName() + " minYoE : "+ filter.getMinYoE());
 			//System.out.println(combination.getFilterHeaders());
 			//System.out.println(combination.toString(combination.headerList));

@@ -21,7 +21,7 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.ElapsedTimeUtil;
@@ -204,8 +204,8 @@ public class OptimumFinder {
 
 		FilterCombination combination1 = filterList.get(0);
 		FilterCombination combination2 = filterList.get(1);
-		Filter filter1 = combination1.getFilter();
-		Filter filter2 = combination2.getFilter();
+		FilterCombination filter1 = combination1.getFilter();
+		FilterCombination filter2 = combination2.getFilter();
 		
 		HashMap<String, Microtask> map1 = (HashMap<String, Microtask>) filter1.apply(microtaskMap);
 		FileSessionDTO sessionDTO = new FileSessionDTO();
@@ -217,7 +217,7 @@ public class OptimumFinder {
 		
 		if(filterList.size()==3){
 			FilterCombination combination3 = filterList.get(2);
-			Filter filter3 = combination3.getFilter();
+			FilterCombination filter3 = combination3.getFilter();
 			microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 			HashMap<String, Microtask> map3 = (HashMap<String, Microtask>) filter3.apply(microtaskMap);
 			HashMap<String, Microtask> map123 = MicrotaskMapUtil.mergeMaps(microtaskMap, map12, map3);
@@ -293,7 +293,7 @@ public class OptimumFinder {
 			FileSessionDTO sessionDTO = new FileSessionDTO();
 			HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) sessionDTO.getMicrotasks();
 
-			Filter filter = combination.getFilter();
+			FilterCombination filter = combination.getFilter();
 			HashMap<String, Microtask> filteredMicrotaskMap = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 
 			Integer totalDifferentWorkersAmongHITs = countWorkers(filteredMicrotaskMap, null);

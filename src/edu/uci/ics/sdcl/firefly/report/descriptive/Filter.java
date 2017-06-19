@@ -26,7 +26,7 @@ import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
  * @author igMoreira
  *
  */
-public class Filter {
+public class Filter  {
 
 	private int[] explanationSize = new int[2];
 	private int[] confidence = new int[2];

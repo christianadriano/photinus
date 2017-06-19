@@ -25,7 +25,7 @@ public class ConfidenceCounting extends CountReport {
 	 * Generates the CountReport content part. 
 	 */
 	@Override
-	public Map<String, List<String>> generateReport( HeaderReport headerReport, AnswerReport answerReport, Filter filter) {
+	public Map<String, List<String>> generateReport( HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter) {
 		Map<String, List<String>> content = mergeContent(headerReport, answerReport);
 		List<String> questionIDList = content.get("Question ID");
 		List<List<String>> confidenceList = new ArrayList<List<String>>();

@@ -36,7 +36,7 @@ public abstract class CountReport {
 	 * @param filter 
 	 * @return: The map containing the columns and values of the table
 	 */
-	public abstract Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, Filter filter);
+	public abstract Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter);
 	
 	public abstract String getType();
 	

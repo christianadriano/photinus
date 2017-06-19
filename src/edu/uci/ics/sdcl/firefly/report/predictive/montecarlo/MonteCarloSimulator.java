@@ -9,7 +9,6 @@ import java.util.Iterator;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
@@ -23,7 +22,6 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
-import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 
 public class MonteCarloSimulator {
 
@@ -54,29 +52,29 @@ public class MonteCarloSimulator {
 	private void computeVoting(FilterCombination filter, ArrayList<HashMap<String,Microtask>> listOfMicrotaskMaps, int sampleSize){
 		this.outcomes_PositiveVoting = new ArrayList<DataPoint>();
 		this.outcomes_MajorityVoting = new ArrayList<DataPoint>();
-		
+
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
 		HashMap<String, QuestionLinesMap> lineMapping =  loader.loadList();
-		
+
 		for(int i=0; i<listOfMicrotaskMaps.size();i++){
 
 			HashMap<String, Microtask> microtaskMap = listOfMicrotaskMaps.get(i);
-		
+
 			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(microtaskMap, null);
-				
+
 			DataPoint positiveVDataPoint = new DataPoint();
 			DataPoint majorityVDataPoint = new DataPoint();
 
 			for(String fileName: fileNameList){//each fileName is a Java method
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(microtaskMap,fileName);
 				if(answerMap!=null && answerMap.size()>0){
-						
+
 					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 					Consensus predictor = new AcrossQuestionsConsensus(2);
 					Outcome outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
-			
+
 					predictor = new WithinQuestionConsensus();
 					outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
@@ -97,7 +95,7 @@ public class MonteCarloSimulator {
 
 			this.outcomes_PositiveVoting.add(positiveVDataPoint);
 			this.outcomes_MajorityVoting.add(majorityVDataPoint);
-			
+
 		}		
 	}
 
@@ -192,13 +190,13 @@ public class MonteCarloSimulator {
 	}
 
 	private Outcome computeDataPoint(FilterCombination filter, AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
-		
-		
+
+
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
-	 
+
 		Outcome outcome = new Outcome(filter, //FilterCombination
 				answerData.getHitFileName(), //fileName
 				predictor.getName(), //predictorType
@@ -223,9 +221,9 @@ public class MonteCarloSimulator {
 				AnswerData.count(answerData.answerMap, Answer.NO), //totalNO
 				AnswerData.count(answerData.answerMap, Answer.I_DONT_KNOW)//totalIDK
 				);
-		
-		 
-		
+
+
+
 		return outcome;
 	}
 
@@ -291,7 +289,7 @@ public class MonteCarloSimulator {
 
 	//------------------------------------------------------------------------------------------------------
 
-	public void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
+	private void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
 			HashMap<String, Microtask> microtaskMap, String crowdName){
 
 		for(int i=1;i<=populationSize;i++){
@@ -317,24 +315,36 @@ public class MonteCarloSimulator {
 		printToFile(this.positiveVoting_AverageDataPointByAnswerLevel,this.majorityVoting_AverageDataPointByAnswerLevel,crowdName);
 	}
 
+	/**
+	 * Create the filters corresponding to each subcrowd and extract the microtask map for each subcrowd.
+	 * 
+	 * @return list of subcrowds with their attributes instantiated
+	 */
+	private ArrayList<SubCrowd> composeSubcrowds(){
+		SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
+		ArrayList<SubCrowd> subCrowdList =  finder.generateSubCrowdFilters();
+		subCrowdList = finder.generateSubCrowdMicrotasks(subCrowdList);
+		return subCrowdList;
+	}
+
+	//----------------------------------------------------------------------
+	
+	public void run(){		
+		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
+
+		// for(SubCrowd crowd:subCrowdList){
+		SubCrowd crowd =subCrowdList.get(0);	
+		HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
+		int numberOfSamples = 1000; //how many simulated crowds
+		int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
+		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap, crowd.name);			 
+		//}
+	}
+
 	/** THis is used to test, but the actual call is made from class SimulationController */
 	public static void main(String args[]){
-
-		int populationSize = 20; //total answers per question
-		int numberOfSamples = 10000; //how many simulated crowds
-
 		MonteCarloSimulator sim = new MonteCarloSimulator("SamplingPredictor");
-
-		FileSessionDTO dto = new FileSessionDTO();
-		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks();
-
-		//Inspect how to combine subcrowd generator with the Montecarlo simulation.
-		
-		FilterCombination filter = new FilterCombination();
-		//SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
-		//ArrayList<SubCrowd> filterList = finder.generateSubCrowdFilters();
-		//filter ((SubCrowd)filterList.get(0).;
-		sim.generateSimulations(filter, populationSize, numberOfSamples, microtaskMap, "all workers");
+		sim.run();
 	}
 
 }

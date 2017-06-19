@@ -4,12 +4,12 @@ package edu.uci.ics.sdcl.firefly.report.descriptive;
 public class ReportApplication {
 
 	private DescriptiveReportBuilder builder;
-	private Filter filter;
+	private FilterCombination filter;
 	private DescriptiveReportWriter exporter;
 	
 	public static void main(String[] args) {
 
-		ReportApplication application = new ReportApplication(new Filter(),new ExcelExporter());
+		ReportApplication application = new ReportApplication(new FilterCombination(),new ExcelExporter());
 		application.runAnswerOptionReport(); //Instantiates with an empty (no effect) filter
 		
 		//workers demographics is different
@@ -17,7 +17,7 @@ public class ReportApplication {
 	}
 	
 	
-	public ReportApplication(Filter filter, DescriptiveReportWriter exporter)
+	public ReportApplication(FilterCombination filter, DescriptiveReportWriter exporter)
 	{
 		this.filter = filter;
 		this.exporter = exporter;

@@ -39,7 +39,7 @@ public abstract class AnswerReport {
 	 * @param filter 
 	 * @return: The map containing the columns and values of the table
 	 */
-	public Map<String, List<String>> generateReport( Map<String, List<String>> content, Filter filter)
+	public Map<String, List<String>> generateReport( Map<String, List<String>> content, FilterCombination filter)
 	{
 		SessionDTO database = new FileSessionDTO();
 		Map<String, Microtask> microtasks = filter.apply((HashMap<String, Microtask>) database.getMicrotasks());

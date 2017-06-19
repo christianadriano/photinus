@@ -25,10 +25,10 @@ public class DescriptiveReportBuilder {
 	private CountReport counters;
 	private CorrectnessReport correctness;
 	private DescriptiveReportWriter exporter;
-	private Filter filter;
+	private FilterCombination filter;
 	String reportName = "";
 	
-	public DescriptiveReportBuilder(AnswerReport answer, CountReport counter, CorrectnessReport correctness, DescriptiveReportWriter exporter, Filter filter) {
+	public DescriptiveReportBuilder(AnswerReport answer, CountReport counter, CorrectnessReport correctness, DescriptiveReportWriter exporter, FilterCombination filter) {
 		this.answers = answer;
 		this.counters = counter;
 		this.correctness = correctness;
@@ -66,7 +66,7 @@ public class DescriptiveReportBuilder {
 	 * @param filter 
 	 * @return: The AnswerReport containing the filtered data for the report type X
 	 */
-	private Map<String, List<String>> buildAnswerReport(Map<String, List<String>> content, Filter filter)
+	private Map<String, List<String>> buildAnswerReport(Map<String, List<String>> content, FilterCombination filter)
 	{
 		return answers.generateReport(content,filter);
 	}
@@ -76,7 +76,7 @@ public class DescriptiveReportBuilder {
 	 * the yellow parts of the tables.
 	 * @return: The CountReport containing the filtered data for the report type X
 	 */
-	private Map<String, List<String>> buildCountReport(HeaderReport header, AnswerReport answers, Filter filter) {
+	private Map<String, List<String>> buildCountReport(HeaderReport header, AnswerReport answers, FilterCombination filter) {
 		return counters.generateReport(header,answers, filter);
 	}
 	
@@ -85,7 +85,7 @@ public class DescriptiveReportBuilder {
 	 * the orange parts of the tables.
 	 * @return: The CorrectnessReport containing the filtered data for the report type X
 	 */
-	private Map<String, List<String>> buildCorrectnessReport(HeaderReport headerReport, AnswerReport answerReport, Filter filter)
+	private Map<String, List<String>> buildCorrectnessReport(HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter)
 	{
 		return this.correctness.generateReport(headerReport, answerReport, filter);
 	}

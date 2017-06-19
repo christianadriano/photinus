@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.AttributeRangeGenerator;
 import edu.uci.ics.sdcl.firefly.report.predictive.CombinedFilterRange;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
@@ -45,7 +45,7 @@ public class SimulationController {
 		for(CombinedFilterRange range: rangeMap.values()){
 
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
-			Filter filter = combination.getFilter();
+			FilterCombination filter = combination.getFilter();
 			SubCrowd crowd =  new SubCrowd();
 			crowd.name = range.getRangeName();
 			crowd.filter = filter;
@@ -82,7 +82,7 @@ public class SimulationController {
 
 			SubCrowd crowd = subCrowdList.get(i);
 			HashMap<String, Microtask> map = (HashMap<String, Microtask>) 
-					Filter.selectMicrotaskFromFileName(originalMicrotaskMap, crowd.name);
+					FilterCombination.selectMicrotaskFromFileName(originalMicrotaskMap, crowd.name);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
 			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);

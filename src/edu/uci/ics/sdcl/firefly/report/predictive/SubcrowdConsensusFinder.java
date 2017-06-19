@@ -10,6 +10,7 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
@@ -45,10 +46,9 @@ public class SubcrowdConsensusFinder {
 		for(CombinedFilterRange range: rangeMap.values()){
 
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
-			Filter filter = combination.getFilter();
-			SubCrowd crowd =  new SubCrowd();
+ 			SubCrowd crowd =  new SubCrowd();
 			crowd.name = range.getRangeName();
-			crowd.filter = filter;
+			crowd.filterCombination = combination;
 			subCrowdList.add(crowd);
 		}
 
@@ -69,10 +69,9 @@ public class SubcrowdConsensusFinder {
 		for(CombinedFilterRange range: rangeMap.values()){
 
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
-			Filter filter = combination.getFilter();
-			SubCrowd crowd =  new SubCrowd();
+ 			SubCrowd crowd =  new SubCrowd();
 			crowd.name = range.getRangeName();
-			crowd.filter = filter;
+			crowd.filterCombination = combination;
 			subCrowdList.add(crowd);
 		}
 
@@ -87,7 +86,8 @@ public class SubcrowdConsensusFinder {
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
-			HashMap<String, Microtask> map = (HashMap<String, Microtask>) crowd.filter.apply(microtaskMap);
+			Filter filter = crowd.filterCombination.getFilter();
+			HashMap<String, Microtask> map = (HashMap<String, Microtask>) filter.apply(microtaskMap);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
 			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);

@@ -34,7 +34,7 @@ public class OrderDuration extends AnswerReport {
 	}
 	
 	@Override
-	public Map<String, List<String>> generateReport( Map<String, List<String>> content,Filter filter) {
+	public Map<String, List<String>> generateReport( Map<String, List<String>> content,FilterCombination filter) {
 		
 		List<String> questionIDList = content.get("Question ID"); // this is the data that came form the HeaderReport
 		
@@ -62,7 +62,7 @@ public class OrderDuration extends AnswerReport {
 		return this.answerContent;
 	}
 	
-	private void obtainMicrotasksDurationByOrder(Filter filter)
+	private void obtainMicrotasksDurationByOrder(FilterCombination filter)
 	{
 		SessionDTO dto = new FileSessionDTO();
 		Map<String, WorkerSession> sessions = dto.getSessions();

@@ -185,7 +185,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public Integer getTrueNegatives() {
 
-		if(this.threshold<=0)
+		if(this.threshold==null || this.threshold<=0)
 			return 0;
 		else{
 			int count=0;
@@ -321,7 +321,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getTruePositiveLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
-		if(this.threshold<=0)
+		if(this.threshold==null || this.threshold<=0)
 			return null; //Means that bug was not found
 		else{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
@@ -342,7 +342,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	@Override
 	public HashMap<String, Integer> getNearPositiveLines(HashMap<String, QuestionLinesMap> lineMapping){
 	
-		if(this.threshold<=0)
+		if(this.threshold==null || this.threshold<=0)
 			return null; //Means that bug was not found
 		else{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();

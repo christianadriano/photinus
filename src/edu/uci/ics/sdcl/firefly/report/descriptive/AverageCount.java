@@ -17,7 +17,7 @@ public class AverageCount extends CountReport {
 	
 	private final int NUMBER_OF_QUESTIONS;
 	private final int QUESTIONS_PER_SESSION;
-	private Filter filter;
+	private FilterCombination filter;
 	
 	public AverageCount() {
 		PropertyManager property = PropertyManager.initializeSingleton();
@@ -26,7 +26,7 @@ public class AverageCount extends CountReport {
 	}
 	
 	@Override
-	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, Filter filter) {
+	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter) {
 		answerReportAverage(headerReport,answerReport);
 		answerOptionAverage(headerReport,answerReport);
 		confidenceAverage(headerReport, answerReport);

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
-import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
-
+import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 
 /**
  * Keeps data relative to a sub-group of workers and their microtasks
@@ -19,7 +18,7 @@ public class SubCrowd {
 	public Integer totalAnswers;
 	
 	/** Filter that produced the sub-crowd */
-	public Filter filter;
+	public FilterCombination filterCombination;
 	
 	/** Total workers in the sub-crowd*/
 	public Integer totalWorkers;

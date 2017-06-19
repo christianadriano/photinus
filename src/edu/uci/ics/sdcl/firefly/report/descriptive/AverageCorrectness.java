@@ -22,7 +22,7 @@ public class AverageCorrectness extends CorrectnessReport {
 	}
 
 	@Override
-	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, Filter filter) {
+	public Map<String, List<String>> generateReport(HeaderReport headerReport, AnswerReport answerReport, FilterCombination filter) {
 
 		Map<String,List<String>> headerContent = headerReport.getContent();
 		Map<String, List<String>>  answerContent = answerReport.getContent();
