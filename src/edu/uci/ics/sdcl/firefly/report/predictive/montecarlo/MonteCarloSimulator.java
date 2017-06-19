@@ -76,7 +76,7 @@ public class MonteCarloSimulator {
 					Outcome outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-					predictor = new WithinQuestionConsensus(isAbsoluteVoting);
+					predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0,isAbsoluteVoting);
 					outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}

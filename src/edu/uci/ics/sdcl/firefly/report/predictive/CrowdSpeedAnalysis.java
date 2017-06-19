@@ -154,7 +154,7 @@ public class CrowdSpeedAnalysis {
 	}
 
 	//-------------------------------------------------------------------------------------------------------
-	private Integer countWorkers(
+	private Double countWorkers(
 			HashMap<String, Microtask> filteredMicrotaskMap, String fileName) {
 
 		HashMap<String,String> workerMap = new HashMap<String, String>();
@@ -166,7 +166,7 @@ public class CrowdSpeedAnalysis {
 				}
 			}
 		}
-		return workerMap.size();
+		return new Double(workerMap.size());
 	}
 
 	private Integer countAnswers(HashMap<String, Microtask> map){
@@ -199,7 +199,7 @@ public class CrowdSpeedAnalysis {
 
 	public void computeVoting(HashMap<String, Microtask> microtaskMap, Double elapsedTime){
 
-		Integer totalDifferentWorkersAmongHITs = countWorkers(microtaskMap, null);
+		Double totalDifferentWorkersAmongHITs = countWorkers(microtaskMap, null);
 
 		DataPoint positiveVDataPoint = new DataPoint();
 		DataPoint majorityVDataPoint = new DataPoint();
@@ -210,18 +210,18 @@ public class CrowdSpeedAnalysis {
 
 		for(String fileName: fileNameList){//each fileName is a Java method
 			HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(microtaskMap,fileName);
-			Integer workerCountPerHIT = countWorkers(microtaskMap,fileName);
+			Double workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 			
-			Consensus predictor = new AcrossQuestionsConsensus(2);
+			Consensus predictor = new AcrossQuestionsConsensus(2,true);
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0);
+			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0,true);
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5,0);
+			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5.0,0,true);
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			thresholdVDatapoint.fileNameOutcomeMap.put(fileName, outcome);		
 		}

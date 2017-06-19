@@ -57,9 +57,11 @@ public class WithinQuestionConsensus extends Consensus{
 	 * 
 	 * @param type one of the two consensus types available in the class (see static attributes)
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
+	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration){
+	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration,boolean isAbsoluteVoting){
 		this.calibration = calibration;
+		this.isAbsoluteVoting = isAbsoluteVoting;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
 
@@ -68,16 +70,16 @@ public class WithinQuestionConsensus extends Consensus{
 			suffix=minimumYesCount.toString();
 
 		this.name = this.name + " " + type + "_" + suffix + "_" + this.calibration;;
-
-
 	}
 
 	/**
 	 * 
 	 * @param type one of the two consensus types available in the class (see static attributes)
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
+	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration, Double minimumAnswersPerQuestion, boolean includeIDK){
+	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration, Double minimumAnswersPerQuestion, 
+			boolean includeIDK, boolean isAbsoluteVoting){
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
