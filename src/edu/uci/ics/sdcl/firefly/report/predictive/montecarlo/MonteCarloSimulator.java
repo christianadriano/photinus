@@ -336,10 +336,10 @@ public class MonteCarloSimulator {
 		SubCrowd crowd =subCrowdList.get(0);	
 		FileSessionDTO dto = new FileSessionDTO();
 		
-		HashMap<String, Microtask> microtaskMap = (HashMap<String, Microtask>) dto.getMicrotasks(); //crowd.microtaskMap;
-		int numberOfSamples = 1000; //how many simulated crowds
+		HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
+		int numberOfSamples = 10000; //how many simulated crowds
 		int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
-		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap, crowd.name);			 
+		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name);			 
 		//}
 	}
 

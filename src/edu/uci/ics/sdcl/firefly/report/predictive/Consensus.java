@@ -17,17 +17,17 @@ public abstract class Consensus {
 	
 	public abstract void setData(AnswerData data);
 	
-	public abstract void setMinimumAnswersPerQuestion(int minimum);
+	public abstract void setMinimumAnswersPerQuestion(double minimum);
 	
 	public abstract void setIncludeIDK(boolean includeIDK);
 	
-	public abstract Integer computeThreshold(AnswerData data);
+	public abstract Double computeThreshold(AnswerData data);
 	
-	public abstract Integer computeSignalStrength(AnswerData data);
+	public abstract Double computeSignalStrength(AnswerData data);
 	
 	public abstract Integer computeNumberOfWorkers(AnswerData data);
 
-	public abstract Integer getMinimumNumberYESAnswersThatLocatedFault();
+	public abstract Double getMinimumNumberYESAnswersThatLocatedFault();
 
 	public abstract Integer getTruePositives();
 	

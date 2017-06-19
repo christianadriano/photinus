@@ -57,13 +57,13 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private String name = "Across-questions consensus";
 	
-	private Integer maxYES=0;
+	private Double maxYES=0.0;
 
-	private HashMap<String, Integer> questionYESCountMap;
+	private HashMap<String, Double> questionYESCountMap;
 
 	AnswerData data;
 
-	private Integer threshold=null;
+	private Double threshold=null;
 	
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
@@ -73,7 +73,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private boolean includeIDK;
 
-	private int minimumAnswersPerQuestion; 
+	private double minimumAnswersPerQuestion; 
 
 	public AcrossQuestionsConsensus(int calibration){
 		super();
@@ -86,11 +86,11 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer computeThreshold(AnswerData data){
+	public Double computeThreshold(AnswerData data){
 		
 		this.data = data;
 		
-		this.questionYESCountMap = this.computeNumberOfAnswers(Answer.YES);
+		this.questionYESCountMap = this.computeAbsoluteNumberOfAnswers(Answer.YES);
 		int numberOfQuestions = data.answerMap.size();
 		if(this.calibration>=numberOfQuestions){ //Consider the smallest number of YES
 			this.threshold = this.smallestNumberOfYesAnswers();
@@ -105,15 +105,15 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * The the smallest number larger than zero. 
 	 * If all questions received zero number of Yes answers then returns zero
 	 */
-	private Integer smallestNumberOfYesAnswers() {
+	private Double smallestNumberOfYesAnswers() {
 	
-		TreeMap<String, Integer> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
+		TreeMap<String, Double> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
 	
 		//Starts with the largest number of YES answers
-		int smallestCount= this.questionYESCountMap.get(sortedYESMap.firstKey()); 
+		double smallestCount= this.questionYESCountMap.get(sortedYESMap.firstKey()); 
 		
-		for(Map.Entry<String, Integer> entry : sortedYESMap.entrySet()){
-			int yesCount = entry.getValue();
+		for(Map.Entry<String, Double> entry : sortedYESMap.entrySet()){
+			double yesCount = entry.getValue();
 			if(yesCount>0 && yesCount<smallestCount )
 				smallestCount = yesCount;
 		}
@@ -140,7 +140,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * @return if the threshold is positive, then returns the difference between Maximum YES's and the Threshold. If 
 	 * threshold is zero, then return -1.0
 	 */
-	public Integer computeSignalStrength(AnswerData data) {
+	public Double computeSignalStrength(AnswerData data) {
 
 		if(this.threshold==null)
 			this.computeThreshold(data);
@@ -149,7 +149,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			return this.maxYES - this.threshold;
 		}
 		else
-			return -1;
+			return -1.0;
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			int count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if((yesCount!=null && yesCount>=this.threshold) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 						count++;
 					}
@@ -191,7 +191,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			int count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if((yesCount<this.threshold) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 						count++;
 					}
@@ -207,7 +207,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		int count=0;
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer yesCount = this.questionYESCountMap.get(questionID);
+				Double yesCount = this.questionYESCountMap.get(questionID);
 				if((yesCount>=this.threshold || this.threshold<=0) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 					count++;
 				}
@@ -222,7 +222,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		int count=0;
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer yesCount = this.questionYESCountMap.get(questionID);
+				Double yesCount = this.questionYESCountMap.get(questionID);
 				if( (yesCount<this.threshold || this.threshold<=0) && ( checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))){
 					count++;
 				}
@@ -238,9 +238,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * @param answerOption the answer option (YES, NO, IDK)
 	 * @return a map <questionID, number of answer of that option>
 	 */
-	private HashMap<String, Integer> computeNumberOfAnswers(String answerOption){
+	private HashMap<String, Double> computeAbsoluteNumberOfAnswers(String answerOption){
 
-		HashMap<String, Integer> countMap = new HashMap<String, Integer>(); 
+		HashMap<String, Double> countMap = new HashMap<String, Double>(); 
 
 		for(String questionID: data.answerMap.keySet()){
 			ArrayList<String> optionList = data.answerMap.get(questionID);
@@ -251,27 +251,50 @@ public class AcrossQuestionsConsensus extends Consensus{
 					counter++;
 			}
 			//System.out.println("counter:"+counter);
-			countMap.put(questionID, new Integer(counter));
+			countMap.put(questionID, new Double(counter));
+		}
+		return countMap;
+	}
+	
+	/**
+	 * @param answerOption the answer option (YES, NO, IDK)
+	 * @return a map <questionID, number of answer of that option divided by the total of answers for the question>
+	 */
+	private HashMap<String, Double> computeRelativeNumberOfAnswers(String answerOption){
+
+		HashMap<String, Double> countMap = new HashMap<String, Double>(); 
+
+		for(String questionID: data.answerMap.keySet()){
+			ArrayList<String> optionList = data.answerMap.get(questionID);
+			int counter = 0;
+			for(String option : optionList){
+				//System.out.println(option);
+				if(option.compareTo(answerOption)==0)
+					counter++;
+			}
+			//System.out.println("counter:"+counter);
+			
+			countMap.put(questionID, new Double(counter/optionList.size()));
 		}
 		return countMap;
 	}
 
-	private Integer computeThreshold(int calibrationLevel){
+	private Double computeThreshold(int calibrationLevel){
 		
 		if(this.questionYESCountMap.isEmpty())
-			return -1;
+			return -1.0;
 		
-		TreeMap<String, Integer> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
+		TreeMap<String, Double> sortedYESMap = this.sortByDescendingValue(this.questionYESCountMap);
 		this.maxYES = this.questionYESCountMap.get(sortedYESMap.firstKey());
 				
-		Integer yesCount_at_Level=0;
+		Double yesCount_at_Level=0.0;
 		int i=1;
 		for(String questionID: sortedYESMap.navigableKeySet()){
-			Integer yesCount = this.questionYESCountMap.get(questionID);
+			Double yesCount = this.questionYESCountMap.get(questionID);
 			//System.out.println("questionID: "+questionID+":"+yesCount);
 			i++;
 			if(i>calibrationLevel) {
-				yesCount_at_Level = new Integer(yesCount);
+				yesCount_at_Level = new Double(yesCount);
 				break;
 			}
 		}
@@ -279,7 +302,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		if(yesCount_at_Level>0)
 			return yesCount_at_Level;
 		else
-			return -1;
+			return -1.0;
 	}
 	
 	/**
@@ -287,18 +310,18 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * @param map
 	 * @return
 	 */
-	private  TreeMap<String, Integer> sortByDescendingValue(HashMap<String, Integer> map) {
+	private  TreeMap<String, Double> sortByDescendingValue(HashMap<String, Double> map) {
 		ValueComparator vc =  new ValueComparator(map);
-		TreeMap<String,Integer> sortedMap = new TreeMap<String,Integer>(vc);
+		TreeMap<String,Double> sortedMap = new TreeMap<String,Double>(vc);
 		sortedMap.putAll(map);
 		return sortedMap;
 	}
 
 	public class ValueComparator implements Comparator<String> {
 		 
-	    Map<String, Integer> map;
+	    Map<String, Double> map;
 	 
-	    public ValueComparator(Map<String, Integer> base) {
+	    public ValueComparator(Map<String, Double> base) {
 	        this.map = base;
 	    }
 	 
@@ -327,7 +350,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
@@ -348,7 +371,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nearFaultyLines);
@@ -365,7 +388,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						if(questionLinesMap.nonFaultyLines==null) 
@@ -384,7 +407,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount<this.threshold || this.threshold<=0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.faultyLines);
@@ -400,7 +423,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			HashMap<String, Integer> map =  new HashMap<String,Integer>();
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount<this.threshold || this.threshold<=0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nonFaultyLines);
@@ -444,7 +467,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				HashMap<String, Integer> map =  new HashMap<String,Integer>();
 				if(data.bugCoveringMap.containsKey(questionID)){
-					Integer yesCount = this.questionYESCountMap.get(questionID);
+					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nearFaultyLines);
@@ -514,7 +537,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 
 	@Override
-	public Integer getMinimumNumberYESAnswersThatLocatedFault(){
+	public Double getMinimumNumberYESAnswersThatLocatedFault(){
 		return this.threshold;
 	}
 
@@ -565,7 +588,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 	
 	
-	public void setMinimumAnswersPerQuestion(int minimum){
+	public void setMinimumAnswersPerQuestion(double minimum){
 		this.minimumAnswersPerQuestion = minimum;
 	}
 
