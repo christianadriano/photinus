@@ -68,6 +68,8 @@ public class AcrossQuestionsConsensus extends Consensus{
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
 	private int calibration=2;
+	
+	private boolean isAbsoluteVoting=true;
 
 	private int questionsBelowMinimalAnswers;
 
@@ -75,9 +77,15 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private double minimumAnswersPerQuestion; 
 
-	public AcrossQuestionsConsensus(int calibration){
+	/**
+	 * 
+	 * @param calibration  The number of top ranking questions which will be considered to locate a fault 
+	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
+	 */
+	public AcrossQuestionsConsensus(int calibration, boolean isAbsoluteVoting){
 		super();
 		this.calibration = calibration;
+		this.isAbsoluteVoting = isAbsoluteVoting;
 		this.name = this.name + "_" + this.calibration;
 	}
 
@@ -90,7 +98,10 @@ public class AcrossQuestionsConsensus extends Consensus{
 		
 		this.data = data;
 		
-		this.questionYESCountMap = this.computeAbsoluteNumberOfAnswers(Answer.YES);
+		if(this.isAbsoluteVoting)
+			this.questionYESCountMap = this.computeAbsoluteNumberOfAnswers(Answer.YES);
+		else
+			this.questionYESCountMap = this.computeRelativeNumberOfAnswers(Answer.YES);
 		int numberOfQuestions = data.answerMap.size();
 		if(this.calibration>=numberOfQuestions){ //Consider the smallest number of YES
 			this.threshold = this.smallestNumberOfYesAnswers();
@@ -153,8 +164,8 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer computeNumberOfWorkers(AnswerData data) {
-		int maxAnswers=0; 
+	public Double computeNumberOfWorkers(AnswerData data) {
+		double maxAnswers=0; 
 		for(ArrayList<String> answerList :  data.answerMap.values()){
 			if(answerList.size()>maxAnswers)
 				maxAnswers = answerList.size();
@@ -164,12 +175,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	
 	@Override
-	public Integer getTruePositives() {
+	public Double getTruePositives() {
 	
-		if(this.threshold<=0)
-			return 0;
+		if(this.threshold<=0.0)
+			return 0.0;
 		else{
-			int count=0;
+			double count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(data.bugCoveringMap.containsKey(questionID)){
 					Double yesCount = this.questionYESCountMap.get(questionID);
@@ -183,12 +194,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getTrueNegatives() {
+	public Double getTrueNegatives() {
 
-		if(this.threshold==null || this.threshold<=0)
-			return 0;
+		if(this.threshold==null || this.threshold<=0.0)
+			return 0.0;
 		else{
-			int count=0;
+			double count=0;
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Double yesCount = this.questionYESCountMap.get(questionID);
@@ -202,9 +213,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getFalsePositives() {
+	public Double getFalsePositives() {
 
-		int count=0;
+		double count=0.0;
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
 				Double yesCount = this.questionYESCountMap.get(questionID);
@@ -217,9 +228,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getFalseNegatives() {
+	public Double getFalseNegatives() {
 
-		int count=0;
+		double count=0.0;
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
 				Double yesCount = this.questionYESCountMap.get(questionID);
@@ -524,9 +535,9 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		String hitFileName = "HIT00_0";
 
-		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
+		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4.0,4.0);
 
-		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2);
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2,true);
 
 		System.out.println("expected: true, actual: "+ predictor.computeThreshold(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getMinimumNumberYESAnswersThatLocatedFault().toString());
@@ -556,7 +567,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			ArrayList<String> answerList = data.answerMap.get(questionID);
 			if(answerList.size()>=this.minimumAnswersPerQuestion){
 				if(!this.includeIDK){
-					int IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
+					double IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
 
 					if(answerList.size()-IDKCount<this.minimumAnswersPerQuestion){
 						System.out.print("["+answerList.size()+"],"+IDKCount+" / ");

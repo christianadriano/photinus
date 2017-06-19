@@ -37,13 +37,13 @@ public class DataPoint {
 	public HashMap<String, Integer> falsePositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> falseNegativeLineMap=new HashMap<String, Integer>();
 
-	public Integer correct_YES=0;
-	public Integer correct_NO=0;
-	public Integer total_YES=0;
-	public Integer total_NO=0;
-	public Integer total_IDK=0;
-	public Integer total_YES_NO=0;
-	public Integer total_Answers=0;
+	public Double correct_YES=0.0;
+	public Double correct_NO=0.0;
+	public Double total_YES=0.0;
+	public Double total_NO=0.0;
+	public Double total_IDK=0.0;
+	public Double total_YES_NO=0.0;
+	public Double total_Answers=0.0;
 	public Double averageCorrectTotal=0.0;
 	public Double averageCorrectYES=0.0;
 	public Double averageCorrectNO=0.0;
@@ -115,10 +115,10 @@ public class DataPoint {
 			recallValueList.add(outcome.recall);
 
 			if(this.totalWorkers < outcome.differentWorkersAmongHITs)
-				this.totalWorkers =  new Integer(outcome.differentWorkersAmongHITs).doubleValue();
+				this.totalWorkers =  new Double(outcome.differentWorkersAmongHITs).doubleValue();
 
 			if(this.maxAnswersHIT < outcome.totalAnswersObtained)
-				this.maxAnswersHIT =  new Integer(outcome.totalAnswersObtained).doubleValue();
+				this.maxAnswersHIT =  new Double(outcome.totalAnswersObtained).doubleValue();
 
 			if(outcome.faultLocated){
 				this.faultsLocated++;
@@ -309,10 +309,10 @@ public class DataPoint {
 					outcome_A.fileName,
 					"Combined consensus",
 					(outcome_A.faultLocated && outcome_B.faultLocated), 
-					0,
+					0.0,
 					outcome_A.maxWorkerPerQuestion>outcome_B.maxWorkerPerQuestion ?outcome_B.maxWorkerPerQuestion: outcome_A.maxWorkerPerQuestion,
 					outcome_A.totalAnswersObtained>outcome_B.totalAnswersObtained ?outcome_B.totalAnswersObtained: outcome_A.totalAnswersObtained,
-					0,
+					0.0,
 					outcome_A.truePositives < outcome_B.truePositives ? outcome_A.truePositives : outcome_B.truePositives,
 					outcome_A.trueNegatives < outcome_B.trueNegatives ? outcome_A.trueNegatives : outcome_B.trueNegatives,
 					outcome_A.falsePositives < outcome_B.falsePositives ? outcome_A.falsePositives : outcome_B.falsePositives,

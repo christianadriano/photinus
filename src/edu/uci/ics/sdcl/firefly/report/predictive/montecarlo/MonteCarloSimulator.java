@@ -49,7 +49,8 @@ public class MonteCarloSimulator {
 	}
 
 
-	private void computeVoting(FilterCombination filter, ArrayList<HashMap<String,Microtask>> listOfMicrotaskMaps, int sampleSize){
+	private void computeVoting(FilterCombination filter, ArrayList<HashMap<String,Microtask>> listOfMicrotaskMaps, 
+			int sampleSize, boolean isAbsoluteVoting){
 		this.outcomes_PositiveVoting = new ArrayList<DataPoint>();
 		this.outcomes_MajorityVoting = new ArrayList<DataPoint>();
 
@@ -60,7 +61,7 @@ public class MonteCarloSimulator {
 
 			HashMap<String, Microtask> microtaskMap = listOfMicrotaskMaps.get(i);
 
-			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(microtaskMap, null);
+			Double totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(microtaskMap, null);
 
 			DataPoint positiveVDataPoint = new DataPoint();
 			DataPoint majorityVDataPoint = new DataPoint();
@@ -69,13 +70,13 @@ public class MonteCarloSimulator {
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(microtaskMap,fileName);
 				if(answerMap!=null && answerMap.size()>0){
 
-					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
+					Double workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Consensus predictor = new AcrossQuestionsConsensus(2);
+					Consensus predictor = new AcrossQuestionsConsensus(2,isAbsoluteVoting);
 					Outcome outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-					predictor = new WithinQuestionConsensus();
+					predictor = new WithinQuestionConsensus(isAbsoluteVoting);
 					outcome = computeDataPoint(filter, data,predictor,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}
@@ -200,7 +201,7 @@ public class MonteCarloSimulator {
 		Outcome outcome = new Outcome(filter, //FilterCombination
 				answerData.getHitFileName(), //fileName
 				predictor.getName(), //predictorType
-				predictor.getTruePositives()>0, //faultLocated
+				predictor.getTruePositives()>0.0, //faultLocated
 				predictor.computeSignalStrength(answerData),//signalStrength
 				predictor.computeNumberOfWorkers(answerData), //maxWorkerPerQuestion
 				answerData.getTotalAnswers(),//totalAnswers
@@ -290,7 +291,7 @@ public class MonteCarloSimulator {
 	//------------------------------------------------------------------------------------------------------
 
 	private void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
-			HashMap<String, Microtask> microtaskMap, String crowdName){
+			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting){
 
 		for(int i=1;i<=populationSize;i++){
 
@@ -302,7 +303,7 @@ public class MonteCarloSimulator {
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
 
 			//Compute statistics for each sample
-			computeVoting(filter, listOfMicrotaskMaps, sampleSize);
+			computeVoting(filter, listOfMicrotaskMaps, sampleSize, isAbsoluteVoting);
 
 			//Save samples with statistics to files
 			printDataPointsToFile(sampleSize);
@@ -332,6 +333,8 @@ public class MonteCarloSimulator {
 	public void run(){		
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
+		boolean isAbsoluteVoting = true;
+		
 		// for(SubCrowd crowd:subCrowdList){
 		SubCrowd crowd =subCrowdList.get(0);	
 		FileSessionDTO dto = new FileSessionDTO();
@@ -339,7 +342,7 @@ public class MonteCarloSimulator {
 		HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
 		int numberOfSamples = 10000; //how many simulated crowds
 		int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
-		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name);			 
+		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting);			 
 		//}
 	}
 

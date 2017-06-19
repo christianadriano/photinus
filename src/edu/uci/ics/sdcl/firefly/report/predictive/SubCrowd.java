@@ -15,16 +15,16 @@ import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 public class SubCrowd {
 	
 	/** Total answers provided by this sub-crowd */
-	public Integer totalAnswers;
+	public Double totalAnswers;
 	
 	/** Filter that produced the sub-crowd */
 	public FilterCombination filterCombination;
 	
 	/** Total workers in the sub-crowd*/
-	public Integer totalWorkers;
+	public Double totalWorkers;
 	
 	/** The maximum number of answers that all questions answered by this sub-crowd has */
-	public Integer maxCommonAnswers;
+	public Double maxCommonAnswers;
 
 	/** All microtasks taken by this sub-crowd */
 	public HashMap<String, Microtask> microtaskMap;

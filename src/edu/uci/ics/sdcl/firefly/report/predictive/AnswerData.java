@@ -16,10 +16,10 @@ public class AnswerData {
 	String hitFileName;
 
 	/** the total different workers in this data set */
-	Integer workerCount;
+	Double workerCount;
 
 	/** Total workers that remained after applying the combined filter */
-	Integer differentWorkersAmongHITs;
+	Double differentWorkersAmongHITs;
 
 	/** questionID, list of answer as YES, NO, IDK */
 	public HashMap<String, ArrayList<String>> answerMap;
@@ -29,7 +29,7 @@ public class AnswerData {
 
 	public AnswerData(String hitFileName,
 			HashMap<String, ArrayList<String>> answers,
-			HashMap<String, String> bugCoveringMap, Integer workerCount, Integer differentWorkersAmongHITs) {
+			HashMap<String, String> bugCoveringMap, Double workerCount,Double differentWorkersAmongHITs) {
 		this.hitFileName = hitFileName;
 		this.answerMap = answers;
 		this.bugCoveringMap = bugCoveringMap;
@@ -41,11 +41,11 @@ public class AnswerData {
 		return hitFileName;
 	}
 
-	public Integer getWorkerCount(){
+	public Double getWorkerCount(){
 		return this.workerCount;
 	}	
 
-	public Integer getDifferentWorkersAmongHITs() {
+	public Double getDifferentWorkersAmongHITs() {
 		return this.differentWorkersAmongHITs;
 	}
 
@@ -57,8 +57,8 @@ public class AnswerData {
 		return bugCoveringMap;
 	}
 
-	public Integer getTotalAnswers() {
-		int answerCount = 0;
+	public Double getTotalAnswers() {
+		double answerCount = 0;
 		for(String questionID: this.answerMap.keySet()){
 			ArrayList<String> answerList = answerMap.get(questionID);
 			answerCount = answerCount + answerList.size();
@@ -67,9 +67,9 @@ public class AnswerData {
 	}
 
 
-	public static int countCorrectYES(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
+	public static double countCorrectYES(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
 
-		int correctCount=0;
+		double correctCount=0;
 		Iterator<String> iter = microtaskMap.keySet().iterator();
 
 		while(iter.hasNext()){
@@ -82,9 +82,9 @@ public class AnswerData {
 		return correctCount;	
 	}
 
-	public static int countCorrectNO(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
+	public static double countCorrectNO(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap){
 
-		int correctCount=0;
+		double correctCount=0;
 		Iterator<String> iter = microtaskMap.keySet().iterator();
 
 		while(iter.hasNext()){
@@ -108,9 +108,9 @@ public class AnswerData {
 	 * @param answerOption  Answer.YES, Answer.NO
 	 * @return
 	 */
-	public static int countCorrectAnswers(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap, String answerOption){
+	public static double countCorrectAnswers(HashMap<String,ArrayList<String>> microtaskMap, HashMap<String, String> bugCoveringMap, String answerOption){
 
-		int correctCount=0;
+		double correctCount=0;
 		Iterator<String> iter = microtaskMap.keySet().iterator();
 
 		while(iter.hasNext()){
@@ -132,9 +132,9 @@ public class AnswerData {
 	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
 	 * @return number of answers of that type.
 	 */
-	public static int countOption(ArrayList<String> answerList, String answerOption){
+	public static double countOption(ArrayList<String> answerList, String answerOption){
 
-		int count=0;
+		double count=0;
 		for(String answer:answerList){
 			if(answer.matches(answerOption)){
 				count++;
@@ -149,9 +149,9 @@ public class AnswerData {
 	 * @param answerOption Answer.YES, Answer.NO, Answer.IDK 
 	 * @return number of answers of that type.
 	 */
-	public static Integer count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
+	public static Double count(HashMap<String, ArrayList<String>> answerMap, String answerOption){
 
-		int count=0;
+		double count=0;
 		Iterator<String> iter = answerMap.keySet().iterator();
 
 		while(iter.hasNext()){

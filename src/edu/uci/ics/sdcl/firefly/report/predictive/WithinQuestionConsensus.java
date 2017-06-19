@@ -23,27 +23,34 @@ public class WithinQuestionConsensus extends Consensus{
 
 	private String consensusType = Balance_YES_NO_Consensus; //default
 
-	private HashMap<String, Integer> voteMap;
+	private HashMap<String, Double> voteMap;
 
-	private HashMap<String, Integer> questionYESCountMap;
+	private HashMap<String, Double> questionYESCountMap;
 
 	private AnswerData data;
 
 	private boolean includeIDK = true;
 
-	private Integer minimumAnswersPerQuestion = 0;
+	private Double minimumAnswersPerQuestion = 0.0;
 
 	private Integer questionsBelowMinimalAnswers = 0;
 
 	/** Difference between number of YES's and NO's. Default is 1.*/
 	private int calibration=0;
 
+	private boolean isAbsoluteVoting=true;
+	
 	/** Minimum number of YES's to consider a question as locating a fault */
-	private Integer minimumYesCount;
+	private Double minimumYesCount;
 
 
-	public WithinQuestionConsensus(){
+	/**
+	 * 
+	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
+	 */
+	public WithinQuestionConsensus(boolean isAbsoluteVoting){
 		super();
+		this.isAbsoluteVoting=isAbsoluteVoting;
 	}
 
 	/**
@@ -51,7 +58,7 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param type one of the two consensus types available in the class (see static attributes)
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 */
-	public WithinQuestionConsensus(String type, Integer minimumYesCount, Integer calibration){
+	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration){
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
@@ -70,7 +77,7 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param type one of the two consensus types available in the class (see static attributes)
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 */
-	public WithinQuestionConsensus(String type, Integer minimumYesCount, Integer calibration, Integer minimumAnswersPerQuestion, boolean includeIDK){
+	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration, Double minimumAnswersPerQuestion, boolean includeIDK){
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
@@ -97,7 +104,7 @@ public class WithinQuestionConsensus extends Consensus{
 		return this.calibration;
 	}
 
-	public void setMinimumYESToConsiderFault(int minimumYesCount){
+	public void setMinimumYESToConsiderFault(double minimumYesCount){
 		this.minimumYesCount=minimumYesCount;
 	}
 
@@ -108,11 +115,19 @@ public class WithinQuestionConsensus extends Consensus{
 
 	/** The number of bug covering questions that were actually found */
 	@Override
-	public Integer computeThreshold(AnswerData data){
+	public Double computeThreshold(AnswerData data){
 		this.data = data;
-		this.questionYESCountMap = this.computeNumberOfYES(data.getAnswerMap());
-		HashMap<String, Integer> questionNoCountMap = this.computeNumberOfNO(data.getAnswerMap());
-		if(this.consensusType.matches(this.Balance_YES_NO_Consensus)){
+		HashMap<String, Double> questionNoCountMap=new HashMap<String, Double>();
+		
+		if(this.isAbsoluteVoting){
+			this.questionYESCountMap = this.computeAbsoluteNumberOfYES(data.getAnswerMap());
+			questionNoCountMap = this.computeAbsoluteNumberOfNO(data.getAnswerMap());		
+		}
+		else{
+			this.questionYESCountMap = this.computeRelativeNumberOfYES(data.getAnswerMap());
+			questionNoCountMap = this.computeRelativeNumberOfNO(data.getAnswerMap());
+		}
+				if(this.consensusType.matches(this.Balance_YES_NO_Consensus)){
 			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap,questionNoCountMap); 
 		}
 		else 
@@ -123,18 +138,18 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer computeSignalStrength(AnswerData data){
+	public Double computeSignalStrength(AnswerData data){
 		if(voteMap==null)
 			this.computeThreshold(data);
 
 		if(getTruePositives()==0)
-			return -1;
+			return -1.0;
 
-		Integer extraVotes=0;
+		Double extraVotes=0.0;
 
 		for(String questionID: data.bugCoveringMap.keySet()){
 
-			Integer vote = voteMap.get(questionID);
+			Double vote = voteMap.get(questionID);
 			if(vote!=null && vote>this.calibration){
 				extraVotes = extraVotes + vote-this.calibration;
 			}
@@ -145,8 +160,8 @@ public class WithinQuestionConsensus extends Consensus{
 
 
 	@Override
-	public Integer computeNumberOfWorkers(AnswerData data) {
-		int maxAnswers=0; 
+	public Double computeNumberOfWorkers(AnswerData data) {
+		double maxAnswers=0; 
 		for(ArrayList<String> answerList :  data.answerMap.values()){
 			if(answerList.size()>maxAnswers)
 				maxAnswers = answerList.size();
@@ -159,20 +174,20 @@ public class WithinQuestionConsensus extends Consensus{
 	 * 
 	 * @return number of YES of the bug covering question that has the smallest positive vote. If the fault was not found returns -1.
 	 */
-	public Integer getMinimumNumberYESAnswersThatLocatedFault(){
+	public Double getMinimumNumberYESAnswersThatLocatedFault(){
 
 		if (voteMap==null){
 			if(this.computeThreshold(data)==0)
-				return -1;
+				return -1.0;
 		}
 
-		int smallestVote = this.computeNumberOfWorkers(data); //starts with the maximum possible.
+		double smallestVote = this.computeNumberOfWorkers(data); //starts with the maximum possible.
 		String questionIDSmallestVote=null;
 
 		//find the number of YES of the bug covering question that has the smallest positive vote
 		for(String questionID: this.voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = this.voteMap.get(questionID);
+				Double vote = this.voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && vote<smallestVote){
 					smallestVote = vote;
 					questionIDSmallestVote = new String(questionID);
@@ -183,12 +198,12 @@ public class WithinQuestionConsensus extends Consensus{
 		if(questionIDSmallestVote!=null)
 			return this.questionYESCountMap.get(questionIDSmallestVote);
 		else 
-			return -1;
+			return -1.0;
 	}
 
 	/** Same result as function compute */
 	@Override
-	public Integer getTruePositives(){
+	public Double getTruePositives(){
 		if(this.voteMap!=null)
 			return this.computeTruePositives();
 		else
@@ -196,7 +211,7 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getFalsePositives(){
+	public Double getFalsePositives(){
 		if(this.voteMap!=null)
 			return computeFalsePositives();
 		else
@@ -204,7 +219,7 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getFalseNegatives(){
+	public Double getFalseNegatives(){
 		if(this.voteMap!=null)
 			return computeFalseNegatives();
 		else
@@ -212,7 +227,7 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public Integer getTrueNegatives(){
+	public Double getTrueNegatives(){
 		if(this.voteMap!=null)
 			return computeTrueNegatives();
 		else
@@ -243,9 +258,9 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
 	 * @return a map <questionID, number of YES's>
 	 */
-	private HashMap<String, Integer> computeNumberOfYES(HashMap<String, ArrayList<String>> questionOptionsMap){
+	private HashMap<String, Double> computeAbsoluteNumberOfYES(HashMap<String, ArrayList<String>> questionOptionsMap){
 
-		HashMap<String, Integer> questionYESCountMap= new HashMap<String, Integer>(); 
+		HashMap<String, Double> questionYESCountMap= new HashMap<String, Double>(); 
 
 		for(String questionID: questionOptionsMap.keySet()){
 			ArrayList<String> optionList = questionOptionsMap.get(questionID);
@@ -256,7 +271,7 @@ public class WithinQuestionConsensus extends Consensus{
 					counter++;
 			}
 			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionYESCountMap.put(questionID, new Integer(counter));
+			questionYESCountMap.put(questionID, new Double(counter));
 		}
 		return questionYESCountMap;
 	}
@@ -264,11 +279,34 @@ public class WithinQuestionConsensus extends Consensus{
 
 	/**
 	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
+	 * @return a map <questionID, number of YES's divided by total answer for the question>
+	 */
+	private HashMap<String, Double> computeRelativeNumberOfYES(HashMap<String, ArrayList<String>> questionOptionsMap){
+
+		HashMap<String, Double> questionYESCountMap= new HashMap<String, Double>(); 
+
+		for(String questionID: questionOptionsMap.keySet()){
+			ArrayList<String> optionList = questionOptionsMap.get(questionID);
+			int counter = 0;
+			for(String option : optionList){
+				//System.out.println(option);
+				if(option.compareTo(Answer.YES)==0)
+					counter++;
+			}
+			//System.out.println("questionID: "+ questionID+"counter:"+counter);
+			questionYESCountMap.put(questionID, new Double(counter/optionList.size()));
+		}
+		return questionYESCountMap;
+	}
+	
+
+	/**
+	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
 	 * @return a map <questionID, number of NO's>
 	 */
-	private HashMap<String, Integer> computeNumberOfNO(HashMap<String, ArrayList<String>> questionOptionsMap){
+	private HashMap<String, Double> computeAbsoluteNumberOfNO(HashMap<String, ArrayList<String>> questionOptionsMap){
 
-		HashMap<String, Integer> questionNOCountMap= new HashMap<String, Integer>(); 
+		HashMap<String, Double> questionNOCountMap= new HashMap<String, Double>(); 
 
 		for(String questionID: questionOptionsMap.keySet()){
 			ArrayList<String> optionList = questionOptionsMap.get(questionID);
@@ -279,11 +317,33 @@ public class WithinQuestionConsensus extends Consensus{
 					counter++;
 			}
 			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionNOCountMap.put(questionID, new Integer(counter));
+			questionNOCountMap.put(questionID, new Double(counter));
 		}
 		return questionNOCountMap;
 	}
 
+	/**
+	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
+	 * @return a map <questionID, number of NO's divided by total number of answers for the question>
+	 */
+	private HashMap<String, Double> computeRelativeNumberOfNO(HashMap<String, ArrayList<String>> questionOptionsMap){
+
+		HashMap<String, Double> questionNOCountMap= new HashMap<String, Double>(); 
+
+		for(String questionID: questionOptionsMap.keySet()){
+			ArrayList<String> optionList = questionOptionsMap.get(questionID);
+			int counter = 0;
+			for(String option : optionList){
+				//System.out.println(option);
+				if(option.compareTo(Answer.NO)==0)
+					counter++;
+			}
+			//System.out.println("questionID: "+ questionID+"counter:"+counter);
+			questionNOCountMap.put(questionID, new Double(counter/optionList.size()));
+		}
+		return questionNOCountMap;
+	}
+	
 	/**
 	 * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
 	 * 
@@ -292,14 +352,14 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param questionNOCountMap
 	 * @return map of questions and respective votes
 	 */
-	private HashMap<String,Integer> computeQuestionVoteMap(HashMap<String, Integer> questionYESCountMap,
-			HashMap<String, Integer> questionNOCountMap) {
+	private HashMap<String,Double> computeQuestionVoteMap(HashMap<String, Double> questionYESCountMap,
+			HashMap<String, Double> questionNOCountMap) {
 
-		HashMap<String,Integer> voteMap =  new HashMap<String,Integer>();
+		HashMap<String,Double> voteMap =  new HashMap<String,Double>();
 		for(String questionID : questionYESCountMap.keySet()){
-			Integer yesCount = questionYESCountMap.get(questionID);
-			Integer noCount = questionNOCountMap.get(questionID);
-			Integer vote = yesCount - noCount;
+			Double yesCount = questionYESCountMap.get(questionID);
+			Double noCount = questionNOCountMap.get(questionID);
+			Double vote = yesCount - noCount;
 
 			voteMap.put(questionID, vote);
 		}
@@ -314,13 +374,13 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param questionNOCountMap
 	 * @return map of questions and respective votes
 	 */
-	private HashMap<String,Integer> computeQuestionVoteMap(HashMap<String, Integer> questionYESCountMap) {
+	private HashMap<String,Double> computeQuestionVoteMap(HashMap<String, Double> questionYESCountMap) {
 
-		HashMap<String,Integer> voteMap =  new HashMap<String,Integer>();
+		HashMap<String,Double> voteMap =  new HashMap<String,Double>();
 		for(String questionID : questionYESCountMap.keySet()){
-			Integer yesCount = questionYESCountMap.get(questionID);
+			Double yesCount = questionYESCountMap.get(questionID);
 
-			Integer vote = yesCount - this.minimumYesCount-1;
+			Double vote = yesCount - this.minimumYesCount-1;
 
 			voteMap.put(questionID, vote);
 		}
@@ -342,7 +402,7 @@ public class WithinQuestionConsensus extends Consensus{
 			ArrayList<String> answerList = data.answerMap.get(questionID);
 			if(answerList.size()>=this.minimumAnswersPerQuestion){
 				if(!this.includeIDK){
-					int IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
+					double IDKCount = data.countOption(answerList, Answer.I_DONT_KNOW);
 
 					if(answerList.size()-IDKCount<this.minimumAnswersPerQuestion){
 						System.out.print("["+answerList.size()+"],"+IDKCount+" / ");
@@ -372,13 +432,13 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 	}
 
-	private Integer computeTruePositives() {
+	private Double computeTruePositives() {
 
-		Integer quantityTruePositives=0;
+		Double quantityTruePositives=0.0;
 
 		for(String questionID: voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))
 					quantityTruePositives = quantityTruePositives +1;
 			}
@@ -387,13 +447,13 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 
-	private Integer computeFalsePositives() {
+	private Double computeFalsePositives() {
 
-		Integer quantityFalsePositives=0;
+		Double quantityFalsePositives=0.0;
 
 		for(String questionID: voteMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))
 					quantityFalsePositives = quantityFalsePositives +1;
 			}
@@ -401,13 +461,13 @@ public class WithinQuestionConsensus extends Consensus{
 		return quantityFalsePositives;
 	}
 
-	private Integer computeFalseNegatives() {
+	private Double computeFalseNegatives() {
 
-		Integer quantityFalseNegatives=0;
+		Double quantityFalseNegatives=0.0;
 
 		for(String questionID: voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote<=this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))
 					quantityFalseNegatives = quantityFalseNegatives +1;
 			}
@@ -415,13 +475,13 @@ public class WithinQuestionConsensus extends Consensus{
 		return quantityFalseNegatives;
 	}
 
-	private Integer computeTrueNegatives() {
+	private Double computeTrueNegatives() {
 
-		Integer quantityTrueNegatives=0;
+		Double quantityTrueNegatives=0.0;
 
 		for(String questionID: voteMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote<=this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID))
 					quantityTrueNegatives = quantityTrueNegatives +1;
 			}
@@ -488,9 +548,9 @@ public class WithinQuestionConsensus extends Consensus{
 
 		String hitFileName = "HIT00_0";
 
-		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4,4);
+		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4.0,4.0);
 
-		WithinQuestionConsensus predictor = new WithinQuestionConsensus();
+		WithinQuestionConsensus predictor = new WithinQuestionConsensus(true);
 		predictor.setCalibration(-1);
 		predictor.computeThreshold(data);
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
@@ -501,16 +561,16 @@ public class WithinQuestionConsensus extends Consensus{
 		System.out.println("expected: 50% bug covering question located, actual: "+ percentageFaults.toString());
 
 
-		Integer falsePositives = predictor.getFalsePositives();
+		Double falsePositives = predictor.getFalsePositives();
 		System.out.println("expected: 1, actual: "+ falsePositives.toString());
 
-		Integer falseNegatives = predictor.getFalseNegatives();
+		Double falseNegatives = predictor.getFalseNegatives();
 		System.out.println("expected: 1, actual: "+ falseNegatives.toString());
 
-		Integer trueNegatives = predictor.getTrueNegatives();
+		Double trueNegatives = predictor.getTrueNegatives();
 		System.out.println("expected: 1, actual: "+ trueNegatives.toString());
 
-		Integer truePositives = predictor.getTruePositives();
+		Double truePositives = predictor.getTruePositives();
 		System.out.println("expected: 1, actual: "+ truePositives.toString());
 	}
 
@@ -522,7 +582,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		for(String questionID: voteMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					if(questionLinesMap==null || questionLinesMap.faultyLines==null) System.err.println("No mapping for questionID: "+questionID);
@@ -542,7 +602,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					map = loadLines(map,questionLinesMap.nearFaultyLines);
@@ -562,7 +622,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					if(questionLinesMap.nonFaultyLines==null) 
@@ -583,7 +643,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(!data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote<=this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					if(questionLinesMap.nonFaultyLines==null) 
@@ -604,7 +664,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote<=this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					map = loadLines(map,questionLinesMap.faultyLines);
@@ -643,7 +703,7 @@ public class WithinQuestionConsensus extends Consensus{
 		HashMap<String, HashMap<String,Integer>> questionMap = new HashMap<String, HashMap<String,Integer>>();
 		for(String questionID: this.questionYESCountMap.keySet()){
 			if(data.bugCoveringMap.containsKey(questionID)){
-				Integer vote = voteMap.get(questionID);
+				Double vote = voteMap.get(questionID);
 				if(vote!=null && vote>this.calibration && this.checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 					QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 					HashMap<String, Integer> map = loadLines(new HashMap<String, Integer>(),questionLinesMap.nearFaultyLines);
@@ -657,7 +717,7 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 
-	public void setMinimumAnswersPerQuestion(int minimum){
+	public void setMinimumAnswersPerQuestion(double minimum){
 		this.minimumAnswersPerQuestion = minimum;
 	}
 

@@ -135,23 +135,23 @@ public class SubcrowdConsensusFinder {
 		return outcome;
 	}
 
-	public ArrayList<SubCrowd> runAnswerPerQuestionFilters(){
+	public ArrayList<SubCrowd> runAnswerPerQuestionFilters(boolean isAbsoluteVoting){
 		ArrayList<SubCrowd> subCrowdList =  this.generateAnswersPerQuestion_Filters();
 		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
-		return run(subCrowdList);
+		return run(subCrowdList,isAbsoluteVoting);
 	}
 	
 	
-	public ArrayList<SubCrowd> runSubCrowdFilters(){
+	public ArrayList<SubCrowd> runSubCrowdFilters(boolean isAbsoluteVoting){
 		ArrayList<SubCrowd> subCrowdList =  this.generateSubCrowdFilters();
 		subCrowdList = this.generateSubCrowdMicrotasks(subCrowdList);
-		return run(subCrowdList);
+		return run(subCrowdList, isAbsoluteVoting);
 	}
 	
-	public ArrayList<SubCrowd> run(ArrayList<SubCrowd> subCrowdList){
+	public ArrayList<SubCrowd> run(ArrayList<SubCrowd> subCrowdList,boolean isAbsoluteVoting){
 		
 		for(SubCrowd subcrowd: subCrowdList){
-			Integer totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
+			Double totalDifferentWorkersAmongHITs = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap, null);
 
 			DataPoint acrossQuestionsDataPoint = new DataPoint(subcrowd.name,"Across-Questions Consensus");
 			DataPoint withinQuestionDataPoint = new DataPoint(subcrowd.name,"Within-Question Consensus");
@@ -160,13 +160,13 @@ public class SubcrowdConsensusFinder {
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(subcrowd.microtaskMap,fileName);
 				if(answerMap!=null && answerMap.size()>0){
 
-					Integer workerCountPerHIT = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap,fileName);
+					Double workerCountPerHIT = MicrotaskMapUtil.countWorkers(subcrowd.microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,this.bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Consensus consensus = new AcrossQuestionsConsensus(2);
+					Consensus consensus = new AcrossQuestionsConsensus(2,isAbsoluteVoting);
 					Outcome outcome = computeDataPoint(data,consensus,this.lineMapping);
 					acrossQuestionsDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 
-					consensus = new WithinQuestionConsensus();
+					consensus = new WithinQuestionConsensus(isAbsoluteVoting);
 					outcome = computeDataPoint(data,consensus,lineMapping);
 					withinQuestionDataPoint.fileNameOutcomeMap.put(outcome.fileName, outcome);
 				}
@@ -244,7 +244,8 @@ public class SubcrowdConsensusFinder {
 
 	public static void main(String args[]){
 		SubcrowdConsensusFinder finder = new SubcrowdConsensusFinder();
-		ArrayList<SubCrowd> list = finder.runSubCrowdFilters();
+		boolean isAbsoluteVoting = true;
+		ArrayList<SubCrowd> list = finder.runSubCrowdFilters(isAbsoluteVoting);
 		for(SubCrowd subcrowd: list){
 			finder.printJavaOutcomes(subcrowd);
 			finder.printSubCrowdAverages(subcrowd);

@@ -3,7 +3,6 @@ package edu.uci.ics.sdcl.firefly.report.predictive;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;;
 /**
@@ -22,36 +21,36 @@ public class Outcome {
 
 	public Boolean faultLocated;
 
-	public Integer signalStrength;
+	public Double signalStrength;
 
 	/** Maximum different workers per question for this HIT */
-	public Integer maxWorkerPerQuestion;
+	public Double maxWorkerPerQuestion;
 
 	/** All the YES, NO, IDK for all different questions in the same HIT */
-	public Integer totalAnswersObtained;
+	public Double totalAnswersObtained;
 
 	/** Minimal number of YES's (has different definitions for WithinQuestionConsensus and AcrossQuestionsConsensus  */
-	public Integer threshold; 
+	public Double threshold; 
 
-	public Integer truePositives;
+	public Double truePositives;
 
-	public Integer trueNegatives;
+	public Double trueNegatives;
 
-	public Integer falsePositives;	
+	public Double falsePositives;	
 
-	public Integer falseNegatives;
+	public Double falseNegatives;
 	
-	public Integer correct_YES_Answers;
+	public Double correct_YES_Answers;
 
-	public Integer correct_NO_Answers;
+	public Double correct_NO_Answers;
 	
-	public Integer total_YES_Answers;
+	public Double total_YES_Answers;
 	
-	public Integer total_NO_Answers;
+	public Double total_NO_Answers;
 	
-	public Integer 	total_IDK_Answers;
+	public Double 	total_IDK_Answers;
 	
-	public Integer total_YESNO_Answers;
+	public Double total_YESNO_Answers;
 	
 	public Double average_Total_Correct_Answers;
 	
@@ -71,10 +70,10 @@ public class Outcome {
 	public Double recall;
 
 	/** Total workers that contributed to one HIT after applying the combined filter */
-	public Integer differentWorkersPerHIT;
+	public Double differentWorkersPerHIT;
 
 	/** Total workers that remained after applying the combined filter */
-	public Integer differentWorkersAmongHITs;
+	public Double differentWorkersAmongHITs;
 
 	/** Maps which flagged lines came from which questions */
 	public HashMap<String, HashMap<String, Integer>> questionMap;
@@ -84,12 +83,12 @@ public class Outcome {
 	public Outcome(){}
 	
 	public Outcome(FilterCombination filter, String fileName, String predictorType, Boolean faultLocated,
-			Integer signalStrength, Integer maxWorkerPerQuestion, Integer totalAnswers, Integer threshold,
-			Integer truePositives, Integer trueNegatives,
-			Integer falsePositives, Integer falseNegatives,Integer differentWorkersPerHIT, Integer differentWorkersAmongHITs,
+			Double signalStrength, Double maxWorkerPerQuestion, Double totalAnswers, Double threshold,
+			Double truePositives, Double trueNegatives,
+			Double falsePositives, Double falseNegatives,Double differentWorkersPerHIT, Double differentWorkersAmongHITs,
 			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
 			HashMap<String,Integer> falsePositiveLines, int questionsBelowMinimumAnswers,
-			Integer correctYES, Integer correctNO, Integer totalYES, Integer totalNO,Integer totalIDK) {
+			Double correctYES, Double correctNO, Double totalYES, Double totalNO,Double totalIDK) {
 		super();
 		this.filter = filter;
 		this.fileName = new String(fileName.replace("HIT0", "J").replace("_","."));
@@ -124,7 +123,7 @@ public class Outcome {
 	}
 
 
-	private Double computePrecision(int tp, int fp){
+	private Double computePrecision(double tp, double fp){
 		Double tpD = new Double(tp);
 		Double fpD =  new Double(fp);
 		if((tpD+fpD) ==0) 
@@ -133,7 +132,7 @@ public class Outcome {
 			return (tpD/(tpD+fpD));
 	}
 
-	private Double computeRecall(int tp, int fn){
+	private Double computeRecall(double tp, double fn){
 		Double tpD = new Double(tp);
 		Double fnD =  new Double(fn);
 		if((tpD+fnD) ==0) 

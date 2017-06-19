@@ -25,17 +25,17 @@ public abstract class Consensus {
 	
 	public abstract Double computeSignalStrength(AnswerData data);
 	
-	public abstract Integer computeNumberOfWorkers(AnswerData data);
+	public abstract Double computeNumberOfWorkers(AnswerData data);
 
 	public abstract Double getMinimumNumberYESAnswersThatLocatedFault();
 
-	public abstract Integer getTruePositives();
+	public abstract Double getTruePositives();
 	
-	public abstract Integer getTrueNegatives();
+	public abstract Double getTrueNegatives();
 	
-	public abstract Integer getFalsePositives();
+	public abstract Double getFalsePositives();
 	
-	public abstract Integer getFalseNegatives();
+	public abstract Double getFalseNegatives();
 
 	public abstract HashMap<String, Integer> getTruePositiveLines(
 			HashMap<String, QuestionLinesMap> lineMapping);

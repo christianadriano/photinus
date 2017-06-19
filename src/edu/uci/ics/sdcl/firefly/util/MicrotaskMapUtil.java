@@ -68,7 +68,7 @@ public class MicrotaskMapUtil {
 		return millisec /(3600 *1000);
 	}
 
-	public static Integer countWorkers(
+	public static Double countWorkers(
 			HashMap<String, Microtask> filteredMicrotaskMap, String fileName) {
 
 		HashMap<String,String> workerMap = new HashMap<String, String>();
@@ -80,7 +80,7 @@ public class MicrotaskMapUtil {
 				}
 			}
 		}
-		return workerMap.size();
+		return new Double(workerMap.size());
 	}
 
 	public static Double countAnswers(HashMap<String, Microtask> map){
@@ -133,9 +133,9 @@ public class MicrotaskMapUtil {
 		return cloneMap;
 	}
 
-	public static int getMaxAnswersPerQuestion(HashMap<String, Microtask> map){
+	public static Double getMaxAnswersPerQuestion(HashMap<String, Microtask> map){
 
-		int maxAnswers=0;
+		double maxAnswers=0;
 		for(Microtask microtask: map.values()){
 			maxAnswers = maxAnswers<microtask.getNumberOfAnswers()? microtask.getNumberOfAnswers(): maxAnswers;
 		}
