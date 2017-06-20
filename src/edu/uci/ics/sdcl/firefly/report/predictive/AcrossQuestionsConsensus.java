@@ -402,10 +402,11 @@ public class AcrossQuestionsConsensus extends Consensus{
 					Double yesCount = this.questionYESCountMap.get(questionID);
 					if(yesCount!=null && yesCount>=this.threshold && this.threshold>0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
-						if(questionLinesMap.nonFaultyLines==null) 
-							System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
-						else
+						if(questionLinesMap.nonFaultyLines!=null) 
 							map = loadLines(map,questionLinesMap.nonFaultyLines);
+						//else
+							//System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
+
 					}
 				}
 			}

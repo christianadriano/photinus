@@ -329,21 +329,21 @@ public class MonteCarloSimulator {
 	}
 
 	//----------------------------------------------------------------------
-	
+
 	public void run(){		
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
-		boolean isAbsoluteVoting = true;
-		
-		// for(SubCrowd crowd:subCrowdList){
-		SubCrowd crowd =subCrowdList.get(0);	
-		FileSessionDTO dto = new FileSessionDTO();
-		
-		HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
+		boolean isAbsoluteVoting = false;
 		int numberOfSamples = 10000; //how many simulated crowds
-		int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
-		generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting);			 
-		//}
+
+		for(SubCrowd crowd:subCrowdList){
+		//	SubCrowd crowd =subCrowdList.get(1);	
+			
+			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
+
+			int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
+			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting);			 
+		}
 	}
 
 	/** THis is used to test, but the actual call is made from class SimulationController */
