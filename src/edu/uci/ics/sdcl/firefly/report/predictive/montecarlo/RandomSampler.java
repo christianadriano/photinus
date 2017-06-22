@@ -23,8 +23,10 @@ public class RandomSampler {
 	private int numberOfSamples;
 	private int sampleSize;  
 	private int populationSize;
+	private boolean isFixedSampleSize;
+	
 
-	public RandomSampler(int sampleSize, int numberOfSamples, int populationSize){
+	public RandomSampler(int sampleSize, int numberOfSamples, int populationSize, boolean isFixedSampleSize){
 		this.sampleSize = sampleSize;
 		this.numberOfSamples = numberOfSamples;
 		this.populationSize = populationSize;
@@ -84,9 +86,14 @@ public class RandomSampler {
 		HashMap<String,ArrayList<Vector<Answer>>> sampledAnswerByQuestion = new HashMap<String,ArrayList<Vector<Answer>>>();
 
 		for(Microtask task: microtaskMap.values()){
+			ArrayList<Vector<Answer>> sampleAnswerList = new ArrayList<Vector<Answer>>();
 			String questionID = task.getID().toString();
 			Vector<Answer> answerList = task.getAnswerList();
-			ArrayList<Vector<Answer>> sampleAnswerList = this.sampleAnswers(answerList);
+			if(!this.isFixedSampleSize && answerList.size()<=this.populationSize){
+				sampleAnswerList.add((Vector<Answer>)answerList.clone());
+			}
+			else
+				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
 					
 			sampledAnswerByQuestion.put(questionID, sampleAnswerList);
 		}
@@ -130,7 +137,7 @@ public class RandomSampler {
 	 * @param answerList
 	 * @return sampled answers out of the population, sampled without replacement.
 	 */
-	private ArrayList<Vector<Answer>> sampleAnswers(Vector<Answer> answerList){
+	private ArrayList<Vector<Answer>> sampleAnswersFixedSize(Vector<Answer> answerList){
 
 		ArrayList<Vector<Answer>> samplesList = new ArrayList<Vector<Answer>>(); 
 
@@ -139,7 +146,7 @@ public class RandomSampler {
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
-			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize);
+			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize,this.populationSize);
 			for(String key: pickedAnswersMap.keySet()){
 				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
 				sample.add(answer);
@@ -150,7 +157,7 @@ public class RandomSampler {
 		}
 		return samplesList;
 	}
-
+	
 	private void printSample(Vector<Answer> sample) {
 		String outcome = "";
 		for(int i=0;i<sample.size();i++){
@@ -162,13 +169,13 @@ public class RandomSampler {
 
 
 	/** To avoid picking the same answer twice */
-	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int max){
+	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int sampleSize,int populationSize){
 
 		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
 
-		while(pickedAnswersMap.size()<max){
+		while(pickedAnswersMap.size()<sampleSize){
 			Random rand = new Random();
-			Integer index = rand.nextInt(this.populationSize);
+			Integer index = rand.nextInt(populationSize);
 			String indexStr = index.toString();
 			if(!pickedAnswersMap.containsKey(indexStr)){
 				pickedAnswersMap.put(indexStr, index);
@@ -225,7 +232,7 @@ public class RandomSampler {
 					elapsedTime, timeStamp, difficulty, orderInWorkerSession,sessionID));
 		}
 
-		ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswers(answerList);
+		ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswersFixedSize(answerList);
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = answerSamplesList.get(i);
 			for(int j=0; j<sample.size();j++){
@@ -244,7 +251,7 @@ public class RandomSampler {
 	}
 	
 	public static void main(String args[]){
-		RandomSampler sampling = new RandomSampler(19,2,20);
+		RandomSampler sampling = new RandomSampler(19,2,20,true);
 		sampling.testSampleAnswerForQuestion();
 		//sampling.testGenerateSamplesPerQuestion();
 	}

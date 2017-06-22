@@ -291,7 +291,7 @@ public class MonteCarloSimulator {
 	//------------------------------------------------------------------------------------------------------
 
 	private void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
-			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting){
+			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting, boolean isFixedSampleSize){
 
 		for(int i=1;i<=populationSize;i++){
 
@@ -299,7 +299,7 @@ public class MonteCarloSimulator {
 			int sampleSize = i; 
 
 			//Generate the samples
-			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, populationSize);
+			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, populationSize, isFixedSampleSize);
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
 
 			//Compute statistics for each sample
@@ -334,6 +334,7 @@ public class MonteCarloSimulator {
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
 		boolean isAbsoluteVoting = false;
+		boolean isFixedSampleSize = true;
 		int numberOfSamples = 10000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
@@ -342,7 +343,7 @@ public class MonteCarloSimulator {
 			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
 
 			int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
-			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting);			 
+			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting,isFixedSampleSize);			 
 		}
 	}
 
