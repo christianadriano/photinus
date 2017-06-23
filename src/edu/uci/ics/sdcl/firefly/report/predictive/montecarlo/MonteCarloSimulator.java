@@ -334,12 +334,12 @@ public class MonteCarloSimulator {
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
 		boolean isAbsoluteVoting = false;
-		boolean isFixedSampleSize = true;
+		boolean isFixedSampleSize = false;
 		int numberOfSamples = 10000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
-		//	SubCrowd crowd =subCrowdList.get(1);	
-			
+			//SubCrowd crowd =subCrowdList.get(1);	
+
 			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
 
 			int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
