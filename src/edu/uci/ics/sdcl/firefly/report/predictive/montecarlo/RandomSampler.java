@@ -24,12 +24,21 @@ public class RandomSampler {
 	private int sampleSize;  
 	private int populationSize;
 	private boolean isFixedSampleSize;
-	
+
+	private HashMap<String,Integer> indexMap= new HashMap<String,Integer>();
+
 
 	public RandomSampler(int sampleSize, int numberOfSamples, int populationSize, boolean isFixedSampleSize){
+
 		this.sampleSize = sampleSize;
 		this.numberOfSamples = numberOfSamples;
 		this.populationSize = populationSize;
+
+		//Initializes the index used to sample answers
+		for(int i=0;i<populationSize;i++){
+			Integer indexInt = new Integer(i);
+			indexMap.put(indexInt.toString(),indexInt);
+		}
 	}
 
 
@@ -94,7 +103,7 @@ public class RandomSampler {
 			}
 			else
 				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
-					
+
 			sampledAnswerByQuestion.put(questionID, sampleAnswerList);
 		}
 		return sampledAnswerByQuestion;
@@ -108,7 +117,7 @@ public class RandomSampler {
 	 * @return the size of the microtasks with fewer answers
 	 */
 	public static int computeMaximumSampleSize(HashMap<String, Microtask> microtaskMap){
-		
+
 		int minimumAnswersPerMicrotask = 20;
 		for(Microtask task: microtaskMap.values()){
 			Vector<Answer> answerList = task.getAnswerList();
@@ -119,7 +128,7 @@ public class RandomSampler {
 	}
 
 	private void printSamples(String questionID, ArrayList<Vector<Answer>> sampleAnswerList) {
-		
+
 		System.out.println(questionID+"--------------------------");
 		for(int i=0;i<sampleAnswerList.size();i++){	
 			System.out.println("-- Sample:"+i);
@@ -146,7 +155,7 @@ public class RandomSampler {
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
-			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize,this.populationSize);
+			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize,answerList.size());
 			for(String key: pickedAnswersMap.keySet()){
 				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
 				sample.add(answer);
@@ -157,39 +166,47 @@ public class RandomSampler {
 		}
 		return samplesList;
 	}
-	
-	private void printSample(Vector<Answer> sample) {
-		String outcome = "";
-		for(int i=0;i<sample.size();i++){
-			outcome = outcome + ","+ sample.get(i).getOption();
-		}
-		System.out.println(outcome);
-		
-	}
 
-
-	/** To avoid picking the same answer twice */
+	/**
+	 * 	
+	 * Create a random list of unique indexes, so we can avoid picking the same answer twice 
+	 * @param sampleSize
+	 * @param populationSize
+	 * @return
+	 */
 	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int sampleSize,int populationSize){
 
 		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
 
+		Random rand = new Random();
+
 		while(pickedAnswersMap.size()<sampleSize){
-			Random rand = new Random();
+
 			Integer index = rand.nextInt(populationSize);
 			String indexStr = index.toString();
 			if(!pickedAnswersMap.containsKey(indexStr)){
 				pickedAnswersMap.put(indexStr, index);
 			}
 		}
-		
+
 		//if(max==20){
 		//	printMap(pickedAnswersMap);
 		//}
-		
+
 		return pickedAnswersMap;
 	}
 
-	
+
+	private void printSample(Vector<Answer> sample) {
+		String outcome = "";
+		for(int i=0;i<sample.size();i++){
+			outcome = outcome + ","+ sample.get(i).getOption();
+		}
+		System.out.println(outcome);
+
+	}
+
+
 	private void printMap(HashMap<String,Integer> pickedAnswersMap){
 		String outcome="";
 		Iterator<String> iter = pickedAnswersMap.keySet().iterator();
@@ -199,7 +216,7 @@ public class RandomSampler {
 		}
 		System.out.println(outcome);
 	}
-	
+
 	private HashMap<String, Microtask> cloneMap(HashMap<String, Microtask> map){
 
 		HashMap<String, Microtask> cloneMap = new HashMap<String, Microtask>();
@@ -210,7 +227,7 @@ public class RandomSampler {
 		}
 		return cloneMap;
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	public void testSampleAnswerForQuestion(){
@@ -243,15 +260,15 @@ public class RandomSampler {
 	}
 
 	public void testGenerateSamplesPerQuestion(){
-		
+
 		FileSessionDTO dto =  new FileSessionDTO();
 		HashMap<String,Microtask> map = (HashMap<String, Microtask>) dto.getMicrotasks();
-		
+
 		this.generateMicrotaskMap(map);
 	}
-	
+
 	public static void main(String args[]){
-		RandomSampler sampling = new RandomSampler(19,2,20,true);
+		RandomSampler sampling = new RandomSampler(4,20,20,true);
 		sampling.testSampleAnswerForQuestion();
 		//sampling.testGenerateSamplesPerQuestion();
 	}
