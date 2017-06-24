@@ -193,9 +193,9 @@ public class AttributeRangeGenerator {
 		range = originalMap.get(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383);
 		selectedRangeMap.put(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383, range);
 
-		originalMap =  AttributeRangeGenerator.setupQuestionsToExclude();
-		range = originalMap.get(AttributeRangeGenerator.CONDITIONAL_CLAUSE_ABOVE_3LINES);
-		selectedRangeMap.put(AttributeRangeGenerator.CONDITIONAL_CLAUSE_ABOVE_3LINES, range);
+		//originalMap =  AttributeRangeGenerator.setupQuestionsToExclude();
+		//range = originalMap.get(AttributeRangeGenerator.CONDITIONAL_CLAUSE_ABOVE_3LINES);
+		//selectedRangeMap.put(AttributeRangeGenerator.CONDITIONAL_CLAUSE_ABOVE_3LINES, range);
 
 		originalMap =  AttributeRangeGenerator.setupNoFilters();
 		range = originalMap.get(AttributeRangeGenerator.NO_FILTERS);
