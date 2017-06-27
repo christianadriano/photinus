@@ -22,23 +22,20 @@ public class RandomSampler {
 
 	private int numberOfSamples;
 	private int sampleSize;  
-	private int populationSize;
-	private boolean isFixedSampleSize;
+	private int maximumSampleSize;
+	private boolean isVariableSampleSize;
 
-	private HashMap<String,Integer> indexMap= new HashMap<String,Integer>();
+	/** Map used to store the categories of samples produced by each simulation */
+	private HashMap<String,Integer> sampleProfileMap= new HashMap<String,Integer>();
 
 
-	public RandomSampler(int sampleSize, int numberOfSamples, int populationSize, boolean isFixedSampleSize){
+	public RandomSampler(int sampleSize, int numberOfSamples, int maximumSampleSize, boolean isVariableSampleSize){
 
 		this.sampleSize = sampleSize;
 		this.numberOfSamples = numberOfSamples;
-		this.populationSize = populationSize;
+		this.maximumSampleSize = maximumSampleSize;
+		this.isVariableSampleSize = isVariableSampleSize;
 
-		//Initializes the index used to sample answers
-		for(int i=0;i<populationSize;i++){
-			Integer indexInt = new Integer(i);
-			indexMap.put(indexInt.toString(),indexInt);
-		}
 	}
 
 
@@ -92,31 +89,61 @@ public class RandomSampler {
 	 */
 	private HashMap<String,ArrayList<Vector<Answer>>> generateSamplesPerQuestion(HashMap<String, Microtask> microtaskMap){
 
-		HashMap<String,ArrayList<Vector<Answer>>> sampledAnswerByQuestion = new HashMap<String,ArrayList<Vector<Answer>>>();
-
+		HashMap<String,ArrayList<Vector<Answer>>> sampledAnswerByQuestionMap = new HashMap<String,ArrayList<Vector<Answer>>>();
+		int oversamplingCount=0;
+		int normalsamplingCount=0;
 		for(Microtask task: microtaskMap.values()){
 			ArrayList<Vector<Answer>> sampleAnswerList = new ArrayList<Vector<Answer>>();
 			String questionID = task.getID().toString();
 			Vector<Answer> answerList = task.getAnswerList();
-			if(!this.isFixedSampleSize && answerList.size()<=this.populationSize){
-				sampleAnswerList.add((Vector<Answer>)answerList.clone());
-			}
-			else
-				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
 
-			sampledAnswerByQuestion.put(questionID, sampleAnswerList);
+			if(this.isVariableSampleSize && answerList.size()<=this.sampleSize){
+				oversamplingCount++;
+				sampleAnswerList.add((Vector<Answer>)answerList.clone()); //Don't sample, just take the entire list of answers.
+			}
+			  else if(answerList.size()<this.sampleSize){
+				System.out.println("SHOULD NEVER ENTER HERE!!!!!!!!!!!!, sampleSize:"+this.sampleSize+", answerList.size:"+answerList.size());
+			}
+			else{
+				normalsamplingCount++;
+				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
+			}
+
+			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
 		}
-		return sampledAnswerByQuestion;
+		
+		System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
+		
+		return sampledAnswerByQuestionMap;
 	}
 
 	/**
-	 * When dealing with filtered data, Microtasks will have different number of answers each.
-	 * Therefore, we should set the maximum sample size to the size of the minimum number of answers per microtask.
-	 * This was we avoid over-sampling microtasks that have fewer answers.
+	 * While dealing with filtered data, Microtasks will have different number of answers each.
+	 * Therefore, we should set the maximum sample size to the size of the MAXIMUM number of answers per microtask.
+	 * This way we avoid over-sampling microtasks that have fewer answers.
 	 * @param microtaskMap
 	 * @return the size of the microtasks with fewer answers
 	 */
-	public static int computeMaximumSampleSize(HashMap<String, Microtask> microtaskMap){
+	public static int computeMaximum_NumberAnswers(HashMap<String, Microtask> microtaskMap){
+
+		int maximumAnswersPerMicrotask = 0;
+		for(Microtask task: microtaskMap.values()){
+			Vector<Answer> answerList = task.getAnswerList();
+			if(answerList.size()>maximumAnswersPerMicrotask)
+				maximumAnswersPerMicrotask = answerList.size();
+		}
+		return maximumAnswersPerMicrotask;
+	}
+
+
+	/**
+	 * While dealing with filtered data, Microtasks will have different number of answers each.
+	 * Therefore, we should set the maximum sample size to the size of the MINIMUM number of answers per microtask.
+	 * This way we avoid over-sampling microtasks that have fewer answers.
+	 * @param microtaskMap
+	 * @return the size of the microtasks with fewer answers
+	 */
+	public static int computeMinimum_NumberAnswers(HashMap<String, Microtask> microtaskMap){
 
 		int minimumAnswersPerMicrotask = 20;
 		for(Microtask task: microtaskMap.values()){
@@ -155,7 +182,7 @@ public class RandomSampler {
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
-			pickedAnswersMap = sampleWithoutReplacementIndexes(this.sampleSize,answerList.size());
+			pickedAnswersMap = sampleWithoutReplacement(this.sampleSize,answerList.size());
 			for(String key: pickedAnswersMap.keySet()){
 				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
 				sample.add(answer);
@@ -174,104 +201,162 @@ public class RandomSampler {
 	 * @param populationSize
 	 * @return
 	 */
-	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int sampleSize,int populationSize){
+//	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int sampleSize,int populationSize){
+//
+//		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
+//
+//		Random rand = new Random();
+//
+//		while(pickedAnswersMap.size()<sampleSize){
+//
+//			Integer index = rand.nextInt(populationSize);
+//			String indexStr = index.toString();
+//			if(!pickedAnswersMap.containsKey(indexStr)){
+//				pickedAnswersMap.put(indexStr, index);
+//			}
+//		}
+//
+//		//if(max==20){
+//		//	printMap(pickedAnswersMap);
+//		//}
+//
+//		return pickedAnswersMap;
+//	}
+
+	/**
+	 * 	
+	 * Create a random list of unique indexes, so we can avoid picking the same answer twice 
+	 * @param sampleSize
+	 * @param populationSize
+	 * @return
+	 */
+	private HashMap<String,Integer> sampleWithoutReplacement (int sampleSize,int populationSize){
+		
+		//Create the list of indexes
+		ArrayList<String> indexList = new ArrayList<String>();
+		for(int i=0;i<populationSize;i++){
+			indexList.add(new Integer(i).toString());
+		}
+
 
 		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
 
 		Random rand = new Random();
 
-		while(pickedAnswersMap.size()<sampleSize){
+		int currentSize = populationSize;
 
-			Integer index = rand.nextInt(populationSize);
-			String indexStr = index.toString();
+		for(int i=0; i<sampleSize;i++){
+			Integer index = rand.nextInt(currentSize);
+			
+			String indexStr = indexList.get(index.intValue());
+
 			if(!pickedAnswersMap.containsKey(indexStr)){
 				pickedAnswersMap.put(indexStr, index);
 			}
+			else
+			{
+				System.out.println("ERROR index repeated at sampleWithoutReplacement:"+ indexStr);
+			}
+			
+			//Updates the list of indexes to sample from
+			indexList.remove(index.intValue());
+			currentSize--;
 		}
-
-		//if(max==20){
-		//	printMap(pickedAnswersMap);
-		//}
-
 		return pickedAnswersMap;
 	}
 
+	 
 
-	private void printSample(Vector<Answer> sample) {
-		String outcome = "";
-		for(int i=0;i<sample.size();i++){
-			outcome = outcome + ","+ sample.get(i).getOption();
+
+private void printSample(Vector<Answer> sample) {
+	String outcome = "";
+	for(int i=0;i<sample.size();i++){
+		outcome = outcome + ","+ sample.get(i).getOption();
+	}
+	System.out.println(outcome);
+
+}
+
+
+private void printMap(HashMap<String,Integer> pickedAnswersMap){
+	String outcome="";
+	Iterator<String> iter = pickedAnswersMap.keySet().iterator();
+	while(iter.hasNext()){
+		String key = iter.next();
+		outcome = outcome+","+key;
+	}
+	System.out.println(outcome);
+}
+
+private HashMap<String, Microtask> cloneMap(HashMap<String, Microtask> map){
+
+	HashMap<String, Microtask> cloneMap = new HashMap<String, Microtask>();
+
+	for(Microtask microtask : map.values()){
+		Microtask cloneTask = microtask.getSimpleVersion();
+		cloneMap.put(cloneTask.getID().toString(), cloneTask);
+	}
+	return cloneMap;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+
+public void testSampleAnswerForQuestion(){
+
+	//String option, int confidenceOption, String explanation, String workerId, 
+	//String elapsedTime, String timeStamp, int difficulty, int orderInWorkerSession
+	int confidence=0;
+	int difficulty =0;
+	int orderInWorkerSession=0;
+	String explanation = "explanation";
+	String timeStamp = null;
+	String elapsedTime = "00:00:00.000";
+	String sessionID="sessionID";
+
+	Vector<Answer> answerList = new Vector<Answer>();
+
+	for(int i=0; i<this.maximumSampleSize;i++){
+		answerList.add(new Answer("YES", confidence, explanation, new Integer(i).toString(), 
+				elapsedTime, timeStamp, difficulty, orderInWorkerSession,sessionID));
+	}
+
+	ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswersFixedSize(answerList);
+	for(int i=0;i<this.numberOfSamples;i++){
+		Vector<Answer> sample = answerSamplesList.get(i);
+		for(int j=0; j<sample.size();j++){
+			System.out.print(sample.get(j).getWorkerId()+":");
 		}
-		System.out.println(outcome);
-
+		System.out.println();
 	}
+}
+
+public void testGenerateSamplesPerQuestion(){
+
+	FileSessionDTO dto =  new FileSessionDTO();
+	HashMap<String,Microtask> map = (HashMap<String, Microtask>) dto.getMicrotasks();
+
+	this.generateMicrotaskMap(map);
+}
+
+private void testSampleWithoutReplacement(int sampleSize, int populationSize) {
+	
+	 HashMap<String,Integer> pickedAnswersMap =  this.sampleWithoutReplacement(sampleSize, populationSize);
+	 Iterator<String> iterKeys = pickedAnswersMap.keySet().iterator();
+	 while(iterKeys.hasNext()){
+		 System.out.println((String)iterKeys.next());
+	 }
+}
 
 
-	private void printMap(HashMap<String,Integer> pickedAnswersMap){
-		String outcome="";
-		Iterator<String> iter = pickedAnswersMap.keySet().iterator();
-		while(iter.hasNext()){
-			String key = iter.next();
-			outcome = outcome+","+key;
-		}
-		System.out.println(outcome);
-	}
+public static void main(String args[]){
+	RandomSampler sampling = new RandomSampler(4,20,20,true);
+	//sampling.testSampleAnswerForQuestion();
+	//sampling.testGenerateSamplesPerQuestion();
+	sampling.testSampleWithoutReplacement(3,9);
+}
 
-	private HashMap<String, Microtask> cloneMap(HashMap<String, Microtask> map){
 
-		HashMap<String, Microtask> cloneMap = new HashMap<String, Microtask>();
 
-		for(Microtask microtask : map.values()){
-			Microtask cloneTask = microtask.getSimpleVersion();
-			cloneMap.put(cloneTask.getID().toString(), cloneTask);
-		}
-		return cloneMap;
-	}
-
-	//-------------------------------------------------------------------------------------------------------------------------------
-
-	public void testSampleAnswerForQuestion(){
-
-		//String option, int confidenceOption, String explanation, String workerId, 
-		//String elapsedTime, String timeStamp, int difficulty, int orderInWorkerSession
-		int confidence=0;
-		int difficulty =0;
-		int orderInWorkerSession=0;
-		String explanation = "explanation";
-		String timeStamp = null;
-		String elapsedTime = "00:00:00.000";
-		String sessionID="sessionID";
-
-		Vector<Answer> answerList = new Vector<Answer>();
-
-		for(int i=0; i<this.populationSize;i++){
-			answerList.add(new Answer("YES", confidence, explanation, new Integer(i).toString(), 
-					elapsedTime, timeStamp, difficulty, orderInWorkerSession,sessionID));
-		}
-
-		ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswersFixedSize(answerList);
-		for(int i=0;i<this.numberOfSamples;i++){
-			Vector<Answer> sample = answerSamplesList.get(i);
-			for(int j=0; j<sample.size();j++){
-				System.out.print(sample.get(j).getWorkerId()+":");
-			}
-			System.out.println();
-		}
-	}
-
-	public void testGenerateSamplesPerQuestion(){
-
-		FileSessionDTO dto =  new FileSessionDTO();
-		HashMap<String,Microtask> map = (HashMap<String, Microtask>) dto.getMicrotasks();
-
-		this.generateMicrotaskMap(map);
-	}
-
-	public static void main(String args[]){
-		RandomSampler sampling = new RandomSampler(4,20,20,true);
-		sampling.testSampleAnswerForQuestion();
-		//sampling.testGenerateSamplesPerQuestion();
-	}
 
 
 }

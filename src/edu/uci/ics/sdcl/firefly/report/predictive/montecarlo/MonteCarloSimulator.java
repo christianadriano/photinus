@@ -1,10 +1,13 @@
 package edu.uci.ics.sdcl.firefly.report.predictive.montecarlo;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
@@ -234,10 +237,15 @@ public class MonteCarloSimulator {
 	public void printDataPointsToFile(int name){
 
 		String nameStr = new Integer(name).toString();
-		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//"+this.outputFolder+"//"+ nameStr+".csv";
+		String directory = "C://firefly//MonteCarloSimulation//ByJavaMethod//"+this.outputFolder+"//";
+		String destination = directory + nameStr+".csv";
 		BufferedWriter log;
 
 		try {
+			//Clean previous files before writing in the Java Method directory 
+			File directoryFile = new File(directory);
+			org.apache.commons.io.FileUtils.cleanDirectory(directoryFile);
+			
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
 
@@ -290,16 +298,16 @@ public class MonteCarloSimulator {
 
 	//------------------------------------------------------------------------------------------------------
 
-	private void generateSimulations(FilterCombination filter, int populationSize, int numberOfSamples, 
+	private void generateSimulations(FilterCombination filter, int maximumSampleSize, int numberOfSamples, 
 			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting, boolean isFixedSampleSize){
 
-		for(int i=1;i<=populationSize;i++){
+		for(int i=1;i<=maximumSampleSize;i++){
 
 			//how many answers per question
 			int sampleSize = i; 
 
 			//Generate the samples
-			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, populationSize, isFixedSampleSize);
+			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize);
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
 
 			//Compute statistics for each sample
@@ -333,17 +341,23 @@ public class MonteCarloSimulator {
 	public void run(){		
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
-		boolean isAbsoluteVoting = false;
-		boolean isFixedSampleSize = false;
-		int numberOfSamples = 10000; //how many simulated crowds
+		boolean isAbsoluteVoting = true;
+		boolean isVariableSampleSize = true;
+		int numberOfSamples = 1000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
 			//SubCrowd crowd =subCrowdList.get(1);	
 
 			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
-
-			int maximumSampleSize = RandomSampler.computeMaximumSampleSize(microtaskMap);//total answers per question		
-			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting,isFixedSampleSize);			 
+			
+			int maximumSampleSize;
+			if(isVariableSampleSize){
+				maximumSampleSize = RandomSampler.computeMaximum_NumberAnswers(microtaskMap);//maximum it capped to the question with the fewest answers	
+			}
+			else{
+				maximumSampleSize = RandomSampler.computeMinimum_NumberAnswers(microtaskMap);//maximum it capped to the question with the most answers	
+			}
+			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting,isVariableSampleSize);			 
 		}
 	}
 
