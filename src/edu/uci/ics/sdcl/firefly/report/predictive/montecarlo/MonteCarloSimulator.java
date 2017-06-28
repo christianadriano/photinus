@@ -7,11 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.commons.io.FileUtils;
-
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
-import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
@@ -38,9 +35,9 @@ public class MonteCarloSimulator {
 
 	private HashMap<String,String> bugCoveringMap;
 
-	private HashMap<String, DataPoint> positiveVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+	private HashMap<String, DataPoint> positiveVoting_AverageDataPointByAnswerLevel;
 
-	private HashMap<String, DataPoint> majorityVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+	private HashMap<String, DataPoint> majorityVoting_AverageDataPointByAnswerLevel;
 
 	private String outputFolder = "";
 
@@ -69,18 +66,19 @@ public class MonteCarloSimulator {
 			DataPoint positiveVDataPoint = new DataPoint();
 			DataPoint majorityVDataPoint = new DataPoint();
 
+			Consensus predictorAcrossQuestions = new AcrossQuestionsConsensus(2,isAbsoluteVoting);
+			Consensus predictorWithinQuestions = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0,isAbsoluteVoting);
+			
 			for(String fileName: fileNameList){//each fileName is a Java method
 				HashMap<String, ArrayList<String>> answerMap = MicrotaskMapUtil.extractAnswersForFileName(microtaskMap,fileName);
 				if(answerMap!=null && answerMap.size()>0){
 
 					Double workerCountPerHIT = MicrotaskMapUtil.countWorkers(microtaskMap,fileName);
 					AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-					Consensus predictor = new AcrossQuestionsConsensus(2,isAbsoluteVoting);
-					Outcome outcome = computeDataPoint(filter, data,predictor,lineMapping);
+					Outcome outcome = computeDataPoint(filter, data,predictorAcrossQuestions,lineMapping);
 					positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-					predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0,isAbsoluteVoting);
-					outcome = computeDataPoint(filter, data,predictor,lineMapping);
+					outcome = computeDataPoint(filter, data,predictorWithinQuestions,lineMapping);
 					majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 				}
 			}
@@ -301,15 +299,22 @@ public class MonteCarloSimulator {
 	private void generateSimulations(FilterCombination filter, int maximumSampleSize, int numberOfSamples, 
 			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting, boolean isFixedSampleSize){
 
+		this.positiveVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+
+		this.majorityVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+		
 		for(int i=1;i<=maximumSampleSize;i++){
 
 			//how many answers per question
 			int sampleSize = i; 
-
+			
 			//Generate the samples
 			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize);
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
 
+			
+			//System.out.println("OrigAnswers:"+MicrotaskMapUtil.countAnswers(microtaskMap)+", #Answers: + "+MicrotaskMapUtil.countAnswers(listOfMicrotaskMaps.get(listOfMicrotaskMaps.size()-1)));
+			
 			//Compute statistics for each sample
 			computeVoting(filter, listOfMicrotaskMaps, sampleSize, isAbsoluteVoting);
 
@@ -342,13 +347,14 @@ public class MonteCarloSimulator {
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
 		boolean isAbsoluteVoting = true;
-		boolean isVariableSampleSize = true;
+		boolean isVariableSampleSize = false;
 		int numberOfSamples = 1000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
-			//SubCrowd crowd =subCrowdList.get(1);	
+			///SubCrowd crowd =subCrowdList.get(8);	
 
 			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
+			System.out.println(crowd.name+", #answers: "+MicrotaskMapUtil.countAnswers(microtaskMap)+", #workers:"+MicrotaskMapUtil.countWorkers(microtaskMap, null));
 			
 			int maximumSampleSize;
 			if(isVariableSampleSize){

@@ -46,8 +46,10 @@ public class RandomSampler {
 	 */
 	public  ArrayList<HashMap<String, Microtask>> generateMicrotaskMap(HashMap<String, Microtask> microtaskMap){
 
+		//List of microtaskMaps to be initialized with the actual sampled answers. List has typically 1000 or 10000 microtaskMaps
 		ArrayList<HashMap<String, Microtask>> sampleMapsList = this.initializeSampledMaps(microtaskMap);	
 
+		//Keeps a list of sample answer lists for each question. Typically a 1000 or 10000 answerlist for each question
 		HashMap<String,ArrayList<Vector<Answer>>> sampledAnswerByQuestion = this.generateSamplesPerQuestion(microtaskMap);
 
 		for(String questionID : sampledAnswerByQuestion.keySet()){
@@ -112,7 +114,7 @@ public class RandomSampler {
 			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
 		}
 		
-		System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
+		//System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
 		
 		return sampledAnswerByQuestionMap;
 	}

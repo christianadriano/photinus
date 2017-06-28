@@ -68,6 +68,12 @@ public class MicrotaskMapUtil {
 		return millisec /(3600 *1000);
 	}
 
+	/**
+	 * 
+	 * @param filteredMicrotaskMap
+	 * @param fileName Java Method name or null if one wants a count across all Java Methods
+	 * @return
+	 */
 	public static Double countWorkers(
 			HashMap<String, Microtask> filteredMicrotaskMap, String fileName) {
 
