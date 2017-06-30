@@ -114,7 +114,7 @@ public class RandomSampler {
 			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
 		}
 		
-		//System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
+		System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
 		
 		return sampledAnswerByQuestionMap;
 	}
@@ -196,34 +196,6 @@ public class RandomSampler {
 		return samplesList;
 	}
 
-	/**
-	 * 	
-	 * Create a random list of unique indexes, so we can avoid picking the same answer twice 
-	 * @param sampleSize
-	 * @param populationSize
-	 * @return
-	 */
-//	private HashMap<String,Integer> sampleWithoutReplacementIndexes (int sampleSize,int populationSize){
-//
-//		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
-//
-//		Random rand = new Random();
-//
-//		while(pickedAnswersMap.size()<sampleSize){
-//
-//			Integer index = rand.nextInt(populationSize);
-//			String indexStr = index.toString();
-//			if(!pickedAnswersMap.containsKey(indexStr)){
-//				pickedAnswersMap.put(indexStr, index);
-//			}
-//		}
-//
-//		//if(max==20){
-//		//	printMap(pickedAnswersMap);
-//		//}
-//
-//		return pickedAnswersMap;
-//	}
 
 	/**
 	 * 	
@@ -243,7 +215,7 @@ public class RandomSampler {
 
 		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
 
-		Random rand = new Random();
+		Random rand = new Random(System.currentTimeMillis());
 
 		int currentSize = populationSize;
 
