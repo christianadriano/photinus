@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import edu.uci.ics.sdcl.firefly.Answer;
-
 public class DataPoint {
 
 	public Double averagePrecision=0.0;
