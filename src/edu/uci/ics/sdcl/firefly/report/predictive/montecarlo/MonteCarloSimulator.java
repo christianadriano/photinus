@@ -41,7 +41,6 @@ public class MonteCarloSimulator {
 
 	private String outputFolder = "";
 
-
 	public MonteCarloSimulator(String outputFolder){
 
 		this.outputFolder = outputFolder;
@@ -238,7 +237,7 @@ public class MonteCarloSimulator {
 		String directory = "C://firefly//MonteCarloSimulation//ByJavaMethod//"+this.outputFolder+"//";
 		String destination = directory + nameStr+".csv";
 		BufferedWriter log;
-
+		
 		try {
 			//Clean previous files before writing in the Java Method directory 
 			File directoryFile = new File(directory);
@@ -271,7 +270,7 @@ public class MonteCarloSimulator {
 		String nameStr = name+"_datapoint";
 		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//DataPoints//"+ nameStr+".csv";
 		BufferedWriter log;
-
+		
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
 			//Print file header
@@ -302,6 +301,7 @@ public class MonteCarloSimulator {
 		this.positiveVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
 
 		this.majorityVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+		 
 		
 		for(int i=1;i<=maximumSampleSize;i++){
 
@@ -311,10 +311,7 @@ public class MonteCarloSimulator {
 			//Generate the samples
 			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize);
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
-
-			
-			//System.out.println("OrigAnswers:"+MicrotaskMapUtil.countAnswers(microtaskMap)+", #Answers: + "+MicrotaskMapUtil.countAnswers(listOfMicrotaskMaps.get(listOfMicrotaskMaps.size()-1)));
-			
+	
 			//Compute statistics for each sample
 			computeVoting(filter, listOfMicrotaskMaps, sampleSize, isAbsoluteVoting);
 
@@ -348,10 +345,10 @@ public class MonteCarloSimulator {
 
 		boolean isAbsoluteVoting = true;
 		boolean isVariableSampleSize = false;
-		int numberOfSamples = 1000; //how many simulated crowds
+		int numberOfSamples = 10000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
-			///SubCrowd crowd =subCrowdList.get(8);	
+			//SubCrowd crowd =subCrowdList.get(8);	
 
 			HashMap<String, Microtask> microtaskMap = crowd.microtaskMap;
 			System.out.println(crowd.name+", #answers: "+MicrotaskMapUtil.countAnswers(microtaskMap)+", #workers:"+MicrotaskMapUtil.countWorkers(microtaskMap, null));
