@@ -160,38 +160,38 @@ public class AttributeRangeGenerator {
 		CombinedFilterRange range;
 		HashMap<String, CombinedFilterRange> selectedRangeMap = new HashMap<String, CombinedFilterRange>();
 
-		//originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
-		//range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);		
-		//selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT, range);
+		originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT);		
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_NON_STUDENT, range);
 
-		//originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
-		//range = originalMap.get(AttributeRangeGenerator.WORKER_NON_STUDENT);	
-		//selectedRangeMap.put(AttributeRangeGenerator.WORKER_NON_STUDENT, range);
+		originalMap = AttributeRangeGenerator.setupProfessionRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_NON_STUDENT);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_NON_STUDENT, range);
 
 
-		//originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
-		//range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT);
-		//selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT, range);
+		originalMap = AttributeRangeGenerator.setupCombineScoreProfession();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT);
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80_NON_STUDENT, range);
 
 		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
 		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100);	
 		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100, range);
 
-		//originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
-		//range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);	
-		//selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
+		originalMap = AttributeRangeGenerator.setupScoreRangeFilters();
+		range = originalMap.get(AttributeRangeGenerator.WORKER_SCORE_100_80);	
+		selectedRangeMap.put(AttributeRangeGenerator.WORKER_SCORE_100_80, range);
 
-		//originalMap = AttributeRangeGenerator.setupAnswerDurations();
-		//range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);
-		//selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30, range);
+		originalMap = AttributeRangeGenerator.setupAnswerDurations();
+		range = originalMap.get(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30);
+		selectedRangeMap.put(AttributeRangeGenerator.ANSWER_DURATION_MIN_60_30, range);
 
-		//originalMap = AttributeRangeGenerator.setupConfidenceDifficulty();
-		//range = originalMap.get(AttributeRangeGenerator.CONFIDENCE_DIFFICULTY_UP_3_PERCENT);
-		//selectedRangeMap.put(AttributeRangeGenerator.CONFIDENCE_DIFFICULTY_UP_3_PERCENT, range);
+		originalMap = AttributeRangeGenerator.setupConfidenceDifficulty();
+		range = originalMap.get(AttributeRangeGenerator.CONFIDENCE_DIFFICULTY_UP_3_PERCENT);
+		selectedRangeMap.put(AttributeRangeGenerator.CONFIDENCE_DIFFICULTY_UP_3_PERCENT, range);
 
-		//originalMap =  AttributeRangeGenerator.setupExplanationSize();
-		//range = originalMap.get(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383);
-		//selectedRangeMap.put(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383, range);
+		originalMap =  AttributeRangeGenerator.setupExplanationSize();
+		range = originalMap.get(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383);
+		selectedRangeMap.put(AttributeRangeGenerator.EXPLANATION_2_3_4_QT_57_2383, range);
 
 		//originalMap =  AttributeRangeGenerator.setupQuestionsToExclude();
 		//range = originalMap.get(AttributeRangeGenerator.CONDITIONAL_CLAUSE_ABOVE_3LINES);
