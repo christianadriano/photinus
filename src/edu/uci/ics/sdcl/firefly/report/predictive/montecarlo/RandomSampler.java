@@ -1,5 +1,7 @@
 package edu.uci.ics.sdcl.firefly.report.predictive.montecarlo;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,8 +27,8 @@ public class RandomSampler {
 	private int maximumSampleSize;
 	private boolean isVariableSampleSize;
 
-	/** Map used to store the categories of samples produced by each simulation */
-	private HashMap<String,Integer> sampleProfileMap= new HashMap<String,Integer>();
+	/** Map used to store the information about the samples produced for each sample size */
+	private HashMap<Integer,SampledQuestions> sampledQuestionsMap;
 
 
 	public RandomSampler(int sampleSize, int numberOfSamples, int maximumSampleSize, boolean isVariableSampleSize){
@@ -35,7 +37,7 @@ public class RandomSampler {
 		this.numberOfSamples = numberOfSamples;
 		this.maximumSampleSize = maximumSampleSize;
 		this.isVariableSampleSize = isVariableSampleSize;
-
+		this.sampledQuestionsMap = new HashMap<Integer,SampledQuestions>(); 
 	}
 
 
@@ -111,6 +113,7 @@ public class RandomSampler {
 				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
 			}
 
+			
 			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
 		}
 		
@@ -227,9 +230,8 @@ public class RandomSampler {
 			if(!pickedAnswersMap.containsKey(indexStr)){
 				pickedAnswersMap.put(indexStr, index);
 			}
-			else
-			{
-				System.out.println("ERROR index repeated at sampleWithoutReplacement:"+ indexStr);
+			else{
+				System.out.println("ERROR! index was repeated at sampleWithoutReplacement:"+ indexStr);
 			}
 			
 			//Updates the list of indexes to sample from
@@ -240,7 +242,33 @@ public class RandomSampler {
 	}
 
 	 
+	public void printSampleProfiles(String fileName){
+		String nameStr = fileName+"_sampleProfiles";
+		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//DataPoints//"+ nameStr+".csv";
+		BufferedWriter log;
+		
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
 
+			log.write(SampledQuestions.getHeader()+"\n");
+
+			for(Integer key: this.sampledQuestionsMap.keySet()){
+
+				String line= sampledQuestionsMap.get(key).toString();
+				
+				log.write(line+"\n");
+			}		
+
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+	}
+	
 
 private void printSample(Vector<Answer> sample) {
 	String outcome = "";
