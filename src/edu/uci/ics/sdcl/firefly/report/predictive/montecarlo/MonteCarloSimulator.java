@@ -41,6 +41,9 @@ public class MonteCarloSimulator {
 
 	private String outputFolder = "";
 
+	/** Map used to store the information about the samples produced for each sample size */
+	private HashMap<String,SampledQuestions> sampledQuestionsProfileMap;
+
 	public MonteCarloSimulator(String outputFolder){
 
 		this.outputFolder = outputFolder;
@@ -263,7 +266,7 @@ public class MonteCarloSimulator {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void printToFile(HashMap<String, DataPoint> positiveVotingAverageMap,
 			HashMap<String, DataPoint> majorityVotingAverageMap,String name) {
 
@@ -293,6 +296,40 @@ public class MonteCarloSimulator {
 		}
 	}
 
+	
+	/** 
+	 * Prints the statistics about sampling
+	 * @param fileName
+	 * @see SampledQuestions
+	 */
+	public void printSampleProfiles(String fileName){
+		String nameStr = fileName+"_sampleProfiles";
+		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//DataPoints//"+ nameStr+".csv";
+		BufferedWriter log;
+		
+		try {
+			log = new BufferedWriter(new FileWriter(destination));
+			//Print file header
+
+			log.write(SampledQuestions.getHeader()+"\n");
+
+			for(String key: this.sampledQuestionsProfileMap.keySet()){
+
+				String line= sampledQuestionsProfileMap.get(key).toString();
+				
+				log.write(line+"\n");
+			}		
+
+			log.close();
+			System.out.println("file written at: "+destination);
+		} 
+		catch (Exception e) {
+			System.out.println("ERROR while processing file:" + destination);
+			e.printStackTrace();
+		}
+	}
+	
+	
 	//------------------------------------------------------------------------------------------------------
 
 	private void generateSimulations(FilterCombination filter, int maximumSampleSize, int numberOfSamples, 
@@ -301,7 +338,10 @@ public class MonteCarloSimulator {
 		this.positiveVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
 
 		this.majorityVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
+		
+		this.sampledQuestionsProfileMap = new HashMap<String,SampledQuestions>();
 		 
+		//Move sampleProfile 
 		
 		for(int i=1;i<=maximumSampleSize;i++){
 
@@ -309,8 +349,9 @@ public class MonteCarloSimulator {
 			int sampleSize = i; 
 			
 			//Generate the samples
-			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize);
+			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize,this.bugCoveringMap);
 			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
+			this.sampledQuestionsProfileMap.put(new Integer(i).toString(),sampling.getSampledQuestionsProfile());
 	
 			//Compute statistics for each sample
 			computeVoting(filter, listOfMicrotaskMaps, sampleSize, isAbsoluteVoting);
@@ -324,6 +365,10 @@ public class MonteCarloSimulator {
 		}
 		//print the averages samples from Majority voting and Positive voting
 		printToFile(this.positiveVoting_AverageDataPointByAnswerLevel,this.majorityVoting_AverageDataPointByAnswerLevel,crowdName);
+		
+		//print the profiles of the samples (oversampling, undersampling, etc.)
+		printSampleProfiles(crowdName);
+		
 	}
 
 	/**
@@ -344,7 +389,7 @@ public class MonteCarloSimulator {
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
 		boolean isAbsoluteVoting = true;
-		boolean isVariableSampleSize = false;
+		boolean isVariableSampleSize = true;
 		int numberOfSamples = 10000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){

@@ -11,6 +11,7 @@ import java.util.Vector;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
+import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 
 /** 
  * 
@@ -26,19 +27,26 @@ public class RandomSampler {
 	private int sampleSize;  
 	private int maximumSampleSize;
 	private boolean isVariableSampleSize;
+	
+	private HashMap<String,String> bugCoveringMap;
+	private SampledQuestions sampledQuestionsProfile;
 
-	/** Map used to store the information about the samples produced for each sample size */
-	private HashMap<Integer,SampledQuestions> sampledQuestionsMap;
 
-
-	public RandomSampler(int sampleSize, int numberOfSamples, int maximumSampleSize, boolean isVariableSampleSize){
+	public RandomSampler(int sampleSize, int numberOfSamples, int maximumSampleSize, 
+			boolean isVariableSampleSize, HashMap<String,String> bugCoveringMap){
 
 		this.sampleSize = sampleSize;
 		this.numberOfSamples = numberOfSamples;
 		this.maximumSampleSize = maximumSampleSize;
 		this.isVariableSampleSize = isVariableSampleSize;
-		this.sampledQuestionsMap = new HashMap<Integer,SampledQuestions>(); 
+		this.bugCoveringMap = bugCoveringMap;
 	}
+
+
+	public SampledQuestions getSampledQuestionsProfile() {
+		return this.sampledQuestionsProfile;
+	}
+
 
 
 	/**
@@ -94,8 +102,13 @@ public class RandomSampler {
 	private HashMap<String,ArrayList<Vector<Answer>>> generateSamplesPerQuestion(HashMap<String, Microtask> microtaskMap){
 
 		HashMap<String,ArrayList<Vector<Answer>>> sampledAnswerByQuestionMap = new HashMap<String,ArrayList<Vector<Answer>>>();
-		int oversamplingCount=0;
-		int normalsamplingCount=0;
+		double oversamplingCount=0.0;
+		double undersamplingCount=0.0;
+		double countOf_OversampledQuestions_bugCovering=0.0;
+		double countOf_UndersampledQuestions_bugCovering=0.0;
+		double countOf_OversampledQuestions_NonBugCovering = 0.0;
+		double countOf_UndersampledQuestions_NonBugCovering = 0.0;
+		
 		for(Microtask task: microtaskMap.values()){
 			ArrayList<Vector<Answer>> sampleAnswerList = new ArrayList<Vector<Answer>>();
 			String questionID = task.getID().toString();
@@ -103,24 +116,37 @@ public class RandomSampler {
 
 			if(this.isVariableSampleSize && answerList.size()<=this.sampleSize){
 				oversamplingCount++;
-				sampleAnswerList.add((Vector<Answer>)answerList.clone()); //Don't sample, just take the entire list of answers.
+				if(this.bugCoveringMap.containsKey(questionID))
+					countOf_OversampledQuestions_bugCovering++;
+				else
+					countOf_OversampledQuestions_NonBugCovering++;
+					
+					sampleAnswerList.add((Vector<Answer>)answerList.clone()); //Don't sample, just take the entire list of answers.
 			}
 			  else if(answerList.size()<this.sampleSize){
 				System.out.println("SHOULD NEVER ENTER HERE!!!!!!!!!!!!, sampleSize:"+this.sampleSize+", answerList.size:"+answerList.size());
 			}
 			else{
-				normalsamplingCount++;
+				undersamplingCount++;
+				if(this.bugCoveringMap.containsKey(questionID))
+					countOf_UndersampledQuestions_bugCovering++;
+				else
+					countOf_UndersampledQuestions_NonBugCovering++;
 				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
 			}
-
 			
 			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
 		}
 		
-		System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+normalsamplingCount);
+		//System.out.println("SampleSize:"+this.sampleSize+", OversamplingCount:"+oversamplingCount+", normalsamplingCount:"+undersamplingCount);
+		
+		this.sampledQuestionsProfile = new SampledQuestions(this.sampleSize,  oversamplingCount, undersamplingCount, 0,
+				 countOf_OversampledQuestions_bugCovering,  countOf_OversampledQuestions_NonBugCovering,
+				 countOf_UndersampledQuestions_bugCovering,  countOf_UndersampledQuestions_NonBugCovering);
 		
 		return sampledAnswerByQuestionMap;
 	}
+
 
 	/**
 	 * While dealing with filtered data, Microtasks will have different number of answers each.
@@ -242,32 +268,7 @@ public class RandomSampler {
 	}
 
 	 
-	public void printSampleProfiles(String fileName){
-		String nameStr = fileName+"_sampleProfiles";
-		String destination = "C://firefly//MonteCarloSimulation//ByJavaMethod//DataPoints//"+ nameStr+".csv";
-		BufferedWriter log;
-		
-		try {
-			log = new BufferedWriter(new FileWriter(destination));
-			//Print file header
 
-			log.write(SampledQuestions.getHeader()+"\n");
-
-			for(Integer key: this.sampledQuestionsMap.keySet()){
-
-				String line= sampledQuestionsMap.get(key).toString();
-				
-				log.write(line+"\n");
-			}		
-
-			log.close();
-			System.out.println("file written at: "+destination);
-		} 
-		catch (Exception e) {
-			System.out.println("ERROR while processing file:" + destination);
-			e.printStackTrace();
-		}
-	}
 	
 
 private void printSample(Vector<Answer> sample) {
@@ -351,7 +352,9 @@ private void testSampleWithoutReplacement(int sampleSize, int populationSize) {
 
 
 public static void main(String args[]){
-	RandomSampler sampling = new RandomSampler(4,20,20,true);
+	
+	HashMap<String,String> bugCoveringMap = BugCoveringMap.initialize();
+	RandomSampler sampling = new RandomSampler(4,20,20,true,bugCoveringMap);
 	//sampling.testSampleAnswerForQuestion();
 	//sampling.testGenerateSamplesPerQuestion();
 	sampling.testSampleWithoutReplacement(3,9);
