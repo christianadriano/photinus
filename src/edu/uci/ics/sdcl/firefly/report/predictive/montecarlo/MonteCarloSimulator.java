@@ -390,7 +390,7 @@ public class MonteCarloSimulator {
 
 		boolean isAbsoluteVoting = true;
 		boolean isVariableSampleSize = true;
-		int numberOfSamples = 10000; //how many simulated crowds
+		int numberOfSamples = 1000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
 			//SubCrowd crowd =subCrowdList.get(8);	

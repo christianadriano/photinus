@@ -87,33 +87,33 @@ public class SampledQuestions {
 	 * @return
 	 */
 	public static String getHeader(){
-		return("sampleSize, OversampledQuestions, % OversampledQuestions, " +
-				"BugCovering OversampledQuestions, % BugCovering_OversampledQuestions, " +
-				"UndersampledQuestions,  % UndersampledQuestions, " +
-				"BugCovering UndersampledQuestions, % BugCovering_UndersampledQuestions, " +
-				"NonBugCovering_OversampledQuestions, NonBugCovering_UndersampledQuestions, " +
-				"total_SampledQuestions, Not_SampledQuestions, " +
-				"top_1_oversampledQuestionID, top_2_oversampledQuestionID, top_3_oversampledQuestionID");
+		return("sampleSize, Oversampled Questions, % Oversampled Questions, " +
+				"BugCovering Oversampled Questions, % BugCovering Oversampled Questions, " +
+				"Undersampled Questions,  % Undersampled Questions, " +
+				"BugCovering Undersampled Questions, % BugCovering Undersampled Questions, " +
+				"NonBugCovering Oversampled Questions, NonBugCovering Undersampled Questions, " +
+				"total_Sampled Questions, Not_Sampled Questions, " +
+				"top_1_oversampled QuestionID, top_2_oversampled QuestionID, top_3_oversampled QuestionID");
 	}
 	
 	
 	public String toString(){
 						
-		return( this.sampleSize.toString() +
-				this.countOf_OversampledQuestions.toString() + 
-				this.percent_oversampledQuestions.toString() + 
-				this.countOf_OversampledQuestions_bugCovering.toString() +
-				this.percent_oversampledQuestions_bugCovering.toString() +
-				this.countOf_UndersampledQuestions.toString() + 
-				this.percent_undersampledQuestions.toString() + 
-				this.countOf_UndersampledQuestions_bugCovering.toString() +
-				this.percent_undersampledQuestions_bugCovering.toString() +
-				this.countOf_OversampledQuestions_NonBugCovering.toString() +
-				this.countOf_UndersampledQuestions_NonBugCovering.toString() +
-				this.total_SampledQuestions.toString() +
-				this.countOf_NotSampledQuestions.toString()+
-				this.top_1_oversampledQuestionID+
-				this.top_2_oversampledQuestionID+
+		return( this.sampleSize.toString() +","+
+				this.countOf_OversampledQuestions.toString() +","+
+				this.percent_oversampledQuestions.toString() +","+
+				this.countOf_OversampledQuestions_bugCovering.toString() +","+
+				this.percent_oversampledQuestions_bugCovering.toString() +","+
+				this.countOf_UndersampledQuestions.toString() + ","+
+				this.percent_undersampledQuestions.toString() + ","+
+				this.countOf_UndersampledQuestions_bugCovering.toString() +","+
+				this.percent_undersampledQuestions_bugCovering.toString() +","+
+				this.countOf_OversampledQuestions_NonBugCovering.toString() +","+
+				this.countOf_UndersampledQuestions_NonBugCovering.toString() +","+
+				this.total_SampledQuestions.toString() +","+
+				this.countOf_NotSampledQuestions.toString()+","+
+				this.top_1_oversampledQuestionID +","+
+				this.top_2_oversampledQuestionID +","+
 				this.top_3_oversampledQuestionID);
 		
 	}
