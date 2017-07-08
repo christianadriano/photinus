@@ -132,7 +132,7 @@ public class RandomSampler {
 					countOf_UndersampledQuestions_bugCovering++;
 				else
 					countOf_UndersampledQuestions_NonBugCovering++;
-				sampleAnswerList = this.sampleAnswersFixedSize(answerList);
+				sampleAnswerList = this.sampleWithout_Replacement(answerList);
 			}
 			
 			sampledAnswerByQuestionMap.put(questionID, sampleAnswerList);
@@ -204,7 +204,7 @@ public class RandomSampler {
 	 * @param answerList
 	 * @return sampled answers out of the population, sampled without replacement.
 	 */
-	private ArrayList<Vector<Answer>> sampleAnswersFixedSize(Vector<Answer> answerList){
+	private ArrayList<Vector<Answer>> sampleWithout_Replacement(Vector<Answer> answerList){
 
 		ArrayList<Vector<Answer>> samplesList = new ArrayList<Vector<Answer>>(); 
 
@@ -225,6 +225,33 @@ public class RandomSampler {
 		return samplesList;
 	}
 
+	
+	/**
+	 * This method is used to run a bootstrap sampling
+	 * 
+	 * @param answerList
+	 * @return sampled answers out of the population, sampled WITH replacement.
+	 */
+	private ArrayList<Vector<Answer>> sampleWith_Replacement(Vector<Answer> answerList){
+
+		ArrayList<Vector<Answer>> samplesList = new ArrayList<Vector<Answer>>(); 
+
+		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>(); 
+
+		for(int i=0;i<this.numberOfSamples;i++){
+			Vector<Answer> sample = new Vector<Answer>();
+
+			pickedAnswersMap = sampleWithoutReplacement(this.sampleSize,answerList.size());
+			for(String key: pickedAnswersMap.keySet()){
+				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
+				sample.add(answer);
+			}
+			samplesList.add(sample);
+			//if(sampleSize==20)
+			//	printSample(sample);
+		}
+		return samplesList;
+	}
 
 	/**
 	 * 	
@@ -323,7 +350,7 @@ public void testSampleAnswerForQuestion(){
 				elapsedTime, timeStamp, difficulty, orderInWorkerSession,sessionID));
 	}
 
-	ArrayList<Vector<Answer>> answerSamplesList = this.sampleAnswersFixedSize(answerList);
+	ArrayList<Vector<Answer>> answerSamplesList = this.sampleWithout_Replacement(answerList);
 	for(int i=0;i<this.numberOfSamples;i++){
 		Vector<Answer> sample = answerSamplesList.get(i);
 		for(int j=0; j<sample.size();j++){
