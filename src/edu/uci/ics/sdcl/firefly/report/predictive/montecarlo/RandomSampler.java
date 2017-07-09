@@ -213,7 +213,7 @@ public class RandomSampler {
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
-			pickedAnswersMap = sampleWithoutReplacement(this.sampleSize,answerList.size());
+			pickedAnswersMap = sampleIndex_WithoutReplacement(this.sampleSize,answerList.size());
 			for(String key: pickedAnswersMap.keySet()){
 				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
 				sample.add(answer);
@@ -241,7 +241,7 @@ public class RandomSampler {
 		for(int i=0;i<this.numberOfSamples;i++){
 			Vector<Answer> sample = new Vector<Answer>();
 
-			pickedAnswersMap = sampleWithoutReplacement(this.sampleSize,answerList.size());
+			pickedAnswersMap = sampleIndex_WithReplacement(this.sampleSize,answerList.size());
 			for(String key: pickedAnswersMap.keySet()){
 				Answer answer = answerList.get(pickedAnswersMap.get(key).intValue());
 				sample.add(answer);
@@ -253,6 +253,44 @@ public class RandomSampler {
 		return samplesList;
 	}
 
+	//---------- Sampling with and without
+	
+	private HashMap<String, Integer> sampleIndex_WithReplacement(int sampleSize,int populationSize) {
+		
+		//Create the list of indexes
+		ArrayList<String> indexList = new ArrayList<String>();
+		for(int i=0;i<populationSize;i++){
+			indexList.add(new Integer(i).toString());
+		}
+
+
+		HashMap<String,Integer> pickedAnswersMap = new HashMap<String,Integer>();
+
+		Random rand = new Random(System.currentTimeMillis());
+
+		int currentSize = populationSize;
+
+		for(int i=0; i<sampleSize;i++){
+			Integer index = rand.nextInt(currentSize);
+			
+			String indexStr = indexList.get(index.intValue());
+
+			if(!pickedAnswersMap.containsKey(indexStr)){
+				pickedAnswersMap.put(indexStr, index);
+			}
+			else{
+				System.out.println("ERROR! index was repeated at sampleWithoutReplacement:"+ indexStr);
+			}
+			
+			//Updates the list of indexes to sample from
+			indexList.remove(index.intValue());
+			currentSize--;
+		}
+		return pickedAnswersMap;
+		return null;
+	}
+
+
 	/**
 	 * 	
 	 * Create a random list of unique indexes, so we can avoid picking the same answer twice 
@@ -260,7 +298,7 @@ public class RandomSampler {
 	 * @param populationSize
 	 * @return
 	 */
-	private HashMap<String,Integer> sampleWithoutReplacement (int sampleSize,int populationSize){
+	private HashMap<String,Integer> sampleIndex_WithoutReplacement (int sampleSize,int populationSize){
 		
 		//Create the list of indexes
 		ArrayList<String> indexList = new ArrayList<String>();
@@ -370,7 +408,7 @@ public void testGenerateSamplesPerQuestion(){
 
 private void testSampleWithoutReplacement(int sampleSize, int populationSize) {
 	
-	 HashMap<String,Integer> pickedAnswersMap =  this.sampleWithoutReplacement(sampleSize, populationSize);
+	 HashMap<String,Integer> pickedAnswersMap =  this.sampleIndex_WithoutReplacement(sampleSize, populationSize);
 	 Iterator<String> iterKeys = pickedAnswersMap.keySet().iterator();
 	 while(iterKeys.hasNext()){
 		 System.out.println((String)iterKeys.next());
