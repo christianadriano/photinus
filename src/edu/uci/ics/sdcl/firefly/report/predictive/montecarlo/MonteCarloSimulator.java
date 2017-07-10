@@ -333,7 +333,8 @@ public class MonteCarloSimulator {
 	//------------------------------------------------------------------------------------------------------
 
 	private void generateSimulations(FilterCombination filter, int maximumSampleSize, int numberOfSamples, 
-			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting, boolean isFixedSampleSize){
+			HashMap<String, Microtask> microtaskMap, String crowdName,boolean isAbsoluteVoting, boolean isFixedSampleSize,
+			boolean withoutReplacement){
 
 		this.positiveVoting_AverageDataPointByAnswerLevel = new HashMap<String,DataPoint>();
 
@@ -350,7 +351,7 @@ public class MonteCarloSimulator {
 			
 			//Generate the samples
 			RandomSampler sampling = new RandomSampler(sampleSize, numberOfSamples, maximumSampleSize, isFixedSampleSize,this.bugCoveringMap);
-			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap);
+			ArrayList<HashMap<String, Microtask>> listOfMicrotaskMaps =sampling.generateMicrotaskMap(microtaskMap,withoutReplacement);
 			this.sampledQuestionsProfileMap.put(new Integer(i).toString(),sampling.getSampledQuestionsProfile());
 	
 			//Compute statistics for each sample
@@ -389,7 +390,8 @@ public class MonteCarloSimulator {
 		ArrayList<SubCrowd> subCrowdList = composeSubcrowds();
 
 		boolean isAbsoluteVoting = true;
-		boolean isVariableSampleSize = true;
+		boolean isVariableSampleSize = false;
+		boolean withoutReplacement = true;
 		int numberOfSamples = 1000; //how many simulated crowds
 
 		for(SubCrowd crowd:subCrowdList){
@@ -405,7 +407,8 @@ public class MonteCarloSimulator {
 			else{
 				maximumSampleSize = RandomSampler.computeMinimum_NumberAnswers(microtaskMap);//maximum it capped to the question with the most answers	
 			}
-			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, isAbsoluteVoting,isVariableSampleSize);			 
+			generateSimulations(crowd.filterCombination, maximumSampleSize, numberOfSamples, microtaskMap,  crowd.name, 
+					isAbsoluteVoting,isVariableSampleSize,withoutReplacement);			 
 		}
 	}
 
