@@ -114,27 +114,27 @@ public class RandomSampler {
 			String questionID = task.getID().toString();
 			Vector<Answer> answerList = task.getAnswerList();
 
-			//There is never oversampling with fixed sample size
-			if(this.isVariableSampleSize && answerList.size()<=this.sampleSize){
+			//The answer list is smaller or equal to the sample size, hence no sampling is possible 
+			if(answerList.size()<=this.sampleSize){
+				
+				sampleAnswerList.add((Vector<Answer>)answerList.clone()); //Don't sample, just take the entire list of answers.
+				
+				//counter for statistics
 				oversamplingCount++;
 				if(this.bugCoveringMap.containsKey(questionID))
 					countOf_OversampledQuestions_bugCovering++;
 				else
 					countOf_OversampledQuestions_NonBugCovering++;
-
-				sampleAnswerList.add((Vector<Answer>)answerList.clone()); //Don't sample, just take the entire list of answers.
 			}
-			else if(answerList.size()<this.sampleSize){
-				System.out.println("SHOULD NEVER ENTER HERE!!!!!!!!!!!!, sampleSize:"+this.sampleSize+", answerList.size:"+answerList.size());
-			}
-			else{
+		 
+			else{//The answerList is larger than the desired sample size
 			
 				//Sample answers
 				if(withoutReplacement){
-					sampleAnswerList = this.sampleWithout_Replacement(answerList);
+					sampleAnswerList = this.sampleWithout_Replacement((Vector<Answer>)answerList.clone());
 				}
 				else{
-					sampleAnswerList = this.sampleWith_Replacement(answerList);
+					sampleAnswerList = this.sampleWith_Replacement((Vector<Answer>)answerList.clone());
 				}
 
 				//counter for statistics
