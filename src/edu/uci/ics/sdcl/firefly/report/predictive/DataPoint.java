@@ -106,14 +106,18 @@ public class DataPoint {
 		ArrayList<Double> correctTotalAnswers_averageList = new ArrayList<Double>();
 		ArrayList<Double> correctYESAnswers_averageList = new ArrayList<Double>();
 		ArrayList<Double> correctNOAnswers_averageList = new ArrayList<Double>();
+		
+		ArrayList<Double> totalWorkers_averageList = new ArrayList<Double>();
 
 		for(String key: fileNameOutcomeMap.keySet()){
 			Outcome outcome = fileNameOutcomeMap.get(key);
 			precisionValueList.add(outcome.precision);
 			recallValueList.add(outcome.recall);
 
-			if(this.totalWorkers < outcome.differentWorkersAmongHITs)
-				this.totalWorkers =  new Double(outcome.differentWorkersAmongHITs).doubleValue();
+			totalWorkers_averageList.add(new Double(outcome.differentWorkersAmongHITs).doubleValue());
+			
+			//if(this.totalWorkers < outcome.differentWorkersAmongHITs)
+			//	this.totalWorkers =  new Double(outcome.differentWorkersAmongHITs).doubleValue();
 
 			if(this.maxAnswersHIT < outcome.totalAnswersObtained)
 				this.maxAnswersHIT =  new Double(outcome.totalAnswersObtained).doubleValue();
@@ -166,6 +170,7 @@ public class DataPoint {
 		this.nearPositiveLinesCount = this.nearPositiveLineMap.size();
 		this.falseNegativeLinesCount = this.falseNegativeLineMap.size();
 
+		this.totalWorkers = average(totalWorkers_averageList);
 		this.LinesPrecision = average(precision_LineValueList);
 		this.LinesRecall =  average(recall_LineValueList);
 		this.numberOfOutcomes =  fileNameOutcomeMap.size();
