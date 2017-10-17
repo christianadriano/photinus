@@ -154,16 +154,16 @@ public class MicrotaskMapUtil {
 	 * @param map
 	 * @return
 	 */
-	public static int getMaxCommonAnswersPerQuestion(HashMap<String, Microtask> map){
+	public static Double getMaxCommonAnswersPerQuestion(HashMap<String, Microtask> map){
 
-		int maxCommonAnswers=20;
+		double maxCommonAnswers=20;
 		for(Microtask microtask: map.values()){
 			maxCommonAnswers = maxCommonAnswers>microtask.getNumberOfAnswers()? microtask.getNumberOfAnswers(): maxCommonAnswers;
 		}
 		return maxCommonAnswers;
 	}
 
-	public static HashMap<String, Microtask> cutMapToMaximumAnswers(HashMap<String, Microtask> map, Integer maxCommonAnswers) {
+	public static HashMap<String, Microtask> cutMapToMaximumAnswers(HashMap<String, Microtask> map, Double maxCommonAnswers) {
 
 		HashMap<String, Microtask> cutMap = new HashMap<String, Microtask>();
 
@@ -171,7 +171,7 @@ public class MicrotaskMapUtil {
 
 			Vector<Answer> answerList = microtask.getAnswerList();
 			if(answerList.size()>=maxCommonAnswers){
-				answerList.subList(0, maxCommonAnswers-1);
+				answerList.subList(0, (int) (maxCommonAnswers-1));
 			}
 			else
 				return null; //size should be at least of maxCommonAnswers

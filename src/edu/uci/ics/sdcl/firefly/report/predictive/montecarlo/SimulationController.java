@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
+import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
+import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.AttributeRangeGenerator;
 import edu.uci.ics.sdcl.firefly.report.predictive.CombinedFilterRange;
-import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterGenerator;
 import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
@@ -45,10 +45,9 @@ public class SimulationController {
 		for(CombinedFilterRange range: rangeMap.values()){
 
 			FilterCombination combination = FilterGenerator.generateFilterCombination(range);
-			FilterCombination filter = combination.getFilter();
 			SubCrowd crowd =  new SubCrowd();
 			crowd.name = range.getRangeName();
-			crowd.filter = filter;
+			crowd.filterCombination = combination;
 			subCrowdList.add(crowd);
 		}
 
@@ -81,8 +80,9 @@ public class SimulationController {
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
-			HashMap<String, Microtask> map = (HashMap<String, Microtask>) 
-					FilterCombination.selectMicrotaskFromFileName(originalMicrotaskMap, crowd.name);
+			HashMap<String, Microtask> map = (HashMap<String, Microtask>) null;
+				//TODO FilterCombination changed need to redesign the integration
+				//	FilterCombination.selectMicrotaskFromFileName(originalMicrotaskMap, crowd.name);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
 			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
@@ -101,7 +101,7 @@ public class SimulationController {
 		for(int i=0; i<subCrowdList.size();i++){
 
 			SubCrowd crowd = subCrowdList.get(i);
-			HashMap<String, Microtask> map = (HashMap<String, Microtask>) crowd.filter.apply(microtaskMap);
+			HashMap<String, Microtask> map = (HashMap<String, Microtask>) crowd.filterCombination.getFilter().apply(microtaskMap);
 			crowd.microtaskMap = map;
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(map, null);
 			crowd.totalAnswers = MicrotaskMapUtil.getMaxAnswersPerQuestion(map);
@@ -138,7 +138,7 @@ public class SimulationController {
 			SubCrowd crowd = subCrowdList.get(i);
 			HashMap<String, Microtask> map = crowd.microtaskMap;
 			crowd.microtaskMap = MicrotaskMapUtil.cutMapToMaximumAnswers(map,crowd.maxCommonAnswers);
-			crowd.totalAnswers = MicrotaskMapUtil.countAnswers(crowd.microtaskMap).intValue();
+			crowd.totalAnswers = (double) MicrotaskMapUtil.countAnswers(crowd.microtaskMap).intValue();
 			crowd.totalWorkers = MicrotaskMapUtil.countWorkers(crowd.microtaskMap, null);
 			subCrowdList.set(i, crowd);
 		}
@@ -157,7 +157,8 @@ public class SimulationController {
 
 			MonteCarloSimulator simulator = new MonteCarloSimulator(crowd.name);
 			FilterCombination filter = new FilterCombination();
-			simulator.generateSimulations(filter, crowd.maxCommonAnswers, this.numberOfSamples,	crowd.microtaskMap, crowd.name);
+			//TODO generateSimulations is now private. Redesign the integration between SimulationController and MonteCarloSimulator
+			//simulator.generateSimulations(filter, crowd.maxCommonAnswers, this.numberOfSamples,	crowd.microtaskMap, crowd.name);
 		}
 	}
 
