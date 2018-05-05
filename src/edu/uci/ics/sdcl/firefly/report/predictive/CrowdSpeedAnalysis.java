@@ -328,9 +328,9 @@ public class CrowdSpeedAnalysis {
 				+ "Total lines to inspect";
 	}
 
-	public void printDataPointsToFile(){
-
-		String destination = "C://firefly//SpeedAnalysis//speedAnalysis_all.csv";
+	public void printDataPointsToFile(String fileName){
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		String destination =  manager.speedAnalysisPath +fileName;
 		BufferedWriter log;
 
 		try {
@@ -394,7 +394,7 @@ public class CrowdSpeedAnalysis {
 	public static void main(String args[]){
 		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis();
 		analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
-		analysis.printDataPointsToFile();
+		analysis.printDataPointsToFile("speedAnalysis_all.csv");
 		//analysis.printDataPointListToFile();
 	}
 
