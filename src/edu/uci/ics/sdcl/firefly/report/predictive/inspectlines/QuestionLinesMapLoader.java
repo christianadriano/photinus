@@ -4,6 +4,7 @@ package edu.uci.ics.sdcl.firefly.report.predictive.inspectlines;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
 
 /**
@@ -21,6 +22,12 @@ public class QuestionLinesMapLoader {
 	/** Keeps the number of lines per question */
 	public static HashMap<String, Integer> questionLineCount;
 
+	
+	public QuestionLinesMapLoader() {
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		this.path = manager.reportPath;
+	}
+	
 	/** 
 	 * The list is loaded from a text file 
 	 * @return list of QuestionLineData for the variables 
