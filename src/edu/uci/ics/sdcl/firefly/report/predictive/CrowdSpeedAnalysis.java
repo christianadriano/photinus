@@ -388,14 +388,6 @@ public class CrowdSpeedAnalysis {
 
 
 
-	/**
-	 * 
-	 * @param map
-	 * @param minAnswers the minimal number of answers for which all questions
-	 */
-	public void simulateMonteCarlo(HashMap<String, Microtask> map, int maxAnswers){
-
-	}
 
 	//----------------------------------------------------------------------
 
