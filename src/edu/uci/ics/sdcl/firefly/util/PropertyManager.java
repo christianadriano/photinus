@@ -18,7 +18,7 @@ public class PropertyManager {
 	
 	public String skillTestUploadFolder = "/samples/bulkSkillTests/";
 	
-	public String speedAnalysisPath = "C:/firefly/SpeedAnalysis/";
+	public String speedAnalysisPath = "C:/Users/Chris/firefly/SpeedAnalysis/";
 	
 	public String fileUploadSourcePath;
 	
