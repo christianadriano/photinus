@@ -217,11 +217,11 @@ public class CrowdSpeedAnalysis {
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,0,true);
+			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-2,true);//Initial values used was 0
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,5.0,0,true);
+			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,8.0,0,true); //Initial value used was 5
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			thresholdVDatapoint.fileNameOutcomeMap.put(fileName, outcome);		
 		}
@@ -272,9 +272,11 @@ public class CrowdSpeedAnalysis {
 		
 	}
 
-	public void printDataPointListToFile(){
+	public void printDataPointList_ToFile(){
 
-		String destination = "C://firefly//SpeedAnalysis//speedAnalysis_AllAggregationMethods_data.csv";
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		
+		String destination =  manager.speedAnalysisPath +"speedAnalysis_AllAggregationMethods_data.csv";
 		BufferedWriter log;
 
 		try {
@@ -394,8 +396,8 @@ public class CrowdSpeedAnalysis {
 	public static void main(String args[]){
 		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis();
 		analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
-		analysis.printDataPointsToFile("speedAnalysis_all.csv");
-		//analysis.printDataPointListToFile();
+		//analysis.printDataPointsToFile("speedAnalysis_all_predicted_KNN.csv");
+		analysis.printDataPointList_ToFile();
 	}
 
 }
