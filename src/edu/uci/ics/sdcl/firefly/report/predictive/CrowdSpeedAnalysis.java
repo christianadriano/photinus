@@ -325,7 +325,9 @@ public class CrowdSpeedAnalysis {
 	//----------------------------------------------------------------------
 
 	private String getHeader(){
-		return "Answer level,Average Precision,Average Recall,Total Workers, Total Answers, "
+		return "Answer level,Average Precision,Average Recall,"
+				+ "True Positives, True Negatives, False Positives, False Negatives,"
+				+ "Total Workers, Total Answers, "
 				+ "Hours taken, Faults Located, True Positive Lines, Near Positive Lines, False Positive Lines,"
 				+ "Total lines to inspect";
 	}
@@ -334,6 +336,8 @@ public class CrowdSpeedAnalysis {
 		PropertyManager manager = PropertyManager.initializeSingleton();
 		String destination =  manager.speedAnalysisPath +fileName;
 		BufferedWriter log;
+		
+		ArrayList<DataPoint> dataPointList = this.outcomes_ThresholdVoting;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
@@ -341,21 +345,25 @@ public class CrowdSpeedAnalysis {
 
 			log.write(getHeader()+"\n");
 
-			for(int i=0; i<this.outcomes_PositiveVoting.size();i++){
-				DataPoint datapointPV = this.outcomes_PositiveVoting.get(i);
+			for(int i=0; i<dataPointList.size();i++){
+				DataPoint datapoint = dataPointList.get(i);
 
-				Integer linesToInspect = datapointPV.getTotalLinesToInspect();
+				Integer linesToInspect = datapoint.getTotalLinesToInspect();
 
 				String line= new Integer(i+1).toString() +","+
-						datapointPV.averagePrecision.toString()+","+
-						datapointPV.averageRecall.toString()+","+
-						datapointPV.totalWorkers.toString()+","+
-						datapointPV.maxAnswersHIT.toString()+","+
-						datapointPV.elapsedTime.toString()+","+
-						datapointPV.faultsLocated.toString()+","+
-						datapointPV.truePositiveLinesCount.toString()+","+
-						datapointPV.falsePositiveLinesCount.toString()+","+
-						datapointPV.nearPositiveLinesCount.toString()+","+
+						datapoint.averagePrecision.toString()+","+
+						datapoint.averageRecall.toString()+","+
+						datapoint.truePositives.toString()+","+
+						datapoint.trueNegatives.toString()+","+
+						datapoint.falsePositives.toString()+","+
+						datapoint.falseNegatives.toString()+","+
+						datapoint.totalWorkers.toString()+","+
+						datapoint.maxAnswersHIT.toString()+","+
+						datapoint.elapsedTime.toString()+","+
+						datapoint.faultsLocated.toString()+","+
+						datapoint.truePositiveLinesCount.toString()+","+
+						datapoint.falsePositiveLinesCount.toString()+","+
+						datapoint.nearPositiveLinesCount.toString()+","+
 						linesToInspect.toString();
 				log.write(line+"\n");
 			}
@@ -389,6 +397,7 @@ public class CrowdSpeedAnalysis {
 	}
 
 
+	
 
 
 	//----------------------------------------------------------------------
@@ -396,8 +405,8 @@ public class CrowdSpeedAnalysis {
 	public static void main(String args[]){
 		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis();
 		analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
-		//analysis.printDataPointsToFile("speedAnalysis_all_predicted_KNN.csv");
-		analysis.printDataPointList_ToFile();
+		analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN.csv");
+		//analysis.printDataPointList_ToFile();
 	}
 
 }
