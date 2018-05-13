@@ -41,8 +41,15 @@ public class CrowdSpeedAnalysis {
 
 	private HashMap<String,String> bugCoveringMap;
 
-	public CrowdSpeedAnalysis(){
+	//-------------------------------------------------------------------------------------
 
+	public CrowdSpeedAnalysis(String[] newFileNameList){
+		if(fileNameList!=null)
+			this.fileNameList = newFileNameList;
+		this.loadInitialize();
+	}
+
+	private void loadInitialize() {
 		//Obtain bug covering question list
 		PropertyManager manager = PropertyManager.initializeSingleton();
 		bugCoveringMap = new HashMap<String,String>();
@@ -122,6 +129,7 @@ public class CrowdSpeedAnalysis {
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
+		HashMap<String, Integer> trueNegativeLines = predictor.getTrueNegativeLines(lineMapping);
 		falsePositiveLines = Consensus.removeFalsePositiveDuplications(nearPositiveLines,falsePositiveLines);
 		Boolean faultLocated = truePositiveLines!=null && truePositiveLines.size()>0;
 		int questionsBelowMinimumAnswers = predictor.getQuestionsBelowMinimalAnswers();
@@ -143,6 +151,7 @@ public class CrowdSpeedAnalysis {
 				truePositiveLines,
 				nearPositiveLines,
 				falsePositiveLines,
+				trueNegativeLines,
 				questionsBelowMinimumAnswers,
 				AnswerData.countCorrectYES(answerData.answerMap, answerData.bugCoveringMap),
 				AnswerData.countCorrectNO(answerData.answerMap, answerData.bugCoveringMap),
@@ -212,7 +221,7 @@ public class CrowdSpeedAnalysis {
 			HashMap<String, ArrayList<String>> answerMap = extractAnswersForFileName(microtaskMap,fileName);
 			Double workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
-			
+
 			Consensus predictor = new AcrossQuestionsConsensus(2,true);
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
@@ -220,7 +229,7 @@ public class CrowdSpeedAnalysis {
 			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-2,true);//Initial values used was 0
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
-			
+
 			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,8.0,0,true); //Initial value used was 5
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			thresholdVDatapoint.fileNameOutcomeMap.put(fileName, outcome);		
@@ -229,7 +238,7 @@ public class CrowdSpeedAnalysis {
 		positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 		majorityVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 		thresholdVDatapoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
-		
+
 		positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
 		majorityVDataPoint.computeAverages();
 		thresholdVDatapoint.computeAverages();
@@ -237,11 +246,11 @@ public class CrowdSpeedAnalysis {
 		positiveVDataPoint.elapsedTime = elapsedTime;
 		majorityVDataPoint.elapsedTime = elapsedTime;
 		thresholdVDatapoint.elapsedTime = elapsedTime;
-		
+
 		positiveVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 		majorityVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 		thresholdVDatapoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
-		
+
 		this.outcomes_PositiveVoting.add(positiveVDataPoint);
 		this.outcomes_MajorityVoting.add(majorityVDataPoint);
 		this.outcomes_ThresholdVoting.add(thresholdVDatapoint);
@@ -269,13 +278,13 @@ public class CrowdSpeedAnalysis {
 				+ "Average Precision_Threshold,Average Recall_Threshold, Total Workers, Total Answers, "
 				+ " Hours taken, Faults Located_PV, Faults Located_MV, Faults Located_Threshold"
 				+ " Lines to Inspect_PV, Lines to Inspect_MV, Lines to Inspect_Threshold ";
-		
+
 	}
 
 	public void printDataPointList_ToFile(){
 
 		PropertyManager manager = PropertyManager.initializeSingleton();
-		
+
 		String destination =  manager.speedAnalysisPath +"speedAnalysis_AllAggregationMethods_data.csv";
 		BufferedWriter log;
 
@@ -305,7 +314,7 @@ public class CrowdSpeedAnalysis {
 						datapointPV.faultsLocated.toString()+","+
 						datapointMV.faultsLocated.toString()+","+
 						datapointThreshold.faultsLocated.toString()+","+
-				
+
 						datapointPV.getTotalLinesToInspect().toString()+","+
 						datapointMV.getTotalLinesToInspect().toString()+","+
 						datapointThreshold.getTotalLinesToInspect().toString();
@@ -328,7 +337,8 @@ public class CrowdSpeedAnalysis {
 		return "Answer level,Average Precision,Average Recall,"
 				+ "True Positives, True Negatives, False Positives, False Negatives,"
 				+ "Total Workers, Total Answers, "
-				+ "Hours taken, Faults Located, True Positive Lines, Near Positive Lines, False Positive Lines,"
+				+ "Hours taken, Faults Located, "
+				+ "True Positive Lines, Near Positive Lines, False Positive Lines, False Negative Lines, True Negative Lines"
 				+ "Total lines to inspect";
 	}
 
@@ -336,7 +346,7 @@ public class CrowdSpeedAnalysis {
 		PropertyManager manager = PropertyManager.initializeSingleton();
 		String destination =  manager.speedAnalysisPath +fileName;
 		BufferedWriter log;
-		
+
 		ArrayList<DataPoint> dataPointList = this.outcomes_ThresholdVoting;
 
 		try {
@@ -362,8 +372,10 @@ public class CrowdSpeedAnalysis {
 						datapoint.elapsedTime.toString()+","+
 						datapoint.faultsLocated.toString()+","+
 						datapoint.truePositiveLinesCount.toString()+","+
-						datapoint.falsePositiveLinesCount.toString()+","+
 						datapoint.nearPositiveLinesCount.toString()+","+
+						datapoint.falsePositiveLinesCount.toString()+","+
+						datapoint.falseNegativeLinesCount.toString()+","+
+						datapoint.trueNegativeLinesCount.toString()+","+
 						linesToInspect.toString();
 				log.write(line+"\n");
 			}
@@ -397,16 +409,29 @@ public class CrowdSpeedAnalysis {
 	}
 
 
-	
+	public static void runPerJavaMethod() {
+		String[] fileNameList = {"HIT01_8"};
+		//, "HIT02_24", "HIT03_6", "HIT04_7",
+			//	"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
+		for(String fileName:fileNameList) {
+			String[] newFileNameList = {fileName};
+			CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis(newFileNameList);
+			analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
+			analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN_"+fileName+".csv");
+		}
+	}
 
-
-	//----------------------------------------------------------------------
-
-	public static void main(String args[]){
-		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis();
+	public static void runConsolidated() {
+		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis(null);
 		analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
 		analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN.csv");
 		//analysis.printDataPointList_ToFile();
 	}
 
+	//----------------------------------------------------------------------
+
+	public static void main(String args[]){
+		//runConsolidated();
+		runPerJavaMethod();
+	}
 }
