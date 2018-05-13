@@ -87,7 +87,8 @@ public class Outcome {
 			Double truePositives, Double trueNegatives,
 			Double falsePositives, Double falseNegatives,Double differentWorkersPerHIT, Double differentWorkersAmongHITs,
 			HashMap<String,Integer> truePositiveLines, HashMap<String,Integer> nearPositiveLines, 
-			HashMap<String,Integer> falsePositiveLines, int questionsBelowMinimumAnswers,
+			HashMap<String,Integer> falsePositiveLines, HashMap<String, Integer> trueNegativeLines,
+			int questionsBelowMinimumAnswers,
 			Double correctYES, Double correctNO, Double totalYES, Double totalNO,Double totalIDK) {
 		super();
 		this.filter = filter;

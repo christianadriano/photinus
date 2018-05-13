@@ -25,6 +25,8 @@ public class DataPoint {
 	public Integer falsePositiveLinesCount;
 	public Integer nearPositiveLinesCount;
 	public Integer falseNegativeLinesCount;
+	public Integer trueNegativeLinesCount;
+
 
 	public Double LinesPrecision;
 	public Double LinesRecall;
@@ -34,6 +36,7 @@ public class DataPoint {
 	public HashMap<String, Integer> nearPositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> falsePositiveLineMap=new HashMap<String, Integer>();
 	public HashMap<String, Integer> falseNegativeLineMap=new HashMap<String, Integer>();
+	public HashMap<String, Integer> trueNegativeLineMap=new HashMap<String, Integer>();
 
 	public Double correct_YES=0.0;
 	public Double correct_NO=0.0;
@@ -139,6 +142,7 @@ public class DataPoint {
 			this.nearPositiveLineMap = addLines(this.nearPositiveLineMap, outcome.nearPositiveLinesMap, key);
 			this.falsePositiveLineMap = addLines(this.falsePositiveLineMap, outcome.falsePositiveLinesMap, key);
 			this.falseNegativeLineMap = addLines(this.falseNegativeLineMap, outcome.falseNegativeLinesMap, key);
+			this.trueNegativeLineMap = addLines(this.trueNegativeLineMap,outcome.trueNegativeLinesMap,key);
 
 			Double precisionLine = 0.0;
 			Double recallLine = 0.0;
@@ -169,6 +173,7 @@ public class DataPoint {
 		this.falsePositiveLinesCount = this.falsePositiveLineMap.size();
 		this.nearPositiveLinesCount = this.nearPositiveLineMap.size();
 		this.falseNegativeLinesCount = this.falseNegativeLineMap.size();
+		this.trueNegativeLinesCount = this.trueNegativeLineMap.size();
 
 		this.totalWorkers = average(totalWorkers_averageList);
 		this.LinesPrecision = average(precision_LineValueList);
@@ -254,6 +259,7 @@ public class DataPoint {
 				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+
 				this.falsePositiveLinesCount+","+linesToString(this.falsePositiveLineMap)+","+
 				this.falseNegativeLinesCount+","+linesToString(this.falseNegativeLineMap)+","+
+				this.trueNegativeLinesCount+","+
 				this.LinesPrecision + "," + this.LinesRecall;
 	}
 
@@ -266,6 +272,7 @@ public class DataPoint {
 				this.nearPositiveLinesCount+","+linesToString(this.nearPositiveLineMap)+","+
 				this.falsePositiveLinesCount+","+linesToString(this.falsePositiveLineMap)+","+
 				this.falseNegativeLinesCount+","+linesToString(this.falseNegativeLineMap)+","+
+				this.trueNegativeLinesCount+","+
 				this.LinesPrecision+","+this.LinesRecall+","+
 				this.correct_YES+","+this.correct_NO+","+
 				this.total_YES+","+this.total_NO+","+this.total_IDK+","+this.total_YES_NO+","+
@@ -296,7 +303,9 @@ public class DataPoint {
 		combinedDataPoint.falsePositiveLineMap = intersectionMap(dataPoint_A.falsePositiveLineMap,dataPoint_W.falsePositiveLineMap);
 		combinedDataPoint.truePositiveLineMap = intersectionMap(dataPoint_A.truePositiveLineMap,dataPoint_W.truePositiveLineMap);
 		combinedDataPoint.nearPositiveLineMap = intersectionMap(dataPoint_A.nearPositiveLineMap,dataPoint_W.nearPositiveLineMap);
+		combinedDataPoint.trueNegativeLineMap = intersectionMap(dataPoint_A.trueNegativeLineMap,dataPoint_W.trueNegativeLineMap);
 
+		
 		//Do the same for each Java method	
 		for(Entry<String,Outcome> entry : dataPoint_A.fileNameOutcomeMap.entrySet()){
 			String key = entry.getKey();
@@ -306,6 +315,7 @@ public class DataPoint {
 			HashMap<String,Integer> truePositiveLines = intersectionMap(outcome_A.truePositiveLinesMap, outcome_B.truePositiveLinesMap);
 			HashMap<String,Integer> nearPositiveLines = intersectionMap(outcome_A.nearPositiveLinesMap, outcome_B.nearPositiveLinesMap);
 			HashMap<String,Integer> falsePositiveLines = intersectionMap(outcome_A.falsePositiveLinesMap, outcome_B.falsePositiveLinesMap);
+			HashMap<String,Integer> trueNegativeLines = intersectionMap(outcome_A.trueNegativeLinesMap, outcome_B.trueNegativeLinesMap);
 
 			Outcome combinedOutcome = new Outcome(
 					new FilterCombination(),
@@ -325,6 +335,7 @@ public class DataPoint {
 					truePositiveLines,
 					nearPositiveLines,
 					falsePositiveLines,
+					trueNegativeLines,
 					0,
 					outcome_A.correct_YES_Answers < outcome_B.correct_YES_Answers ? outcome_A.correct_YES_Answers : outcome_B.correct_YES_Answers,
 					outcome_A.correct_NO_Answers < outcome_B.correct_NO_Answers ? outcome_A.correct_NO_Answers : outcome_B.correct_NO_Answers,
