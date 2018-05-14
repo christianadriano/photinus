@@ -13,6 +13,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
+import edu.uci.ics.sdcl.firefly.util.Coordinate;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 import edu.uci.ics.sdcl.firefly.util.RoundDouble;
@@ -44,18 +45,30 @@ public class CrowdSpeedAnalysis {
 	//-------------------------------------------------------------------------------------
 
 	public CrowdSpeedAnalysis(String[] newFileNameList){
-		if(fileNameList!=null)
+		if(fileNameList!=null) {
 			this.fileNameList = newFileNameList;
-		this.loadInitialize();
+			this.loadInitialize(fileNameList[0]); //load only the question for one bugID
+		}
+		else
+			this.loadInitialize(null); //Load all questions
 	}
 
-	private void loadInitialize() {
+	private void loadInitialize(String bugID) {
 		//Obtain bug covering question list
 		PropertyManager manager = PropertyManager.initializeSingleton();
 		bugCoveringMap = new HashMap<String,String>();
 		String[] listOfBugPointingQuestions = manager.bugCoveringList.split(";");
+		Coordinate range = new Coordinate(0,128);
+		
+		if(bugID!=null) {
+			HashMap<String,Coordinate> bugIDQuestionMap = manager.questionRangeMap;
+			range = bugIDQuestionMap.get(bugID);	
+		}
+		
 		for(String questionID:listOfBugPointingQuestions){
-			bugCoveringMap.put(questionID,questionID);
+			Integer questionID_double = new Integer(questionID);
+			if(questionID_double>=range.start && questionID_double<=range.end)
+				bugCoveringMap.put(questionID,questionID);
 		}
 	}
 
@@ -281,11 +294,11 @@ public class CrowdSpeedAnalysis {
 
 	}
 
-	public void printDataPointList_ToFile(){
-
+	public void printDataPointList_ToFile(String outputFileName){
+		
 		PropertyManager manager = PropertyManager.initializeSingleton();
 
-		String destination =  manager.speedAnalysisPath +"speedAnalysis_AllAggregationMethods_data.csv";
+		String destination =  manager.speedAnalysisPath + "/" + outputFileName;
 		BufferedWriter log;
 
 		try {
@@ -410,14 +423,12 @@ public class CrowdSpeedAnalysis {
 
 
 	public static void runPerJavaMethod() {
-		String[] fileNameList = {"HIT01_8"};
-		//, "HIT02_24", "HIT03_6", "HIT04_7",
-			//	"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
+		String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 		for(String fileName:fileNameList) {
 			String[] newFileNameList = {fileName};
 			CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis(newFileNameList);
 			analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
-			analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN_"+fileName+".csv");
+			analysis.printDataPointList_ToFile("speedAnalysis_AllAggregationMethods_"+fileName+".csv");
 		}
 	}
 
