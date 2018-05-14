@@ -111,6 +111,7 @@ public class Outcome {
 		this.nearPositiveLinesMap =  (HashMap<String, Integer>) ((nearPositiveLines!=null) ? nearPositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.truePositiveLinesMap =   (HashMap<String, Integer>) ((truePositiveLines!=null) ? truePositiveLines.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.falseNegativeLinesMap =   new HashMap<String,Integer>(); //I am not computing the false negative lines.
+		this.trueNegativeLinesMap = (HashMap<String, Integer>) ((trueNegativeLinesMap!=null) ? trueNegativeLinesMap.clone() : new HashMap<String,QuestionLinesMap>()); 
 		this.questionBelowMinimumAnswers =   questionsBelowMinimumAnswers; 
 		this.correct_YES_Answers = correctYES;
 		this.correct_NO_Answers = correctNO;
