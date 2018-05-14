@@ -44,7 +44,7 @@ public class PropertyManager {
 	
 	public String bugCoveringList;
 
-	private HashMap<String, Coordinate> questionRangeMap;
+	public HashMap<String, Coordinate> questionRangeMap;
 
 	private static PropertyManager manager;
 	
@@ -99,8 +99,8 @@ public class PropertyManager {
 		String[] bugIDList = properties.getProperty("bugIDList").split(";");
 		for(String bugID:bugIDList) {
 			String rangeStr = properties.getProperty(bugID+"_question_range");
-			Double start = new Double(rangeStr.split(";")[0]);
-			Double end = new Double(rangeStr.split(";")[1]);
+			Integer start = new Integer(rangeStr.split(";")[0]);
+			Integer end = new Integer(rangeStr.split(";")[1]);
 			questionRangeMap.put(bugID, new Coordinate(start,end));			
 		}		
 		return questionRangeMap;

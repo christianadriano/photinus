@@ -8,12 +8,11 @@ package edu.uci.ics.sdcl.firefly.util;
  */
 public class Coordinate {
 
-	public Double start;
-	public Double end;
+	public Integer start;
+	public Integer end;
 
-	public Coordinate(Double start, Double end) {
+	public Coordinate(Integer start, Integer end) {
 		this.start = start;
 		this.end = end;
 	}
-	
 }
