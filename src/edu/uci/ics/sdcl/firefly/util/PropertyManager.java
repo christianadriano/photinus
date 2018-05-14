@@ -2,6 +2,8 @@ package edu.uci.ics.sdcl.firefly.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Properties;
 
 import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
@@ -41,6 +43,8 @@ public class PropertyManager {
 	public String microtaskTokenList;
 	
 	public String bugCoveringList;
+
+	private HashMap<String, Coordinate> questionRangeMap;
 
 	private static PropertyManager manager;
 	
@@ -82,10 +86,24 @@ public class PropertyManager {
 			this.fileNameTokenList = new String(properties.getProperty("fileNameList"));
 			this.microtaskTokenList = new String(properties.getProperty("microtaskList"));
 			this.bugCoveringList = new String(properties.getProperty("bugCoveringQuestions"));
+			this.questionRangeMap = this.readQuestionRange(properties);
 		} 
 		catch (IOException e) {
 			System.out.println("Could not load properties. Please be sure that the property file is located at: "+this.devPropertyPath);
 		}
+	}
+	
+	private HashMap<String,Coordinate> readQuestionRange(Properties properties){
+		HashMap<String,Coordinate> questionRangeMap = new HashMap<String,Coordinate>();
+		
+		String[] bugIDList = properties.getProperty("bugIDList").split(";");
+		for(String bugID:bugIDList) {
+			String rangeStr = properties.getProperty(bugID+"_question_range");
+			Double start = new Double(rangeStr.split(";")[0]);
+			Double end = new Double(rangeStr.split(";")[1]);
+			questionRangeMap.put(bugID, new Coordinate(start,end));			
+		}		
+		return questionRangeMap;
 	}
 	
 	private void readServerProperties(){
@@ -115,4 +133,13 @@ public class PropertyManager {
 		return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 );
 	}
 
+	public static void main(String args[]) {
+		PropertyManager manager = PropertyManager.initializeSingleton();
+		Collection<Coordinate> collection = manager.questionRangeMap.values();
+		for(Coordinate coord:collection) {
+			System.out.println(coord.start+":"+coord.end);
+		}
+		
+	}
+	
 }
