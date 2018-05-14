@@ -29,6 +29,7 @@ public class QuestionLinesMap {
 			this.isBugCovering = true;
 			this.faultyLines = (HashMap<String, String>) faultyLinesMap.clone();
 			computeNearFaultyLines();
+			this.nonFaultyLines = new HashMap<String, String>();
 		}
 		else{
 			this.isBugCovering = false;
@@ -36,11 +37,9 @@ public class QuestionLinesMap {
 		}
 	}
 	
-	/** Computes the non-faulty lines and the nearFaulty-lines 
+	/** Computes the nearFaulty-lines 
 	 *  Near faulty lines exist solely if the question is bug covering.
-	 * 
-	 * */
-	
+	 */
 	public void computeNearFaultyLines(){
 		
 		this.nearFaultyLines = (HashMap<String, String>) this.allLines.clone();
@@ -50,7 +49,6 @@ public class QuestionLinesMap {
 			String line = iterFaulty.next();
 			nearFaultyLines.remove(line);
 		}
-		
 	}
 	
 	public int getLOCs(){
