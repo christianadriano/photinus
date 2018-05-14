@@ -75,7 +75,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	private boolean includeIDK;
 
-	private double minimumAnswersPerQuestion; 
+	private double minimumAnswersPerQuestion=0.0; 
 
 	/**
 	 * 
@@ -436,7 +436,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			for(String questionID: this.questionYESCountMap.keySet()){
 				if(!data.bugCoveringMap.containsKey(questionID)){
 					Double yesCount = this.questionYESCountMap.get(questionID);
-					if(yesCount<this.threshold || this.threshold<=0 && checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
+					if(checkIfQuestionReceivedMinimumNumberOfAnswers(questionID)){
 						QuestionLinesMap questionLinesMap =lineMapping.get(questionID);
 						map = loadLines(map,questionLinesMap.nonFaultyLines);
 					}
