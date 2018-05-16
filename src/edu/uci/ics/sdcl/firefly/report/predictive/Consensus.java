@@ -21,7 +21,7 @@ public abstract class Consensus {
 	
 	public abstract void setIncludeIDK(boolean includeIDK);
 	
-	public abstract Double computeThreshold(AnswerData data);
+	public abstract Double scoreQuestions(AnswerData data);
 	
 	public abstract Double computeSignalStrength(AnswerData data);
 	

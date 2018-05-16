@@ -138,7 +138,7 @@ public class CrowdSpeedAnalysis {
 	}
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor,HashMap<String, QuestionLinesMap> lineMapping) {
-		predictor.computeThreshold(answerData);
+		predictor.scoreQuestions(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
@@ -420,7 +420,6 @@ public class CrowdSpeedAnalysis {
 
 		return filteredMap;
 	}
-
 
 	public static void runPerJavaMethod() {
 		String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7", "HIT05_35","HIT06_51","HIT07_33","HIT08_54"};

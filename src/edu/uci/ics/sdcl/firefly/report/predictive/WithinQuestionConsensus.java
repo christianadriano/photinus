@@ -117,7 +117,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 	/** The number of bug covering questions that were actually found */
 	@Override
-	public Double computeThreshold(AnswerData data){
+	public Double scoreQuestions(AnswerData data){
 		this.data = data;
 		HashMap<String, Double> questionNoCountMap=new HashMap<String, Double>();
 		
@@ -142,7 +142,7 @@ public class WithinQuestionConsensus extends Consensus{
 	@Override
 	public Double computeSignalStrength(AnswerData data){
 		if(voteMap==null)
-			this.computeThreshold(data);
+			this.scoreQuestions(data);
 
 		if(getTruePositives()==0)
 			return -1.0;
@@ -179,7 +179,7 @@ public class WithinQuestionConsensus extends Consensus{
 	public Double getMinimumNumberYESAnswersThatLocatedFault(){
 
 		if (voteMap==null){
-			if(this.computeThreshold(data)==0)
+			if(this.scoreQuestions(data)==0)
 				return -1.0;
 		}
 
@@ -554,7 +554,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		WithinQuestionConsensus predictor = new WithinQuestionConsensus(true);
 		predictor.setCalibration(-1);
-		predictor.computeThreshold(data);
+		predictor.scoreQuestions(data);
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
 		Double totalBugCovering = 2.0;
 

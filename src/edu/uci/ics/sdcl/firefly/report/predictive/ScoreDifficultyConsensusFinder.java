@@ -119,7 +119,7 @@ public class ScoreDifficultyConsensusFinder {
 
 	private Outcome computeDataPoint(AnswerData answerData, Consensus predictor, HashMap<String, QuestionLinesMap> lineMapping) {
 
-		predictor.computeThreshold(answerData);
+		predictor.scoreQuestions(answerData);
 		HashMap<String, Integer> truePositiveLines = predictor.getTruePositiveLines(lineMapping);
 		HashMap<String, Integer> nearPositiveLines = predictor.getNearPositiveLines(lineMapping);
 		HashMap<String, Integer> falsePositiveLines = predictor.getFalsePositiveLines(lineMapping);
