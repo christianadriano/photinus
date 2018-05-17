@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import edu.uci.ics.sdcl.firefly.report.Result;
+import edu.uci.ics.sdcl.firefly.report.voting.Result;
 
 public class FilterContent implements Serializable{
 

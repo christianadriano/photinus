@@ -1,4 +1,4 @@
-package edu.uci.ics.sdcl.firefly.report;
+package edu.uci.ics.sdcl.firefly.report.voting;
 
 import java.awt.Point;
 import java.text.DecimalFormat;
@@ -14,7 +14,7 @@ import edu.uci.ics.sdcl.firefly.QuestionType;
 import edu.uci.ics.sdcl.firefly.QuestionTypeFactory;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
-import edu.uci.ics.sdcl.firefly.report.LogAnalysis.Counter;
+import edu.uci.ics.sdcl.firefly.report.voting.LogAnalysis.Counter;
 
 /**
  * This analysis was to compute the answers for 1 worker, 2 workers, 3 workers, ....

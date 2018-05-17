@@ -8,7 +8,7 @@ import java.util.Vector;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
-import edu.uci.ics.sdcl.firefly.report.LogData;
+import edu.uci.ics.sdcl.firefly.report.voting.LogData;
 
 /**
  * Compute the positive answers from workers how accurate each worker is.

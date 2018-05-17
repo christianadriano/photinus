@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
+import edu.uci.ics.sdcl.firefly.report.voting.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapValidator;
 

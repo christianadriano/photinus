@@ -13,6 +13,7 @@ import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.Filter;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
+import edu.uci.ics.sdcl.firefly.report.predictive.voting.Scoring;
 import edu.uci.ics.sdcl.firefly.util.Coordinate;
 import edu.uci.ics.sdcl.firefly.util.MicrotaskMapUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
@@ -29,27 +30,30 @@ public class CrowdSpeedAnalysis {
 
 
 	/**  list of precision values calculated for each sample */
-	private ArrayList<DataPoint> outcomes_PositiveVoting = new ArrayList<DataPoint>();
+	private ArrayList<DataPoint> outcomes_Ranked_AbsoluteYESVoting = new ArrayList<DataPoint>();
 
 	/**  list of precision values calculated for each sample */
 	private ArrayList<DataPoint> outcomes_MajorityVoting = new ArrayList<DataPoint>();
+	
+	/**  list of precision values calculated for each sample */
+	private ArrayList<DataPoint> outcomes_ProportionalVoting = new ArrayList<DataPoint>();
 
 	/**  list of precision values calculated for each sample */
-	private ArrayList<DataPoint> outcomes_ThresholdVoting  = new ArrayList<DataPoint>();
+	private ArrayList<DataPoint> outcomes_AbsoluteYESVoting  = new ArrayList<DataPoint>();
 
 	private String[] fileNameList = {"HIT01_8", "HIT02_24", "HIT03_6", "HIT04_7",
 			"HIT05_35","HIT06_51","HIT07_33","HIT08_54"};
 
 	private HashMap<String,String> bugCoveringMap;
-
+ 
 	//-------------------------------------------------------------------------------------
 
 	public CrowdSpeedAnalysis(String[] newFileNameList){
-		if(fileNameList!=null) {
 			this.fileNameList = newFileNameList;
 			this.loadInitialize(fileNameList[0]); //load only the question for one bugID
-		}
-		else
+	}
+	
+	public CrowdSpeedAnalysis(){
 			this.loadInitialize(null); //Load all questions
 	}
 
@@ -225,6 +229,7 @@ public class CrowdSpeedAnalysis {
 
 		DataPoint positiveVDataPoint = new DataPoint();
 		DataPoint majorityVDataPoint = new DataPoint();
+		DataPoint proportionalVDataPoint = new DataPoint();
 		DataPoint thresholdVDatapoint = new DataPoint();
 
 		QuestionLinesMapLoader loader = new QuestionLinesMapLoader();
@@ -239,34 +244,43 @@ public class CrowdSpeedAnalysis {
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Balance_YES_NO_Consensus,null,-2,true);//Initial values used was 0
+			predictor = new WithinQuestionConsensus(Scoring.BALANCE_YES_NO_Consensus,null,-2.0,true);//Initial values used was 0
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
+			
+			predictor = new WithinQuestionConsensus(Scoring.PROPORTION_YES_NO_Consensus,null,0.85,true);
+			outcome = computeDataPoint(data,predictor,lineMapping);
+			proportionalVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(WithinQuestionConsensus.Absolute_YES_Consensus,8.0,0,true); //Initial value used was 5
+			predictor = new WithinQuestionConsensus(Scoring.ABSOLUTE_YES_Consensus,null,8.0,true); //Initial value used was 5
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			thresholdVDatapoint.fileNameOutcomeMap.put(fileName, outcome);		
 		}
 
 		positiveVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 		majorityVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
+		proportionalVDataPoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 		thresholdVDatapoint.maxAnswersHIT = MicrotaskMapUtil.countAnswers(microtaskMap).doubleValue();
 
 		positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
+		majorityVDataPoint.computeAverages();
 		majorityVDataPoint.computeAverages();
 		thresholdVDatapoint.computeAverages();
 
 		positiveVDataPoint.elapsedTime = elapsedTime;
 		majorityVDataPoint.elapsedTime = elapsedTime;
+		proportionalVDataPoint.elapsedTime = elapsedTime;
 		thresholdVDatapoint.elapsedTime = elapsedTime;
 
 		positiveVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 		majorityVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
+		proportionalVDataPoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 		thresholdVDatapoint.totalWorkers = new Double(totalDifferentWorkersAmongHITs);
 
-		this.outcomes_PositiveVoting.add(positiveVDataPoint);
+		this.outcomes_Ranked_AbsoluteYESVoting.add(positiveVDataPoint);
 		this.outcomes_MajorityVoting.add(majorityVDataPoint);
-		this.outcomes_ThresholdVoting.add(thresholdVDatapoint);
+		this.outcomes_ProportionalVoting.add(proportionalVDataPoint);
+		this.outcomes_AbsoluteYESVoting.add(thresholdVDatapoint);
 	}
 
 	public void computeElapsedTimeForAnswerLevels(HashMap<String, Microtask> map){
@@ -287,10 +301,11 @@ public class CrowdSpeedAnalysis {
 	//----------------------------------------------------------------------
 
 	private String getAllAggregationMethodsHeader(){
-		return "Answer level,Average Precision_PV,Average Recall_PV,Average Precision_MV,Average Recall_MV,"
-				+ "Average Precision_Threshold,Average Recall_Threshold, Total Workers, Total Answers, "
-				+ " Hours taken, Faults Located_PV, Faults Located_MV, Faults Located_Threshold"
-				+ " Lines to Inspect_PV, Lines to Inspect_MV, Lines to Inspect_Threshold ";
+		return "Answer level,Average Precision_RAYV,Average Recall_RAYV,Average Precision_MV,Average Recall_MV,"
+				+"Precision_PV,Average Recall_PV,"
+				+ "Average Precision_AYV,Average Recall_AYV, Total Workers, Total Answers, "
+				+ " Hours taken, Faults Located_RAYV, Faults Located_MV, Faults Located_PV,Faults Located_AYV"
+				+ " Lines to Inspect_RAYV, Lines to Inspect_MV, Lines to Inspect_PV,Lines to Inspect_AYV ";
 
 	}
 
@@ -308,29 +323,34 @@ public class CrowdSpeedAnalysis {
 			log.write(getAllAggregationMethodsHeader()+"\n");
 
 			for(int i=0; i<this.outcomes_MajorityVoting.size();i++){
-				DataPoint datapointPV = this.outcomes_PositiveVoting.get(i);
+				DataPoint datapointRAYV = this.outcomes_Ranked_AbsoluteYESVoting.get(i);
 				DataPoint datapointMV = this.outcomes_MajorityVoting.get(i);
-				DataPoint datapointThreshold = this.outcomes_ThresholdVoting.get(i);
+				DataPoint datapointPV = this.outcomes_ProportionalVoting.get(i);
+				DataPoint datapointAYV = this.outcomes_AbsoluteYESVoting.get(i);
 
 				String line= new Integer(i+1).toString() +","+
-						datapointPV.averagePrecision.toString()+","+
-						datapointPV.averageRecall.toString()+","+
+						datapointRAYV.averagePrecision.toString()+","+
+						datapointRAYV.averageRecall.toString()+","+
 						datapointMV.averagePrecision.toString()+","+
 						datapointMV.averageRecall.toString()+","+
-						datapointThreshold.averagePrecision.toString()+","+
-						datapointThreshold.averageRecall.toString()+","+
+						datapointPV.averagePrecision.toString()+","+
+						datapointPV.averageRecall.toString()+","+
+						datapointAYV.averagePrecision.toString()+","+
+						datapointAYV.averageRecall.toString()+","+
 
 						datapointMV.totalWorkers.toString()+","+
 						datapointMV.maxAnswersHIT.toString()+","+
 						datapointMV.elapsedTime.toString()+","+
 
-						datapointPV.faultsLocated.toString()+","+
+						datapointRAYV.faultsLocated.toString()+","+
 						datapointMV.faultsLocated.toString()+","+
-						datapointThreshold.faultsLocated.toString()+","+
+						datapointPV.faultsLocated.toString()+","+
+						datapointAYV.faultsLocated.toString()+","+
 
-						datapointPV.getTotalLinesToInspect().toString()+","+
+						datapointRAYV.getTotalLinesToInspect().toString()+","+
 						datapointMV.getTotalLinesToInspect().toString()+","+
-						datapointThreshold.getTotalLinesToInspect().toString();
+						datapointPV.getTotalLinesToInspect().toString()+","+
+						datapointAYV.getTotalLinesToInspect().toString();
 
 				log.write(line+"\n");
 			}
@@ -360,7 +380,7 @@ public class CrowdSpeedAnalysis {
 		String destination =  manager.speedAnalysisPath +fileName;
 		BufferedWriter log;
 
-		ArrayList<DataPoint> dataPointList = this.outcomes_ThresholdVoting;
+		ArrayList<DataPoint> dataPointList = this.outcomes_AbsoluteYESVoting;
 
 		try {
 			log = new BufferedWriter(new FileWriter(destination));
@@ -432,16 +452,16 @@ public class CrowdSpeedAnalysis {
 	}
 
 	public static void runConsolidated() {
-		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis(null);
+		CrowdSpeedAnalysis analysis =  new CrowdSpeedAnalysis();
 		analysis.computeElapsedTimeForAnswerLevels(analysis.getFilteredMap());
-		analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN.csv");
+		analysis.printDataPointsToFile("speedAnalysis_Threshold_predicted_KNN_v2.csv");
 		//analysis.printDataPointList_ToFile();
 	}
 
 	//----------------------------------------------------------------------
 
 	public static void main(String args[]){
-		//runConsolidated();
-		runPerJavaMethod();
+		runConsolidated();
+		//runPerJavaMethod();
 	}
 }

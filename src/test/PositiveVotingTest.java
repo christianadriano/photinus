@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.Answer;
-import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
+import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 

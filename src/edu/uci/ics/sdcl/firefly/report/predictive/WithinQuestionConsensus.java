@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
+import edu.uci.ics.sdcl.firefly.report.predictive.voting.Scoring;
 
 /**
  * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
@@ -17,15 +18,13 @@ public class WithinQuestionConsensus extends Consensus{
 
 	public String name = "Within-question";
 
-	public static String Absolute_YES_Consensus="absolute YES consensus";
-
-	public static String Balance_YES_NO_Consensus="balance YES NO consensus";
-
-	private String consensusType = Balance_YES_NO_Consensus; //default
+	private String consensusType = Scoring.ABSOLUTE_YES_Consensus; //default
 
 	private HashMap<String, Double> voteMap;
 
 	private HashMap<String, Double> questionYESCountMap;
+	
+	private HashMap<String, Double> questionNoCountMap;
 
 	private AnswerData data;
 
@@ -36,12 +35,14 @@ public class WithinQuestionConsensus extends Consensus{
 	private Integer questionsBelowMinimalAnswers = 0;
 
 	/** Difference between number of YES's and NO's. Default is 1.*/
-	private int calibration=0;
+	private Double calibration=0.0;
 
 	private boolean isAbsoluteVoting=true;
-	
+
 	/** Minimum number of YES's to consider a question as locating a fault */
 	private Double minimumYesCount;
+
+	private Scoring scoringQuestions;
 
 
 	/**
@@ -51,6 +52,7 @@ public class WithinQuestionConsensus extends Consensus{
 	public WithinQuestionConsensus(boolean isAbsoluteVoting){
 		super();
 		this.isAbsoluteVoting=isAbsoluteVoting;
+		this.scoringQuestions = new Scoring();
 	}
 
 	/**
@@ -59,11 +61,12 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration,boolean isAbsoluteVoting){
+	public WithinQuestionConsensus(String type, Double minimumYesCount, Double calibration,boolean isAbsoluteVoting){
 		this.calibration = calibration;
 		this.isAbsoluteVoting = isAbsoluteVoting;
 		this.minimumYesCount = minimumYesCount;
 		this.consensusType = type;
+		this.scoringQuestions = new Scoring();
 
 		String suffix="0";
 		if(minimumYesCount!=null)
@@ -78,7 +81,8 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, Integer calibration, Double minimumAnswersPerQuestion, 
+	public WithinQuestionConsensus(String type, Double minimumYesCount, 
+			Double calibration, Double minimumAnswersPerQuestion, 
 			boolean includeIDK, boolean isAbsoluteVoting){
 		this.calibration = calibration;
 		this.minimumYesCount = minimumYesCount;
@@ -86,6 +90,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 		this.minimumAnswersPerQuestion = minimumAnswersPerQuestion;
 		this.includeIDK = includeIDK;
+		this.scoringQuestions = new Scoring();
 
 		String suffix="0";
 		if(minimumYesCount!=null)
@@ -97,12 +102,12 @@ public class WithinQuestionConsensus extends Consensus{
 	}
 
 	@Override
-	public void setCalibration(int calibration){
+	public void setCalibration(Double calibration){
 		this.calibration = calibration;
 	}
 
 	@Override
-	public int getCalibration(){
+	public Double getCalibration(){
 		return this.calibration;
 	}
 
@@ -119,24 +124,36 @@ public class WithinQuestionConsensus extends Consensus{
 	@Override
 	public Double scoreQuestions(AnswerData data){
 		this.data = data;
-		HashMap<String, Double> questionNoCountMap=new HashMap<String, Double>();
 		
+		initializeCountMaps();
+
+		if(this.consensusType.matches(Scoring.BALANCE_YES_NO_Consensus)){
+			this.voteMap = this.scoringQuestions.scoreMajorityVote(questionYESCountMap,
+					questionNoCountMap); 
+		}
+		else {
+			if(this.consensusType.matches(Scoring.ABSOLUTE_YES_Consensus)){
+				this.voteMap = this.scoringQuestions.scoreAbsolutePositiveVote(questionYESCountMap);
+			}
+			else 
+				if(this.consensusType.matches(Scoring.PROPORTION_YES_NO_Consensus)) {
+					this.voteMap = this.scoringQuestions.scoreProportionalVote(questionYESCountMap,
+							questionNoCountMap); 
+				}
+		}
+		return this.computeTruePositives();
+
+	}
+
+	private void initializeCountMaps() {
 		if(this.isAbsoluteVoting){
 			this.questionYESCountMap = this.computeAbsoluteNumberOfYES(data.getAnswerMap());
-			questionNoCountMap = this.computeAbsoluteNumberOfNO(data.getAnswerMap());		
+			this.questionNoCountMap = this.computeAbsoluteNumberOfNO(data.getAnswerMap());		
 		}
 		else{
 			this.questionYESCountMap = this.computeRelativeNumberOfYES(data.getAnswerMap());
-			questionNoCountMap = this.computeRelativeNumberOfNO(data.getAnswerMap());
+			this.questionNoCountMap = this.computeRelativeNumberOfNO(data.getAnswerMap());
 		}
-				if(this.consensusType.matches(this.Balance_YES_NO_Consensus)){
-			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap,questionNoCountMap); 
-		}
-		else 
-			this.voteMap = this.computeQuestionVoteMap(questionYESCountMap);
-
-		return this.computeTruePositives();
-
 	}
 
 	@Override
@@ -174,7 +191,8 @@ public class WithinQuestionConsensus extends Consensus{
 	@Override
 	/**
 	 * 
-	 * @return number of YES of the bug covering question that has the smallest positive vote. If the fault was not found returns -1.
+	 * @return number of YES of the bug covering question that has the smallest 
+	 * positive vote. If the fault was not found returns -1.
 	 */
 	public Double getMinimumNumberYESAnswersThatLocatedFault(){
 
@@ -300,7 +318,7 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return questionYESCountMap;
 	}
-	
+
 
 	/**
 	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
@@ -345,49 +363,7 @@ public class WithinQuestionConsensus extends Consensus{
 		}
 		return questionNOCountMap;
 	}
-	
-	/**
-	 * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
-	 * 
-	 * 
-	 * @param questionYESCountMap
-	 * @param questionNOCountMap
-	 * @return map of questions and respective votes
-	 */
-	private HashMap<String,Double> computeQuestionVoteMap(HashMap<String, Double> questionYESCountMap,
-			HashMap<String, Double> questionNOCountMap) {
 
-		HashMap<String,Double> voteMap =  new HashMap<String,Double>();
-		for(String questionID : questionYESCountMap.keySet()){
-			Double yesCount = questionYESCountMap.get(questionID);
-			Double noCount = questionNOCountMap.get(questionID);
-			Double vote = yesCount - noCount;
-
-			voteMap.put(questionID, vote);
-		}
-		return voteMap;
-	}
-
-	/**
-	 * Each question has a vote count which is basically Number of YES's minus the Number of NO's.
-	 * 
-	 * 
-	 * @param questionYESCountMap
-	 * @param questionNOCountMap
-	 * @return map of questions and respective votes
-	 */
-	private HashMap<String,Double> computeQuestionVoteMap(HashMap<String, Double> questionYESCountMap) {
-
-		HashMap<String,Double> voteMap =  new HashMap<String,Double>();
-		for(String questionID : questionYESCountMap.keySet()){
-			Double yesCount = questionYESCountMap.get(questionID);
-
-			Double vote = yesCount - this.minimumYesCount-1;
-
-			voteMap.put(questionID, vote);
-		}
-		return voteMap;
-	}
 
 	/** Check if question has at list minimum answers to evaluate the rule
 	 * The minimum can come from the calibration level, e.g., Y - N >4 , then need at least 4 answers to compute. 
@@ -553,7 +529,7 @@ public class WithinQuestionConsensus extends Consensus{
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4.0,4.0);
 
 		WithinQuestionConsensus predictor = new WithinQuestionConsensus(true);
-		predictor.setCalibration(-1);
+		predictor.setCalibration(-1.0);
 		predictor.scoreQuestions(data);
 		Double bugCoveringQuestionsLocated =  predictor.getTruePositives().doubleValue();
 		Double totalBugCovering = 2.0;
@@ -630,8 +606,8 @@ public class WithinQuestionConsensus extends Consensus{
 					if(questionLinesMap.nonFaultyLines!=null) 
 						map = loadLines(map,questionLinesMap.nonFaultyLines);
 					//else
-						//System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
-						
+					//System.err.println("QuestionID: "+questionID +" is not failure related, but has a bug at same line");
+
 				}
 			}
 		}

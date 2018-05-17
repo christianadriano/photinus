@@ -8,9 +8,9 @@ import java.util.HashMap;
 import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.Answer;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
-import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 
 public class MajorityVotingTest {
 

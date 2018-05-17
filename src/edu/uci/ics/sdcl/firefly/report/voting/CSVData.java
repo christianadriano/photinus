@@ -1,4 +1,4 @@
-package edu.uci.ics.sdcl.firefly.report;
+package edu.uci.ics.sdcl.firefly.report.voting;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,7 +15,7 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.QuestionType;
 import edu.uci.ics.sdcl.firefly.QuestionTypeFactory;
 import edu.uci.ics.sdcl.firefly.Worker;
-import edu.uci.ics.sdcl.firefly.report.LogAnalysis.Counter;
+import edu.uci.ics.sdcl.firefly.report.voting.LogAnalysis.Counter;
 
 /** 
  * Generates the data in a  CSV

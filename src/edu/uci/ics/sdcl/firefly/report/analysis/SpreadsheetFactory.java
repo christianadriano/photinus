@@ -18,8 +18,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import edu.uci.ics.sdcl.firefly.Microtask;
-import edu.uci.ics.sdcl.firefly.report.AnalysisPath;
-import edu.uci.ics.sdcl.firefly.report.Result;
+import edu.uci.ics.sdcl.firefly.report.voting.AnalysisPath;
+import edu.uci.ics.sdcl.firefly.report.voting.Result;
 
 
 /**

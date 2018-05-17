@@ -11,11 +11,11 @@ import java.util.Vector;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
+import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
-import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
-import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 

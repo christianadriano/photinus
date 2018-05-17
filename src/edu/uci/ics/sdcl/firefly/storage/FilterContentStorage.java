@@ -8,8 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import edu.uci.ics.sdcl.firefly.report.AnalysisPath;
 import edu.uci.ics.sdcl.firefly.report.analysis.FilterContent;
+import edu.uci.ics.sdcl.firefly.report.voting.AnalysisPath;
 
 /** 
  * Class used in the data analysis process

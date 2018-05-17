@@ -1,4 +1,4 @@
-package edu.uci.ics.sdcl.firefly.report;
+package edu.uci.ics.sdcl.firefly.report.voting;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,7 +12,7 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
-import edu.uci.ics.sdcl.firefly.report.LogAnalysis.Counter;
+import edu.uci.ics.sdcl.firefly.report.voting.LogAnalysis.Counter;
 
 public class FirstAnswersAnalysis {
 

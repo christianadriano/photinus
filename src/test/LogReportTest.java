@@ -12,9 +12,9 @@ import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
-import edu.uci.ics.sdcl.firefly.report.LogAnalysis;
-import edu.uci.ics.sdcl.firefly.report.LogAnalysis.Counter;
-import edu.uci.ics.sdcl.firefly.report.LogData;
+import edu.uci.ics.sdcl.firefly.report.voting.LogAnalysis;
+import edu.uci.ics.sdcl.firefly.report.voting.LogData;
+import edu.uci.ics.sdcl.firefly.report.voting.LogAnalysis.Counter;
 
 public class LogReportTest {
 

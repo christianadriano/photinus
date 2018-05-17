@@ -11,10 +11,10 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.CodeElement;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerConfidenceCounter.Output;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLOCs;
 import edu.uci.ics.sdcl.firefly.report.predictive.spectra.QuestionLinesData;
+import edu.uci.ics.sdcl.firefly.report.voting.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
 

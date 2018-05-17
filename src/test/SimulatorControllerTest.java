@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
-import org.junit.Test; 
-
-
-
+import org.junit.Test;
 
 import edu.uci.ics.sdcl.firefly.report.predictive.AttributeRangeGenerator;
 import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;

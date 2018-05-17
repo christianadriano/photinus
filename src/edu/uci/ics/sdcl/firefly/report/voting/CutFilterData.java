@@ -1,4 +1,4 @@
-package edu.uci.ics.sdcl.firefly.report;
+package edu.uci.ics.sdcl.firefly.report.voting;
 
 import java.io.BufferedWriter;
 import java.io.File;

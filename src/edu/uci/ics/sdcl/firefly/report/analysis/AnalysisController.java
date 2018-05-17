@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 
 import edu.uci.ics.sdcl.firefly.Microtask;
-import edu.uci.ics.sdcl.firefly.report.AnalysisPath;
+import edu.uci.ics.sdcl.firefly.report.voting.AnalysisPath;
 import edu.uci.ics.sdcl.firefly.storage.FilterContentStorage;
 
 public class AnalysisController {

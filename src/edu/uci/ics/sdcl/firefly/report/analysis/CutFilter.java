@@ -9,9 +9,9 @@ import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
-import edu.uci.ics.sdcl.firefly.report.AnalysisPath;
-import edu.uci.ics.sdcl.firefly.report.LogData;
-import edu.uci.ics.sdcl.firefly.report.Result;
+import edu.uci.ics.sdcl.firefly.report.voting.AnalysisPath;
+import edu.uci.ics.sdcl.firefly.report.voting.LogData;
+import edu.uci.ics.sdcl.firefly.report.voting.Result;
 
 /** Cuts the data and apply filters
  * 

@@ -9,15 +9,15 @@ import java.util.Iterator;
 
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.Microtask;
+import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
+import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.DataPoint;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
-import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.Outcome;
 import edu.uci.ics.sdcl.firefly.report.predictive.SubCrowd;
 import edu.uci.ics.sdcl.firefly.report.predictive.SubcrowdConsensusFinder;
-import edu.uci.ics.sdcl.firefly.report.predictive.AcrossQuestionsConsensus;
-import edu.uci.ics.sdcl.firefly.report.predictive.Consensus;
+import edu.uci.ics.sdcl.firefly.report.predictive.WithinQuestionConsensus;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
 import edu.uci.ics.sdcl.firefly.util.BugCoveringMap;

@@ -8,7 +8,6 @@ import edu.uci.ics.sdcl.firefly.Microtask;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileConsentDTO;
 import edu.uci.ics.sdcl.firefly.report.descriptive.FileSessionDTO;
-import edu.uci.ics.sdcl.firefly.report.descriptive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.AnswerData;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterCombination;
 import edu.uci.ics.sdcl.firefly.report.predictive.FilterGenerator;

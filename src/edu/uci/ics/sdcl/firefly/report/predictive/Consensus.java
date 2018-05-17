@@ -9,9 +9,9 @@ public abstract class Consensus {
 
 	public abstract String getName();
 	
-	public abstract void setCalibration(int calilbration);
+	public abstract void setCalibration(Double calilbration);
 	
-	public abstract int getCalibration();
+	public abstract Double getCalibration();
 	
 	public abstract int getQuestionsBelowMinimalAnswers();
 	
