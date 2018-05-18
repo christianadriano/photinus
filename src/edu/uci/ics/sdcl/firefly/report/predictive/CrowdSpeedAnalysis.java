@@ -240,7 +240,7 @@ public class CrowdSpeedAnalysis {
 			Double workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
-			Consensus predictor = new AcrossQuestionsConsensus(2,true);
+			Consensus predictor = new AcrossQuestionsConsensus(1,true);
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
@@ -264,7 +264,7 @@ public class CrowdSpeedAnalysis {
 
 		positiveVDataPoint.computeAverages();//Compute the average precision and recall for all Java methods
 		majorityVDataPoint.computeAverages();
-		majorityVDataPoint.computeAverages();
+		proportionalVDataPoint.computeAverages();
 		thresholdVDatapoint.computeAverages();
 
 		positiveVDataPoint.elapsedTime = elapsedTime;
@@ -461,7 +461,7 @@ public class CrowdSpeedAnalysis {
 	//----------------------------------------------------------------------
 
 	public static void main(String args[]){
-		runConsolidated();
-		//runPerJavaMethod();
+		//runConsolidated();
+		runPerJavaMethod();
 	}
 }
