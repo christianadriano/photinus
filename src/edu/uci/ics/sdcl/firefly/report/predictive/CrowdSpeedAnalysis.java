@@ -240,19 +240,19 @@ public class CrowdSpeedAnalysis {
 			Double workerCountPerHIT = countWorkers(microtaskMap,fileName);
 			AnswerData data = new AnswerData(fileName,answerMap,bugCoveringMap,workerCountPerHIT,totalDifferentWorkersAmongHITs);
 
-			Consensus predictor = new AcrossQuestionsConsensus(1,true);
+			Consensus predictor = new AcrossQuestionsConsensus(1.0,true);
 			Outcome outcome = computeDataPoint(data,predictor,lineMapping);
 			positiveVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(Scoring.BALANCE_YES_NO_Consensus,null,-2.0,true);//Initial values used was 0
+			predictor = new WithinQuestionConsensus(Scoring.BALANCE_YES_NO_Consensus,-2.0,true);//Initial values used was 0
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			majorityVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 			
-			predictor = new WithinQuestionConsensus(Scoring.PROPORTION_YES_NO_Consensus,null,0.85,true);
+			predictor = new WithinQuestionConsensus(Scoring.PROPORTION_YES_NO_Consensus,0.85,true);
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			proportionalVDataPoint.fileNameOutcomeMap.put(fileName, outcome);
 
-			predictor = new WithinQuestionConsensus(Scoring.ABSOLUTE_YES_Consensus,null,8.0,true); //Initial value used was 5
+			predictor = new WithinQuestionConsensus(Scoring.ABSOLUTE_YES_Consensus,8.0,true); //Initial value used was 5
 			outcome = computeDataPoint(data,predictor,lineMapping);
 			thresholdVDatapoint.fileNameOutcomeMap.put(fileName, outcome);		
 		}

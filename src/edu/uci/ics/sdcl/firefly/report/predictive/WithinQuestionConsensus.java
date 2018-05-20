@@ -16,17 +16,11 @@ import edu.uci.ics.sdcl.firefly.report.predictive.voting.Scoring;
  */
 public class WithinQuestionConsensus extends Consensus{
 
-	public String name = "Within-question";
+	public String name = "Within-question consensus";
 
-	private String consensusType = Scoring.ABSOLUTE_YES_Consensus; //default
+	private String scoringType = Scoring.ABSOLUTE_YES_Consensus; //default
 
 	private HashMap<String, Double> voteMap;
-
-	private HashMap<String, Double> questionYESCountMap;
-	
-	private HashMap<String, Double> questionNoCountMap;
-
-	private AnswerData data;
 
 	private boolean includeIDK = true;
 
@@ -38,9 +32,6 @@ public class WithinQuestionConsensus extends Consensus{
 	private Double calibration=0.0;
 
 	private boolean isAbsoluteVoting=true;
-
-	/** Minimum number of YES's to consider a question as locating a fault */
-	private Double minimumYesCount;
 
 	private Scoring scoringQuestions;
 
@@ -61,11 +52,11 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, Double calibration,boolean isAbsoluteVoting){
+	public WithinQuestionConsensus(String type, Double calibration,boolean isAbsoluteVoting){
+		super();
 		this.calibration = calibration;
 		this.isAbsoluteVoting = isAbsoluteVoting;
-		this.minimumYesCount = minimumYesCount;
-		this.consensusType = type;
+		this.scoringType = type;
 		this.scoringQuestions = new Scoring();
 
 		String suffix="0";
@@ -81,24 +72,18 @@ public class WithinQuestionConsensus extends Consensus{
 	 * @param minimumYesCount null if type if Balance_YES_NO_Consensus, otherwise provide a non-negative integer.
 	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public WithinQuestionConsensus(String type, Double minimumYesCount, 
+	public WithinQuestionConsensus(String type, 
 			Double calibration, Double minimumAnswersPerQuestion, 
 			boolean includeIDK, boolean isAbsoluteVoting){
+		super();
 		this.calibration = calibration;
-		this.minimumYesCount = minimumYesCount;
-		this.consensusType = type;
+		this.scoringType = type;
 
 		this.minimumAnswersPerQuestion = minimumAnswersPerQuestion;
 		this.includeIDK = includeIDK;
 		this.scoringQuestions = new Scoring();
-
-		String suffix="0";
-		if(minimumYesCount!=null)
-			suffix=minimumYesCount.toString();
-
-		this.name = this.name + " " + type + "_" + suffix + "_" + this.calibration;;
-
-
+		
+		this.name = this.name + " " + type + "_" + this.calibration;;
 	}
 
 	@Override
@@ -111,10 +96,6 @@ public class WithinQuestionConsensus extends Consensus{
 		return this.calibration;
 	}
 
-	public void setMinimumYESToConsiderFault(double minimumYesCount){
-		this.minimumYesCount=minimumYesCount;
-	}
-
 	@Override
 	public void setData(AnswerData data){
 		this.data = data;
@@ -125,18 +106,18 @@ public class WithinQuestionConsensus extends Consensus{
 	public Double scoreQuestions(AnswerData data){
 		this.data = data;
 		
-		initializeCountMaps();
+		this.initializeCountMaps(this.isAbsoluteVoting);
 
-		if(this.consensusType.matches(Scoring.BALANCE_YES_NO_Consensus)){
+		if(this.scoringType.matches(Scoring.BALANCE_YES_NO_Consensus)){
 			this.voteMap = this.scoringQuestions.scoreMajorityVote(questionYESCountMap,
 					questionNoCountMap); 
 		}
 		else {
-			if(this.consensusType.matches(Scoring.ABSOLUTE_YES_Consensus)){
+			if(this.scoringType.matches(Scoring.ABSOLUTE_YES_Consensus)){
 				this.voteMap = this.scoringQuestions.scoreAbsolutePositiveVote(questionYESCountMap);
 			}
 			else 
-				if(this.consensusType.matches(Scoring.PROPORTION_YES_NO_Consensus)) {
+				if(this.scoringType.matches(Scoring.PROPORTION_YES_NO_Consensus)) {
 					this.voteMap = this.scoringQuestions.scoreProportionalVote(questionYESCountMap,
 							questionNoCountMap); 
 				}
@@ -145,16 +126,6 @@ public class WithinQuestionConsensus extends Consensus{
 
 	}
 
-	private void initializeCountMaps() {
-		if(this.isAbsoluteVoting){
-			this.questionYESCountMap = this.computeAbsoluteNumberOfYES(data.getAnswerMap());
-			this.questionNoCountMap = this.computeAbsoluteNumberOfNO(data.getAnswerMap());		
-		}
-		else{
-			this.questionYESCountMap = this.computeRelativeNumberOfYES(data.getAnswerMap());
-			this.questionNoCountMap = this.computeRelativeNumberOfNO(data.getAnswerMap());
-		}
-	}
 
 	@Override
 	public Double computeSignalStrength(AnswerData data){
@@ -274,97 +245,7 @@ public class WithinQuestionConsensus extends Consensus{
 
 	//----------------------------------------------------------------------------------------------------------
 
-	/**
-	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
-	 * @return a map <questionID, number of YES's>
-	 */
-	private HashMap<String, Double> computeAbsoluteNumberOfYES(HashMap<String, ArrayList<String>> questionOptionsMap){
-
-		HashMap<String, Double> questionYESCountMap= new HashMap<String, Double>(); 
-
-		for(String questionID: questionOptionsMap.keySet()){
-			ArrayList<String> optionList = questionOptionsMap.get(questionID);
-			int counter = 0;
-			for(String option : optionList){
-				//System.out.println(option);
-				if(option.compareTo(Answer.YES)==0)
-					counter++;
-			}
-			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionYESCountMap.put(questionID, new Double(counter));
-		}
-		return questionYESCountMap;
-	}
-
-
-	/**
-	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
-	 * @return a map <questionID, number of YES's divided by total answer for the question>
-	 */
-	private HashMap<String, Double> computeRelativeNumberOfYES(HashMap<String, ArrayList<String>> questionOptionsMap){
-
-		HashMap<String, Double> questionYESCountMap= new HashMap<String, Double>(); 
-
-		for(String questionID: questionOptionsMap.keySet()){
-			ArrayList<String> optionList = questionOptionsMap.get(questionID);
-			int counter = 0;
-			for(String option : optionList){
-				//System.out.println(option);
-				if(option.compareTo(Answer.YES)==0)
-					counter++;
-			}
-			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionYESCountMap.put(questionID, new Double(counter/optionList.size()));
-		}
-		return questionYESCountMap;
-	}
-
-
-	/**
-	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
-	 * @return a map <questionID, number of NO's>
-	 */
-	private HashMap<String, Double> computeAbsoluteNumberOfNO(HashMap<String, ArrayList<String>> questionOptionsMap){
-
-		HashMap<String, Double> questionNOCountMap= new HashMap<String, Double>(); 
-
-		for(String questionID: questionOptionsMap.keySet()){
-			ArrayList<String> optionList = questionOptionsMap.get(questionID);
-			int counter = 0;
-			for(String option : optionList){
-				//System.out.println(option);
-				if(option.compareTo(Answer.NO)==0)
-					counter++;
-			}
-			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionNOCountMap.put(questionID, new Double(counter));
-		}
-		return questionNOCountMap;
-	}
-
-	/**
-	 * @param questionOptionsMap questionID and list of answer options (YES, NO, IDK)
-	 * @return a map <questionID, number of NO's divided by total number of answers for the question>
-	 */
-	private HashMap<String, Double> computeRelativeNumberOfNO(HashMap<String, ArrayList<String>> questionOptionsMap){
-
-		HashMap<String, Double> questionNOCountMap= new HashMap<String, Double>(); 
-
-		for(String questionID: questionOptionsMap.keySet()){
-			ArrayList<String> optionList = questionOptionsMap.get(questionID);
-			int counter = 0;
-			for(String option : optionList){
-				//System.out.println(option);
-				if(option.compareTo(Answer.NO)==0)
-					counter++;
-			}
-			//System.out.println("questionID: "+ questionID+"counter:"+counter);
-			questionNOCountMap.put(questionID, new Double(counter/optionList.size()));
-		}
-		return questionNOCountMap;
-	}
-
-
+	
 	/** Check if question has at list minimum answers to evaluate the rule
 	 * The minimum can come from the calibration level, e.g., Y - N >4 , then need at least 4 answers to compute. 
 	 * @param minimum number of answers
