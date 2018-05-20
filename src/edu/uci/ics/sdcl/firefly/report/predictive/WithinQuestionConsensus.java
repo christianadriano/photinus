@@ -20,8 +20,6 @@ public class WithinQuestionConsensus extends Consensus{
 
 	private String scoringType = Scoring.ABSOLUTE_YES_Consensus; //default
 
-	private HashMap<String, Double> voteMap;
-
 	private boolean includeIDK = true;
 
 	private Double minimumAnswersPerQuestion = 0.0;
@@ -59,11 +57,7 @@ public class WithinQuestionConsensus extends Consensus{
 		this.scoringType = type;
 		this.scoringQuestions = new Scoring();
 
-		String suffix="0";
-		if(minimumYesCount!=null)
-			suffix=minimumYesCount.toString();
-
-		this.name = this.name + " " + type + "_" + suffix + "_" + this.calibration;;
+		this.name = this.name + " " + type + "_" + this.calibration;;
 	}
 
 	/**

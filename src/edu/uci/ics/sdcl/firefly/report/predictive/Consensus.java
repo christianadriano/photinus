@@ -9,6 +9,8 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 
 public abstract class Consensus {
 	
+	protected HashMap<String, Double> voteMap;
+	
 	protected HashMap<String, Double> questionYESCountMap;
 	
 	protected HashMap<String, Double> questionNoCountMap;
