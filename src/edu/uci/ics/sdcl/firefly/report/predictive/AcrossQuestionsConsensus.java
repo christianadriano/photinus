@@ -67,7 +67,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	
 	/** The number of top ranking questions which will be considered to locate a fault *
 	 * Default is 2 */
-	private int calibration=2;
+	private Double calibration=2.0;
 	
 	private boolean isAbsoluteVoting=true;
 
@@ -82,7 +82,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 	 * @param calibration  The number of top ranking questions which will be considered to locate a fault 
 	 * @param isAbsoluteVoting true counts the number of YES, false counts the number of YES divided by the total number of answers 
 	 */
-	public AcrossQuestionsConsensus(int calibration, boolean isAbsoluteVoting){
+	public AcrossQuestionsConsensus(Double calibration, boolean isAbsoluteVoting){
 		super();
 		this.calibration = calibration;
 		this.isAbsoluteVoting = isAbsoluteVoting;
@@ -132,12 +132,12 @@ public class AcrossQuestionsConsensus extends Consensus{
 	}
 
 	@Override
-	public void setCalibration(int calibrationLevel){
+	public void setCalibration(Double calibrationLevel){
 		this.calibration = calibrationLevel;
 	}
 
 	@Override
-	public int getCalibration(){
+	public Double getCalibration(){
 		return this.calibration;
 	}
 	
@@ -290,7 +290,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return countMap;
 	}
 
-	private Double computeThreshold(int calibrationLevel){
+	private Double computeThreshold(Double calibration2){
 		
 		if(this.questionYESCountMap.isEmpty())
 			return -1.0;
@@ -304,7 +304,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 			Double yesCount = this.questionYESCountMap.get(questionID);
 			//System.out.println("questionID: "+questionID+":"+yesCount);
 			i++;
-			if(i>calibrationLevel) {
+			if(i>calibration2) {
 				yesCount_at_Level = new Double(yesCount);
 				break;
 			}
@@ -538,7 +538,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		AnswerData data = new AnswerData(hitFileName,answerMap,bugCoveringMap,4.0,4.0);
 
-		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2,true);
+		AcrossQuestionsConsensus predictor = new AcrossQuestionsConsensus(2.0,true);
 
 		System.out.println("expected: true, actual: "+ predictor.scoreQuestions(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getMinimumNumberYESAnswersThatLocatedFault().toString());
