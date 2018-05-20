@@ -10,37 +10,22 @@ import java.util.TreeMap;
 import edu.uci.ics.sdcl.firefly.Answer;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMap;
 import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapLoader;
+import edu.uci.ics.sdcl.firefly.report.predictive.voting.Scoring;
 
 /**
+ * Computes the consensus based on ranking the questions by their score. 
+ * The score can be majority voting, absolute number of yes, proportional number of Yes by No's.
+ * See class Scoring for the implementation of this scoring process.
  * 
- * WHAT ARE THRESHOLDS?
- * The Across-Questions Consensus method calculates the number of YES's answers that enable a fault to be located.
- * This number is called "Threshold". 
+ * The ranking accepts ties, which means that questions with the same score will have the same 
+ * ranking position. The current mechanism to compute whether a question is equal or above
+ * a certain ranking position is called Threshold.
+ * 
+ * TODO: substitute the concept of threshold by the concept of ranking ties.
  * 
  * The threshold is the number of YES's that is larger than the one received by 
  * any non-bug-Covering questions and still smaller or equal to at
  * least one bug-covering question.
- * 
- * HOW MANY THRESHOLDS? WHY?
- * There are two possible thresholds with two different goals.
- * 
- * Goal of FirstThrehold:  maximize the true positives without producing any zero false positives, even at the cost of 
- * false negatives (bug covering questions below threshold). This goal recognizes that even in face of false negatives, 
- * we still can locate the fault, hence we want to minimize cost (false positives).
- * 
- * Goal of SecondThrehold: obtain at least one true positive with minimal number of false positives. This goal recognizes that 
- * the crowd did not draw a consensus over the fault, but at least two possible faults.
- *
- *HOW ARE THRESHOLDS CALCULATED?
- * FirstThreshold - Threshold at which most bug covering questions are above it and any non-bug covering question is above it.
- *  
- * If the maxNumber of YES's for Bug-Covering is not larger than the one for Non-Bug-Covering,
- * then returns the difference of YES's between the tow top Bug-Covering and Non-Bug-Covering questions.
- * This difference will be negative and show how many more YES's answers were necessary for the Bug-Covering to be
- * unambiguously distinguished from Non-Bug-Covering questions.
- *
- * Second Threshold - Threshold at which at least one bug covering question is above it and the fewest number of non-bug covering 
- * questions are above it.
  * 
  * There will be only one active thresholds, which will have the following attributes also calculated by this class:
  * - Number of True Positives
@@ -50,12 +35,14 @@ import edu.uci.ics.sdcl.firefly.report.predictive.inspectlines.QuestionLinesMapL
  * - Strength of Signal
  * - Number of workers necessary for Threshold
  * 
- * @author adrianoc
+ * @author Christian Adriano
  *
  */
 public class AcrossQuestionsConsensus extends Consensus{
 
 	private String name = "Across-questions consensus";
+	
+	private String scoringType = Scoring.ABSOLUTE_YES_Consensus; //default
 	
 	private Double maxYES=0.0;
 
@@ -76,6 +63,8 @@ public class AcrossQuestionsConsensus extends Consensus{
 	private boolean includeIDK;
 
 	private double minimumAnswersPerQuestion=0.0; 
+	
+	private Scoring scoringQuestions;
 
 	/**
 	 * 
@@ -87,6 +76,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		this.calibration = calibration;
 		this.isAbsoluteVoting = isAbsoluteVoting;
 		this.name = this.name + "_" + this.calibration;
+		this.scoringQuestions = new Scoring();
 	}
 
 	public String getName(){
@@ -95,14 +85,27 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 	@Override
 	public Double scoreQuestions(AnswerData data){
-		
 		this.data = data;
 		
-		if(this.isAbsoluteVoting)
-			this.questionYESCountMap = this.computeAbsoluteNumberOfAnswers(Answer.YES);
-		else
-			this.questionYESCountMap = this.computeRelativeNumberOfAnswers(Answer.YES);
+		this.initializeCountMaps(this.isAbsoluteVoting);
+
+		if(this.scoringType.matches(Scoring.BALANCE_YES_NO_Consensus)){
+			this.voteMap = this.scoringQuestions.scoreMajorityVote(questionYESCountMap,
+					questionNoCountMap); 
+		}
+		else {
+			if(this.scoringType.matches(Scoring.ABSOLUTE_YES_Consensus)){
+				this.voteMap = this.scoringQuestions.scoreAbsolutePositiveVote(questionYESCountMap);
+			}
+			else 
+				if(this.scoringType.matches(Scoring.PROPORTION_YES_NO_Consensus)) {
+					this.voteMap = this.scoringQuestions.scoreProportionalVote(questionYESCountMap,
+							questionNoCountMap); 
+				}
+		}
+
 		int numberOfQuestions = data.answerMap.size();
+		
 		if(this.calibration>=numberOfQuestions){ //Consider the smallest number of YES
 			this.threshold = this.smallestNumberOfYesAnswers();
 		}
@@ -111,6 +114,7 @@ public class AcrossQuestionsConsensus extends Consensus{
 		return this.threshold;
 	}
 	
+		
 	/** 
 	 * The smallest number of answers that a question has received 
 	 * The the smallest number larger than zero. 
@@ -542,8 +546,6 @@ public class AcrossQuestionsConsensus extends Consensus{
 
 		System.out.println("expected: true, actual: "+ predictor.scoreQuestions(data).toString());
 		System.out.println("expected: 3, actual: "+ predictor.getMinimumNumberYESAnswersThatLocatedFault().toString());
-
-		
 	}
 	
 	
