@@ -47,7 +47,7 @@ public class Scoring {
 
 	/**
 	 * Number of YES's divided by the number of NO's
-	 * 
+	 * If number of NO´s is zero, then return the number of YES´s
 	 * @param questionYESCountMap
 	 * @param questionNOCountMap
 	 * @return a map with the ID of the item and the score
