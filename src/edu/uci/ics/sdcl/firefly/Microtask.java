@@ -311,13 +311,13 @@ public class Microtask implements Serializable
 		this.LOC_CoveredByQuestion = locs;
 	}
 
-	public Integer getLOC_Trimmed() {
-		return LOC_Trimmed;
-	}
-
-	public void setLOC_Trimmed(Integer locs) {
-		this.LOC_Trimmed = locs;
-	}
+//	public Integer getLOC_Trimmed() {
+//		return LOC_Trimmed;
+//	}
+//
+//	public void setLOC_Trimmed(Integer locs) {
+//		this.LOC_Trimmed = locs;
+//	}
 
 	public Integer getCyclomaticComplexity() {
 		return cyclomaticComplexity;
@@ -355,11 +355,12 @@ public class Microtask implements Serializable
 
 		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
 
-		int methodDeclarationStartingLine = lineAfterComments(method) + method.getElementStartingLine();
+		//int methodDeclarationStartingLine = lineAfterComments(method) + method.getElementStartingLine();
 		
 		//normalize lines
-		int start = this.startingLine - methodDeclarationStartingLine;
-		int end = this.endingLine - methodDeclarationStartingLine;
+		//int start = this.startingLine - methodDeclarationStartingLine;
+		int start = this.startingLine - method.getElementStartingLine();
+		int end = start + this.startingLine - this.endingLine; //start + this.LOC_CoveredByQuestion; //this.endingLine - methodDeclarationStartingLine;
 				
 		ArrayList<String> list = new ArrayList<String>();
 
@@ -378,6 +379,7 @@ public class Microtask implements Serializable
 		lastLineStr = lastLineStr.substring(0, this.endingColumn);
 		list.set(list.size()-1, lastLineStr);		
 	*/	
+		
 		return list;
 	}
 
