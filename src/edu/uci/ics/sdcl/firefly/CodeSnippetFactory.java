@@ -46,7 +46,6 @@ public class CodeSnippetFactory {
 		this.setMethodTexts(this.codeSnippetList);
 		for (CodeSnippet codeSnippet : this.codeSnippetList) {
 			codeSnippet.setFileName(PathUtil.removePath(fileName, true));
-			codeSnippet.computeComplexityMetrics();
 		}
 		return this.codeSnippetList;
 	}
