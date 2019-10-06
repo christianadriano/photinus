@@ -91,8 +91,12 @@ public class MicrotaskServlet extends HttpServlet {
 		//Save answers from the previous microtask
 		boolean success=false;
 		if(this.worker.getSessionId()!=null && microtaskId!=null){
-			success = storage.updateMicrotaskAnswer(this.worker.getSessionId(), new Integer(microtaskId),
-				new Answer(Answer.mapOptionToString(answer), confidenceAnswer,explanation, this.worker.getWorkerId(), elapsedTime, timeStamp, difficulty,0));
+			success = storage.updateMicrotaskAnswer(
+					this.worker.getSessionId(), new Integer(microtaskId),
+					new Answer(Answer.mapOptionToString(answer), confidenceAnswer,explanation, 
+							this.worker.getWorkerId(), elapsedTime, timeStamp, difficulty,0,
+							this.worker.getSessionId())
+					);
 		}
 		
 		if(!success){
