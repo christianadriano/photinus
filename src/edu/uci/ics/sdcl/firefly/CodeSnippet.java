@@ -105,6 +105,7 @@ public class CodeSnippet implements Serializable
 	public void computeComplexityMetrics() {
 		this.codeSnippetLines = this.extractLines();
 		this.setCharacterCount_Metric(this.codeSnippetLines); 
+		this.CyclomaticComplexity = this.computeCyclomaticComplexity(this.codeSnippetLines);
 	}
 	
 	@Override
@@ -321,6 +322,16 @@ public class CodeSnippet implements Serializable
 	public Integer getCharacterCount_Metric() {
 		return this.characterCount_Metric;
 	}
+	
+	private int computeCyclomaticComplexity(ArrayList<String> codeSnippetLines){
+		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
+		return comp.compute(codeSnippetLines);
+	}
+
+	public Integer getCyclomaticComplexity_Metric() {
+		return this.CyclomaticComplexity;
+	}
+
 	
 		
 }
