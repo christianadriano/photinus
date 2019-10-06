@@ -37,8 +37,6 @@ public class Microtask implements Serializable
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
-	private Integer cyclomaticComplexity;
-
 
 	/**
 	 * 
@@ -71,8 +69,15 @@ public class Microtask implements Serializable
 		this.failureDescription = failureDescription;
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
-		this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
+		//this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
 		this.LOC_CoveredByQuestion = this.endingLine - this.startingLine + 1;
+		this.codeElement.setSourceCodeLines(this.extractLines(method));
+		this.computeComplexityMetrics();
+	}
+
+	
+	private void computeComplexityMetrics() {
+		this.codeElement.setCharacterCount_metric(this.computeCharacterLenght(this.codeElement.getSourceCodeLines())); 
 	}
 
 	/** Simplified version with only the data needed to write a Session Report */
@@ -310,24 +315,9 @@ public class Microtask implements Serializable
 	public void setLOC_CoveredByQuestion(Integer locs) {
 		this.LOC_CoveredByQuestion = locs;
 	}
-
-//	public Integer getLOC_Trimmed() {
-//		return LOC_Trimmed;
-//	}
-//
-//	public void setLOC_Trimmed(Integer locs) {
-//		this.LOC_Trimmed = locs;
-//	}
-
-	public Integer getCyclomaticComplexity() {
-		return cyclomaticComplexity;
-	}
-
-	public void setCyclomaticComplexity(Integer complexity) {
-		this.cyclomaticComplexity = complexity;
-	}
 	
 	/** 
+	 * Not used anymore.
 	 * @param method
 	 * @return the line just after the Javadoc comment section
 	 */
@@ -352,43 +342,28 @@ public class Microtask implements Serializable
 	}
 	
 	private ArrayList<String> extractLines(CodeSnippet method){
-
-		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
-
-		//int methodDeclarationStartingLine = lineAfterComments(method) + method.getElementStartingLine();
 		
-		//normalize lines
-		//int start = this.startingLine - methodDeclarationStartingLine;
 		int start = this.startingLine - method.getElementStartingLine();
-		int end = start + this.startingLine - this.endingLine; //start + this.LOC_CoveredByQuestion; //this.endingLine - methodDeclarationStartingLine;
+		int end = start + this.endingLine - this.startingLine; //start + this.LOC_CoveredByQuestion; //this.endingLine - methodDeclarationStartingLine;
 				
 		ArrayList<String> list = new ArrayList<String>();
+
+		String[] lineList = method.codeSnippetFromFileContent.split("\r\n|\r|\n");
 
 		for(int i=start;i<=end;i++){
 			list.add(lineList[i]);
 		}
 		
- /**Not trimming columns, considering entire lines.
-		//now trim columns
-		String firstLineStr = list.get(0);
-		//if(firstLineStr.length()>1)
-		firstLineStr = firstLineStr.substring(this.startingColumn, firstLineStr.length()-1);
-		list.set(0,firstLineStr);
-		
-		String lastLineStr = list.get(list.size()-1);
-		lastLineStr = lastLineStr.substring(0, this.endingColumn);
-		list.set(list.size()-1, lastLineStr);		
-	*/	
-		
 		return list;
 	}
 
-
-	private int computeCyclomaticComplexity(CodeSnippet snippet){
-		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
-		return comp.compute(extractLines(snippet));
+	
+	public Integer computeCharacterLenght(ArrayList<String> lineList) {
+		int count = 0;
+		for(String line:lineList) {
+			 count = count + line.trim().length();
+		}
+		return new Integer(count);
 	}
-
-
 
 }
