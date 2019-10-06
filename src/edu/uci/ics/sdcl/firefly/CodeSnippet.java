@@ -42,6 +42,7 @@ public class CodeSnippet implements Serializable
 	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
 	private HashMap<String, CodeSnippet> calleesMap;
+	private int characterCount_Metric;
 
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -295,8 +296,8 @@ public class CodeSnippet implements Serializable
 	public ArrayList<String> extractLines(){
 		String[] lineList = this.codeSnippetFromFileContent.split("\r\n|\r|\n");
 		
-		int start = 0;
-		int end =  this.elementEndingLine - this.elementStartingLine;
+		int start = this.bodyStartingLine - this.elementStartingLine;
+		int end =  this.bodyEndingLine - this.bodyStartingLine;
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
@@ -304,6 +305,19 @@ public class CodeSnippet implements Serializable
 			list.add(lineList[i]);
 		}
 		return list;
+	}
+
+	public void setCharacterCount_Metric() {
+		ArrayList<String> lineList = this.extractLines();
+		int count = 0;
+		for(String line:lineList) {
+			 count = count + line.trim().length();
+		}
+		this.characterCount_Metric = new Integer(count);
+	}
+	
+	public Integer getCharacterCount_Metric() {
+		return this.characterCount_Metric;
 	}
 	
 		
