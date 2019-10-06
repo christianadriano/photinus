@@ -102,6 +102,10 @@ public class CodeSnippet implements Serializable
 		this.callees = new Vector<CodeSnippet>();
 	}
 
+	public void computeComplexityMetrics() {
+		this.setCharacterCount_Metric(); 
+	}
+	
 	@Override
 	public String toString() {
 		return "CodeSnippet" 
