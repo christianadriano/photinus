@@ -247,6 +247,7 @@ public class FileUploadServlet extends HttpServlet {
 
 				int numberOfMicrotasks = storage.getNumberOfMicrotask();
 				results ="Method complexity: characters="+codeSnippet.getCharacterCount_Metric()+", "+ 
+						"CyclomaticComplexity= "+codeSnippet.getCyclomaticComplexity_Metric()+","+
 						"Microtasks generated: " + generatedMicrotasks+","+
 						"Total Microtasks available now: "+ numberOfMicrotasks;
 				
@@ -272,7 +273,7 @@ public class FileUploadServlet extends HttpServlet {
 		while(iter.hasNext()){
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
-			System.out.println(microtask.getID()+", "+microtask.getCyclomaticComplexity());
+			//System.out.println(microtask.getID()+", "+microtask.getCyclomaticComplexity());
 		}
 	}
 
