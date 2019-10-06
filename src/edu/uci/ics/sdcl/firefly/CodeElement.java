@@ -35,6 +35,11 @@ public class CodeElement implements Serializable {
 	
 	protected ArrayList<String> sourceCodeLines = new ArrayList<String>();; //the source corresponding to the CodeElement
 	
+	//Metrics
+	private Integer characterCount_metric;
+	private Integer volumeHalstead_metric;
+	private Integer lengthHasltead_metric;
+	
 	/* constructor for elements without body */
 	public CodeElement(String Type, 
 			Integer elementStartingLineArg, Integer elementStartingColumnArg, 
@@ -134,6 +139,11 @@ public class CodeElement implements Serializable {
 		this.sourceCodeLines = sourceCodeLines;
 	}
 	
-	
+	public Integer getCharacterCount_metric() {
+		return characterCount_metric;
+	}
+	public void setCharacterCount_metric(Integer characterCount_metric) {
+		this.characterCount_metric = characterCount_metric;
+	}	
 	
 }
