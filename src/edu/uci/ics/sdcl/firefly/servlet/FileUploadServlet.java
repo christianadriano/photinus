@@ -201,6 +201,9 @@ public class FileUploadServlet extends HttpServlet {
 					if(codeSnippet.getMethodSignature().getParameterList().size()== parameterSize){
 					//Means that a parameter count was provided, so have to match that as well.
 					//not only the method name
+						
+						//compute metrics only for the codeSnippet that will be used
+						codeSnippet.computeComplexityMetrics();
 						filteredCodeSnippets.add(codeSnippet);
 						foundMatch = true;
 						break;
@@ -211,6 +214,7 @@ public class FileUploadServlet extends HttpServlet {
 					}
 				}
 				else{//no parameter list was provided, so just add the first occurrence of the method
+					codeSnippet.computeComplexityMetrics();
 					filteredCodeSnippets.add(codeSnippet);
 					foundMatch = true;
 					break;
@@ -236,18 +240,18 @@ public class FileUploadServlet extends HttpServlet {
 			if (microtaskMap!= null && microtaskMap.size() > 0){
 				FileDebugSession fileDebuggingSession = new FileDebugSession(keyFileName, fileContent, microtaskMap);
 				int generatedMicrotasks = microtaskMap.size();
+				CodeSnippet codeSnippet = filteredCodeSnippets.firstElement();
 				
 				//Persist data
 				storage.insert(keyFileName, fileDebuggingSession); //append to existing fileDebugSessions
 
-				int generatedCodeSnippets = snippetList.size();
 				int numberOfMicrotasks = storage.getNumberOfMicrotask();
-				results = "Code snippets generated: "+generatedCodeSnippets+ 
-						"<br> Microtasks generated: " + generatedMicrotasks+"<br>"+
-						"Total Microtasks available now: "+ numberOfMicrotasks + "<br>";
+				results ="Method complexity: characters="+codeSnippet.getCharacterCount_Metric()+", "+ 
+						"Microtasks generated: " + generatedMicrotasks+","+
+						"Total Microtasks available now: "+ numberOfMicrotasks;
 				
 				Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
-				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; CodeSnippets="+generatedCodeSnippets+"; Microtasks="+generatedMicrotasks);
+				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; Microtasks="+generatedMicrotasks);
 				
 				//printMicrotasksDetails(microtaskMap);
 				System.out.println("Results: "+results);
