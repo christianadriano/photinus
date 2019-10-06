@@ -37,12 +37,12 @@ public class CodeSnippet implements Serializable
 	
 	//Metrics to evaluate code snippets
 	protected Integer CyclomaticComplexity; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
-	protected Integer sizeCharacters; //Don't consider empty spaces
 	private Integer LOCS;
 	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
 	private HashMap<String, CodeSnippet> calleesMap;
 	private int characterCount_Metric;
+	private ArrayList<String> codeSnippetLines;
 
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -103,7 +103,8 @@ public class CodeSnippet implements Serializable
 	}
 
 	public void computeComplexityMetrics() {
-		this.setCharacterCount_Metric(); 
+		this.codeSnippetLines = this.extractLines();
+		this.setCharacterCount_Metric(this.codeSnippetLines); 
 	}
 	
 	@Override
@@ -272,9 +273,7 @@ public class CodeSnippet implements Serializable
 		int i=0;
 		while((!found) && i<calleeList.size()){
 			CodeSnippet snippet = calleeList.get(i);
-			///System.out.println("callee: "+ snippet.getMethodSignature().getName()+" params: "+snippet.getMethodSignature().getParameterList().size() );
-			//System.out.println("method : " + methodName+" params: "+ numberOfParameters);
-			
+		
 			if(snippet.getMethodSignature().getName().matches(methodName)  &&
 			(snippet.getMethodSignature().getParameterList().size()==numberOfParameters))
 				found=true;
@@ -301,7 +300,7 @@ public class CodeSnippet implements Serializable
 		String[] lineList = this.codeSnippetFromFileContent.split("\r\n|\r|\n");
 		
 		int start = this.bodyStartingLine - this.elementStartingLine;
-		int end =  this.bodyEndingLine - this.bodyStartingLine;
+		int end =  start + this.bodyEndingLine - this.bodyStartingLine;
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
@@ -311,8 +310,7 @@ public class CodeSnippet implements Serializable
 		return list;
 	}
 
-	public void setCharacterCount_Metric() {
-		ArrayList<String> lineList = this.extractLines();
+	public void setCharacterCount_Metric(ArrayList<String> lineList) {
 		int count = 0;
 		for(String line:lineList) {
 			 count = count + line.trim().length();
