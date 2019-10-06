@@ -1,6 +1,7 @@
 package edu.uci.ics.sdcl.firefly;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class CodeElement implements Serializable {
 
@@ -32,6 +33,7 @@ public class CodeElement implements Serializable {
 	protected Integer bodyEndingLine;		// line number for the end of the body
 	protected Integer bodyEndingColumn;		// column number for the end of the body
 	
+	protected ArrayList<String> sourceCodeLines = new ArrayList<String>();; //the source corresponding to the CodeElement
 	
 	/* constructor for elements without body */
 	public CodeElement(String Type, 
@@ -47,7 +49,7 @@ public class CodeElement implements Serializable {
 		this.bodyStartingLine = CodeElement.NO_NUMBER_ASSOCIATED;		
 		this.bodyStartingColumn = CodeElement.NO_NUMBER_ASSOCIATED;	
 		this.bodyEndingLine = CodeElement.NO_NUMBER_ASSOCIATED;		
-		this.bodyEndingColumn = CodeElement.NO_NUMBER_ASSOCIATED;		
+		this.bodyEndingColumn = CodeElement.NO_NUMBER_ASSOCIATED;	
 	}
 	/* constructor for elements with body */
 	public CodeElement(String Type, 
@@ -125,6 +127,13 @@ public class CodeElement implements Serializable {
 	public void setElementEndingColumn(Integer elementEndingColumn) {
 		this.elementEndingColumn = elementEndingColumn;
 	}
+	public ArrayList<String> getSourceCodeLines() {
+		return sourceCodeLines;
+	}
+	public void setSourceCodeLines(ArrayList<String> sourceCodeLines) {
+		this.sourceCodeLines = sourceCodeLines;
+	}
+	
 	
 	
 }
