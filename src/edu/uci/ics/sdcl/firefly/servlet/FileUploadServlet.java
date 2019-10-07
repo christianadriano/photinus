@@ -254,8 +254,8 @@ public class FileUploadServlet extends HttpServlet {
 				Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; Microtasks="+generatedMicrotasks);
 				
-				//printMicrotasksDetails(microtaskMap);
-				System.out.println("Results: "+results);
+				printMicrotasksDetails(microtaskMap);
+				//System.out.println("Results: "+results);
 			}
 			else
 				results = "No Microtasks were generated! Please review the file uploaded.";
@@ -263,17 +263,22 @@ public class FileUploadServlet extends HttpServlet {
 		else
 			results = "No Microtasks were generated! The method name was not found in the file.";
 
+		
 		return results;
 	}
 	
 	private void printMicrotasksDetails(Hashtable<Integer, Microtask> microtaskMap) {
 		
 		Iterator<Integer> iter = microtaskMap.keySet().iterator();
-		System.out.println("ID, Complexity");
+		System.out.println("ID, line, type, charCount");
 		while(iter.hasNext()){
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
-			//System.out.println(microtask.getID()+", "+microtask.getCyclomaticComplexity());
+			System.out.println(microtask.getID().toString()+", "+
+								microtask.getStartingLine()+", "+
+								microtask.getCodeElementType()+", "+
+								microtask.getCodeElement().getCharacterCount_metric()
+								);
 		}
 	}
 
