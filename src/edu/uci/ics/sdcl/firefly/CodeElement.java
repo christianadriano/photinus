@@ -144,6 +144,10 @@ public class CodeElement implements Serializable {
 	}
 	public void setCharacterCount_metric(Integer characterCount_metric) {
 		this.characterCount_metric = characterCount_metric;
+	}
+	
+	public String printMetrics() {
+		return("charCount="+this.characterCount_metric);
 	}	
 	
 }
