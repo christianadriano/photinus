@@ -246,8 +246,10 @@ public class FileUploadServlet extends HttpServlet {
 				storage.insert(keyFileName, fileDebuggingSession); //append to existing fileDebugSessions
 
 				int numberOfMicrotasks = storage.getNumberOfMicrotask();
-				results ="Method complexity: characters="+codeSnippet.getCharacterCount_Metric()+", "+ 
-						"CyclomaticComplexity= "+codeSnippet.getCyclomaticComplexity_Metric()+","+
+				results ="Method complexity: characters="+codeSnippet.getCharacterCount_metric()+", "+ 
+						"CyclomaticComplexity= "+codeSnippet.getCyclomaticComplexity_metric()+","+
+						"Length_Halstead= "+codeSnippet.getLengthHalstead_metric()+","+
+						"Volume_Halstead= "+codeSnippet.getVolumeHalstead_metric()+","+
 						"Microtasks generated: " + generatedMicrotasks+","+
 						"Total Microtasks available now: "+ numberOfMicrotasks;
 				
@@ -270,14 +272,17 @@ public class FileUploadServlet extends HttpServlet {
 	private void printMicrotasksDetails(Hashtable<Integer, Microtask> microtaskMap) {
 		
 		Iterator<Integer> iter = microtaskMap.keySet().iterator();
-		System.out.println("ID, line, type, charCount");
+		System.out.println("ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
 		while(iter.hasNext()){
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
 			System.out.println(microtask.getID().toString()+", "+
 								microtask.getStartingLine()+", "+
 								microtask.getCodeElementType()+", "+
-								microtask.getCodeElement().getCharacterCount_metric()
+								microtask.getCodeElement().getCharacterCount_metric()+","+
+								microtask.getCodeElement().getCyclomaticComplexity_metric()+","+
+								microtask.getCodeElement().getLengthHalstead_metric()+","+
+								microtask.getCodeElement().getVolumeHalstead_metric()
 								);
 		}
 	}
