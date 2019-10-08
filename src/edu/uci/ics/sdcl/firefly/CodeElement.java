@@ -37,8 +37,11 @@ public class CodeElement implements Serializable {
 	
 	//Metrics
 	private Integer characterCount_metric;
-	private Integer volumeHalstead_metric;
-	private Integer lengthHasltead_metric;
+	private Double cyclomaticComplexity_metric;
+
+
+	private Double lengthHalstead_metric;
+	private Double volumeHalstead_metric;
 	
 	/* constructor for elements without body */
 	public CodeElement(String Type, 
@@ -139,11 +142,33 @@ public class CodeElement implements Serializable {
 		this.sourceCodeLines = sourceCodeLines;
 	}
 	
+	//-------------------------
+	// METRICS
+	
 	public Integer getCharacterCount_metric() {
 		return characterCount_metric;
 	}
 	public void setCharacterCount_metric(Integer characterCount_metric) {
 		this.characterCount_metric = characterCount_metric;
+	}
+	
+	public Double getCyclomaticComplexity_metric() {
+		return cyclomaticComplexity_metric;
+	}
+	public void setCyclomaticComplexity_metric(Double cyclomaticComplexity) {
+		cyclomaticComplexity_metric = cyclomaticComplexity;
+	}
+	public Double getLengthHalstead_metric() {
+		return lengthHalstead_metric;
+	}
+	public void setLengthHalstead_metric(Double halsteadLength) {
+		lengthHalstead_metric = halsteadLength;
+	}
+	public Double getVolumeHalstead_metric() {
+		return volumeHalstead_metric;
+	}
+	public void setVolumeHalstead_metric(Double halsteadVolume) {
+		volumeHalstead_metric = halsteadVolume;
 	}
 	
 	public String printMetrics() {
