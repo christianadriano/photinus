@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import complexity.metric.HalsteadComplexityCounter;
-import edu.uci.ics.sdcl.firefly.util.CyclomaticComplexityCounter;
+import complexity.metric.CyclomaticComplexityCounter;
 
 public class CodeSnippet implements Serializable
 {
@@ -36,7 +36,7 @@ public class CodeSnippet implements Serializable
 	protected Vector<CodeElement> elements;	// list of statements
 	
 	//Metrics to evaluate code snippets
-	protected Integer CyclomaticComplexity; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
+	protected Double CyclomaticComplexity; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
 	private Integer LOCS;
 	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
@@ -107,14 +107,21 @@ public class CodeSnippet implements Serializable
 	public void computeComplexityMetrics() {
 		this.codeSnippetLines = this.extractLines();
 		this.setCharacterCount_Metric(this.codeSnippetLines); 
-		this.CyclomaticComplexity = this.computeCyclomaticComplexity(this.codeSnippetLines);
-		Double results[] = computeHalsteadMetric();
+		Double results[] = computeCyclomaticComplexity();
+		this.CyclomaticComplexity = results[0];
+		results = computeHalsteadMetric();
 		this.HalsteadLength = results[0];
 		this.HalsteadVolume = results[1];
 	}
 	
 	private Double[] computeHalsteadMetric() {
 		HalsteadComplexityCounter counter = new HalsteadComplexityCounter();
+		counter.prepare(this.codeSnippetLines);
+		return counter.compute();
+	}
+	
+	private Double[] computeCyclomaticComplexity() {
+		CyclomaticComplexityCounter counter = new CyclomaticComplexityCounter();
 		counter.prepare(this.codeSnippetLines);
 		return counter.compute();
 	}
@@ -334,15 +341,17 @@ public class CodeSnippet implements Serializable
 		return this.characterCount_Metric;
 	}
 	
-	private int computeCyclomaticComplexity(ArrayList<String> codeSnippetLines){
-		CyclomaticComplexityCounter comp = new CyclomaticComplexityCounter();
-		return comp.compute(codeSnippetLines);
-	}
-
-	public Integer getCyclomaticComplexity_Metric() {
+	public Double getCyclomaticComplexity_Metric() {
 		return this.CyclomaticComplexity;
 	}
 
+	public Double getHalsteadLength() {
+		return HalsteadLength;
+	}
+
+	public Double getHalsteadVolume() {
+		return HalsteadVolume;
+	}	
 	
 		
 }
