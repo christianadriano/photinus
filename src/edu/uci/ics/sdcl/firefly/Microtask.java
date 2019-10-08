@@ -38,9 +38,7 @@ public class Microtask implements Serializable
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
-	private Double CyclomaticComplexity;
-	private Double HalsteadLength;
-	private Double HalsteadVolume;
+	
 
 	/**
 	 * 
@@ -84,10 +82,10 @@ public class Microtask implements Serializable
 		ArrayList<String> lineList = this.codeElement.getSourceCodeLines();
 		this.codeElement.setCharacterCount_metric(computeCharacterLenght(lineList));
 		Double results[] = computeCyclomaticComplexity(lineList);
-		this.CyclomaticComplexity = results[0];
+		this.codeElement.setCyclomaticComplexity_metric(results[0]);
 		results = computeHalsteadMetric(lineList);
-		this.HalsteadLength = results[0];
-		this.HalsteadVolume = results[1];
+		this.codeElement.setLengthHalstead_metric(results[0]);
+		this.codeElement.setVolumeHalstead_metric(results[1]);
 	}
 	
 	private Double[] computeHalsteadMetric(ArrayList<String> lineList) {
