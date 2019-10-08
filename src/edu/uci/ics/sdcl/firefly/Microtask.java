@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import edu.uci.ics.sdcl.firefly.lite.MicrotaskLite;
-import edu.uci.ics.sdcl.firefly.util.CyclomaticComplexityCounter;
+import complexity.metric.HalsteadComplexityCounter;
+import complexity.metric.CyclomaticComplexityCounter;
+
 
 public class Microtask implements Serializable
 {	
@@ -37,6 +38,9 @@ public class Microtask implements Serializable
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
+	private Double CyclomaticComplexity;
+	private Double HalsteadLength;
+	private Double HalsteadVolume;
 
 	/**
 	 * 
@@ -77,8 +81,27 @@ public class Microtask implements Serializable
 
 	
 	private void computeComplexityMetrics() {
-		this.codeElement.setCharacterCount_metric(this.computeCharacterLenght(this.codeElement.getSourceCodeLines())); 
+		ArrayList<String> lineList = this.codeElement.getSourceCodeLines();
+		this.codeElement.setCharacterCount_metric(computeCharacterLenght(lineList));
+		Double results[] = computeCyclomaticComplexity(lineList);
+		this.CyclomaticComplexity = results[0];
+		results = computeHalsteadMetric(lineList);
+		this.HalsteadLength = results[0];
+		this.HalsteadVolume = results[1];
 	}
+	
+	private Double[] computeHalsteadMetric(ArrayList<String> lineList) {
+		HalsteadComplexityCounter counter = new HalsteadComplexityCounter();
+		counter.prepare(lineList);
+		return counter.compute();
+	}
+	
+	private Double[] computeCyclomaticComplexity(ArrayList<String> lineList) {
+		CyclomaticComplexityCounter counter = new CyclomaticComplexityCounter();
+		counter.prepare(lineList);
+		return counter.compute();
+	}
+
 
 	/** Simplified version with only the data needed to write a Session Report */
 	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName)	{
