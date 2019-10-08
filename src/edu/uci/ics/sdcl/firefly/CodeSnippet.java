@@ -36,15 +36,15 @@ public class CodeSnippet implements Serializable
 	protected Vector<CodeElement> elements;	// list of statements
 	
 	//Metrics to evaluate code snippets
-	protected Double CyclomaticComplexity; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
+	protected Double cyclomaticComplexity_metric; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
 	private Integer LOCS;
 	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
 	private HashMap<String, CodeSnippet> calleesMap;
-	private int characterCount_Metric;
+	private int characterCount_metric;
 	private ArrayList<String> codeSnippetLines;
-	private Double HalsteadLength;
-	private Double HalsteadVolume;
+	private Double lengthHalstead_metric;
+	private Double volumeHalstead_metric;
 
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -108,10 +108,10 @@ public class CodeSnippet implements Serializable
 		this.codeSnippetLines = this.extractLines();
 		this.setCharacterCount_Metric(this.codeSnippetLines); 
 		Double results[] = computeCyclomaticComplexity();
-		this.CyclomaticComplexity = results[0];
+		this.cyclomaticComplexity_metric = results[0];
 		results = computeHalsteadMetric();
-		this.HalsteadLength = results[0];
-		this.HalsteadVolume = results[1];
+		this.lengthHalstead_metric = results[0];
+		this.volumeHalstead_metric = results[1];
 	}
 	
 	private Double[] computeHalsteadMetric() {
@@ -334,23 +334,23 @@ public class CodeSnippet implements Serializable
 		for(String line:lineList) {
 			 count = count + line.trim().length();
 		}
-		this.characterCount_Metric = new Integer(count);
+		this.characterCount_metric = new Integer(count);
 	}
 	
-	public Integer getCharacterCount_Metric() {
-		return this.characterCount_Metric;
+	public Integer getCharacterCount_metric() {
+		return this.characterCount_metric;
 	}
 	
-	public Double getCyclomaticComplexity_Metric() {
-		return this.CyclomaticComplexity;
+	public Double getCyclomaticComplexity_metric() {
+		return this.cyclomaticComplexity_metric;
 	}
 
-	public Double getHalsteadLength() {
-		return HalsteadLength;
+	public Double getLengthHalstead_metric() {
+		return lengthHalstead_metric;
 	}
 
-	public Double getHalsteadVolume() {
-		return HalsteadVolume;
+	public Double getVolumeHalstead_metric() {
+		return volumeHalstead_metric;
 	}	
 	
 		
