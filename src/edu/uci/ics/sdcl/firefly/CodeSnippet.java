@@ -1,11 +1,11 @@
 package edu.uci.ics.sdcl.firefly;
 import java.io.Serializable;
-import java.util.Vector;
-
-import edu.uci.ics.sdcl.firefly.util.CyclomaticComplexityCounter;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
+
+import complexity.metric.HalsteadComplexityCounter;
+import edu.uci.ics.sdcl.firefly.util.CyclomaticComplexityCounter;
 
 public class CodeSnippet implements Serializable
 {
@@ -43,6 +43,8 @@ public class CodeSnippet implements Serializable
 	private HashMap<String, CodeSnippet> calleesMap;
 	private int characterCount_Metric;
 	private ArrayList<String> codeSnippetLines;
+	private Double HalsteadLength;
+	private Double HalsteadVolume;
 
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -106,8 +108,17 @@ public class CodeSnippet implements Serializable
 		this.codeSnippetLines = this.extractLines();
 		this.setCharacterCount_Metric(this.codeSnippetLines); 
 		this.CyclomaticComplexity = this.computeCyclomaticComplexity(this.codeSnippetLines);
+		Double results[] = computeHalsteadMetric();
+		this.HalsteadLength = results[0];
+		this.HalsteadVolume = results[1];
 	}
 	
+	private Double[] computeHalsteadMetric() {
+		HalsteadComplexityCounter counter = new HalsteadComplexityCounter();
+		counter.prepare(this.codeSnippetLines);
+		return counter.compute();
+	}
+
 	@Override
 	public String toString() {
 		return "CodeSnippet" 
