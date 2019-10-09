@@ -32,18 +32,22 @@ import edu.uci.ics.sdcl.firefly.storage.WorkerSessionStorage;
 import edu.uci.ics.sdcl.firefly.storage.WorkerStorage;
 import edu.uci.ics.sdcl.firefly.util.PathUtil;
 import edu.uci.ics.sdcl.firefly.util.PropertyManager;
+import edu.uci.ics.sdcl.firefly.util.ReadWriteFile;
 import edu.uci.ics.sdcl.firefly.util.TimeStampUtil;
 
 import java.util.*; 
 
 public class FileUploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private ArrayList<String> microtaskComplexityList;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public FileUploadServlet() {
 		super();
+		this.microtaskComplexityList=new ArrayList<String>();
+		this.microtaskComplexityList.add("fileName,ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
 	}
 
 	/**
@@ -246,18 +250,15 @@ public class FileUploadServlet extends HttpServlet {
 				storage.insert(keyFileName, fileDebuggingSession); //append to existing fileDebugSessions
 
 				int numberOfMicrotasks = storage.getNumberOfMicrotask();
-				results ="Method complexity: characters="+codeSnippet.getCharacterCount_metric()+", "+ 
-						"CyclomaticComplexity= "+codeSnippet.getCyclomaticComplexity_metric()+","+
-						"Length_Halstead= "+codeSnippet.getLengthHalstead_metric()+","+
-						"Volume_Halstead= "+codeSnippet.getVolumeHalstead_metric()+","+
-						"Microtasks generated: " + generatedMicrotasks+","+
-						"Total Microtasks available now: "+ numberOfMicrotasks;
 				
 				Logger logger = LoggerFactory.getLogger(FileUploadServlet.class);
 				logger.info("EVENT =FileUpload; FileName="+ keyFileName+"; Microtasks="+generatedMicrotasks);
 				
+				System.out.println("Microtasks generated: " + generatedMicrotasks+","+
+									"Total Microtasks available now: "+ numberOfMicrotasks);
+				
+				printJavaMethodDetails(codeSnippet);
 				printMicrotasksDetails(microtaskMap);
-				//System.out.println("Results: "+results);
 			}
 			else
 				results = "No Microtasks were generated! Please review the file uploaded.";
@@ -269,14 +270,26 @@ public class FileUploadServlet extends HttpServlet {
 		return results;
 	}
 	
+	private String printJavaMethodDetails(CodeSnippet codeSnippet) {
+	return (codeSnippet.getFileName()+","+
+			codeSnippet.getBodyStartingLine().toString()+","+
+			codeSnippet.getCharacterCount_metric()+", "+ 
+			codeSnippet.getCyclomaticComplexity_metric()+","+
+			codeSnippet.getLengthHalstead_metric()+","+
+			codeSnippet.getVolumeHalstead_metric()
+			);
+	}
+	
 	private void printMicrotasksDetails(Hashtable<Integer, Microtask> microtaskMap) {
 		
 		Iterator<Integer> iter = microtaskMap.keySet().iterator();
-		System.out.println("ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
+		System.out.println("fileName, ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
 		while(iter.hasNext()){
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
-			System.out.println(microtask.getID().toString()+", "+
+			String line = new String(
+								microtask.getFileName().toString()+", "+
+								microtask.getID().toString()+", "+
 								microtask.getStartingLine()+", "+
 								microtask.getCodeElementType()+", "+
 								microtask.getCodeElement().getCharacterCount_metric()+","+
@@ -284,6 +297,8 @@ public class FileUploadServlet extends HttpServlet {
 								microtask.getCodeElement().getLengthHalstead_metric()+","+
 								microtask.getCodeElement().getVolumeHalstead_metric()
 								);
+			System.out.println(line);
+			this.microtaskComplexityList.add(line);
 		}
 	}
 
@@ -453,9 +468,16 @@ public class FileUploadServlet extends HttpServlet {
 	}
 	
 	
+	public void writeMetricsToFile() {
+		ReadWriteFile.writeBackToBuffer(this.microtaskComplexityList, 
+				"c://Users//Christian//Documents//GitHub//Complexity_Metrics//test//",
+				"microtaskComplexity.csv");
+	}
+	
 	public static void main(String args[]){
 		FileUploadServlet servlet = new FileUploadServlet();
 		servlet.bulkUpload();
+		servlet.writeMetricsToFile();
 	}
 }
 
