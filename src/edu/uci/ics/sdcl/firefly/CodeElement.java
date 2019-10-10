@@ -38,10 +38,10 @@ public class CodeElement implements Serializable {
 	//Metrics
 	private Integer characterCount_metric;
 	private Double cyclomaticComplexity_metric;
-
-
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
+	private Integer LOC_metric;
+	
 	
 	/* constructor for elements without body */
 	public CodeElement(String Type, 
@@ -170,9 +170,17 @@ public class CodeElement implements Serializable {
 	public void setVolumeHalstead_metric(Double halsteadVolume) {
 		volumeHalstead_metric = halsteadVolume;
 	}
+
+	public Integer getLOC_metric() {
+		return LOC_metric;
+	}
+	public void setLOC_metric(Integer lOC_metric) {
+		LOC_metric = lOC_metric;
+	}
 	
 	public String printMetrics() {
 		return("charCount="+this.characterCount_metric);
 	}	
 	
+
 }
