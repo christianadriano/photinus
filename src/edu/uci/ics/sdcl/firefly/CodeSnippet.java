@@ -35,17 +35,17 @@ public class CodeSnippet implements Serializable
 	protected MethodSignature methodSignature;		// parsed method declaration
 	protected Vector<CodeElement> elements;	// list of statements
 	
-	//Metrics to evaluate code snippets
-	protected Double cyclomaticComplexity_metric; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
-	private Integer LOCS;
-	
 	protected String codeSnippetFromFileContent;	// the string that has the whole body of the method
 	private HashMap<String, CodeSnippet> calleesMap;
-	private int characterCount_metric;
 	private ArrayList<String> codeSnippetLines;
+
+	//Metrics to evaluate code snippets
+	private int characterCount_metric;
+	private Double cyclomaticComplexity_metric; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
-
+	private Integer LOC_metric;
+	
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
 	/* constructor for methods without body */
@@ -265,7 +265,7 @@ public class CodeSnippet implements Serializable
 	public void setCodeSnippetFromFileContent(String codeSnippetFromFileContent) {
 		this.codeSnippetFromFileContent = codeSnippetFromFileContent;
 		String sourceLines[] = codeSnippetFromFileContent.split("\r\n|\r|\n");
-		this.LOCS = sourceLines.length;
+		this.LOC_metric = sourceLines.length;
 	}
 	
 	public String getFileName() {
@@ -311,8 +311,8 @@ public class CodeSnippet implements Serializable
 		return CodeSnippet.isMethodCallee(calleeList, snippet.getMethodSignature().getName(), snippet.getMethodSignature().getParameterList().size());
 	}
 
-	public Integer getLOCS() {
-		return this.LOCS;
+	public Integer getLOC_metric() {
+		return this.LOC_metric;
 	}
 	
 	public ArrayList<String> extractLines(){
