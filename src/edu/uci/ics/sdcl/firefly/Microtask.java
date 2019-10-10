@@ -34,7 +34,6 @@ public class Microtask implements Serializable
 	private String callerFileContent;
 	private Integer callerLOCS;
 	protected String fileName;
-	private Integer LOC_CoveredByQuestion; //lines of code covered by the question
 	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
 
 	private String questionType;
@@ -72,7 +71,6 @@ public class Microtask implements Serializable
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
 		//this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
-		this.LOC_CoveredByQuestion = this.endingLine - this.startingLine + 1;
 		this.codeElement.setSourceCodeLines(this.extractLines(method));
 		this.computeComplexityMetrics();
 	}
@@ -86,6 +84,7 @@ public class Microtask implements Serializable
 		results = computeHalsteadMetric(lineList);
 		this.codeElement.setLengthHalstead_metric(results[0]);
 		this.codeElement.setVolumeHalstead_metric(results[1]);
+		this.codeElement.setLOC_metric(this.endingLine - this.startingLine + 1);
 	}
 	
 	private Double[] computeHalsteadMetric(ArrayList<String> lineList) {
@@ -327,14 +326,6 @@ public class Microtask implements Serializable
 			list.add(answer.getOption());
 		}
 		return list;
-	}
-
-	public Integer getLOC_CoveredByQuestion() {
-		return LOC_CoveredByQuestion;
-	}
-
-	public void setLOC_CoveredByQuestion(Integer locs) {
-		this.LOC_CoveredByQuestion = locs;
 	}
 	
 	/** 
