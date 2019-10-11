@@ -1,10 +1,13 @@
 package edu.uci.ics.sdcl.firefly;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import complexity.metric.HalsteadComplexityCounter;
+import complexity.metric.TrimmedLOCCounter;
 import complexity.metric.CyclomaticComplexityCounter;
 
 public class CodeSnippet implements Serializable
@@ -44,7 +47,7 @@ public class CodeSnippet implements Serializable
 	private Double cyclomaticComplexity_metric; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
-	private Integer LOC_metric;
+	private Double TrimLOC_metric;
 	
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -265,7 +268,10 @@ public class CodeSnippet implements Serializable
 	public void setCodeSnippetFromFileContent(String codeSnippetFromFileContent) {
 		this.codeSnippetFromFileContent = codeSnippetFromFileContent;
 		String sourceLines[] = codeSnippetFromFileContent.split("\r\n|\r|\n");
-		this.LOC_metric = sourceLines.length;
+		TrimmedLOCCounter counter =  new TrimmedLOCCounter();
+		List<String> lineList = Arrays.asList(sourceLines);  
+		counter.prepare(lineList);
+		this.TrimLOC_metric = counter.compute()[0];
 	}
 	
 	public String getFileName() {
@@ -311,8 +317,8 @@ public class CodeSnippet implements Serializable
 		return CodeSnippet.isMethodCallee(calleeList, snippet.getMethodSignature().getName(), snippet.getMethodSignature().getParameterList().size());
 	}
 
-	public Integer getLOC_metric() {
-		return this.LOC_metric;
+	public Double getLOC_metric() {
+		return this.TrimLOC_metric;
 	}
 	
 	public ArrayList<String> extractLines(){
