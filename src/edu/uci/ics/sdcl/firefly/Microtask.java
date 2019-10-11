@@ -108,33 +108,6 @@ public class Microtask implements Serializable
 		this.fileName = fileName; 
 	}
 
-
-	/** Light version used during microtask execution */
-/*	public Microtask(int microtaskId, String question,
-			String failureDescription, String testCase, String snippetHightlights,
-			String callerHightlights, String calleeHightlights,
-			int startingColumn, int endingLine, int endingColumn,
-			String calleeFileContent, int calleeLOCS, String callerFileContent,
-			int callerLOCS, String fileName) {
-
-		this.ID = new Integer(microtaskId);
-		this.question = question;
-		this.failureDescription = failureDescription;
-		this.testCase = testCase;
-		this.snippetHightlights = snippetHightlights;
-		this.callerHightlights = callerHightlights;
-		this.calleeHightlights = calleeHightlights;
-		this.startingColumn = startingColumn;
-		this.endingLine = endingLine;
-		this.endingColumn = endingColumn;
-		this.calleeFileContent = calleeFileContent;
-		this.calleeLOCS = calleeLOCS;
-		this.callerFileContent = callerFileContent;
-		this.callerLOCS = callerLOCS;
-		this.fileName = fileName;
-		
-	}*/
-
 	public Microtask getSimpleVersion(){
 		Vector<Answer> answerListCopy = new Vector<Answer>();
 		for(Answer answer: this.getAnswerList()){
