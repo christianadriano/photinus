@@ -40,7 +40,7 @@ public class CodeElement implements Serializable {
 	private Double cyclomaticComplexity_metric;
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
-	private Integer LOC_metric;
+	private Double LOC_metric;
 	private Double TrimmedLOC_metric; //ignores empty lines, comments and lines with a isolated closing curly brackets
 	
 	
@@ -172,10 +172,10 @@ public class CodeElement implements Serializable {
 		volumeHalstead_metric = halsteadVolume;
 	}
 
-	public Integer getLOC_metric() {
+	public Double getLOC_metric() {
 		return LOC_metric;
 	}
-	public void setLOC_metric(Integer lOC_metric) {
+	public void setLOC_metric(Double lOC_metric) {
 		LOC_metric = lOC_metric;
 	}
 
@@ -185,6 +185,7 @@ public class CodeElement implements Serializable {
 	public void setTrimmedLOC_metric(Double trimmedLOC) {
 		TrimmedLOC_metric = trimmedLOC;
 	}
+	
 	
 	public String printMetrics() {
 		return("charCount="+this.characterCount_metric);
