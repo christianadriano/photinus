@@ -41,6 +41,7 @@ public class CodeElement implements Serializable {
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
 	private Integer LOC_metric;
+	private Integer TrimmedLOC_metric; //ignores empty lines, comments and lines with a isolated closing curly brackets
 	
 	
 	/* constructor for elements without body */
@@ -176,6 +177,13 @@ public class CodeElement implements Serializable {
 	}
 	public void setLOC_metric(Integer lOC_metric) {
 		LOC_metric = lOC_metric;
+	}
+
+	public Integer getTrimmedLOC_metric() {
+		return TrimmedLOC_metric;
+	}
+	public void setTrimmedLOC_metric(Integer trimmedLOC_metric) {
+		TrimmedLOC_metric = trimmedLOC_metric;
 	}
 	
 	public String printMetrics() {
