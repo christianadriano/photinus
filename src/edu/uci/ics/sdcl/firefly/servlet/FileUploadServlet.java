@@ -23,11 +23,9 @@ import edu.uci.ics.sdcl.firefly.SourceFileReader;
 import edu.uci.ics.sdcl.firefly.Worker;
 import edu.uci.ics.sdcl.firefly.WorkerSession;
 import edu.uci.ics.sdcl.firefly.WorkerSessionFactory;
-import edu.uci.ics.sdcl.firefly.controller.StorageManager;
 import edu.uci.ics.sdcl.firefly.controller.StorageStrategy;
 import edu.uci.ics.sdcl.firefly.report.voting.ReportGenerator;
 import edu.uci.ics.sdcl.firefly.storage.MicrotaskStorage;
-import edu.uci.ics.sdcl.firefly.storage.SkillTestStorage;
 import edu.uci.ics.sdcl.firefly.storage.WorkerSessionStorage;
 import edu.uci.ics.sdcl.firefly.storage.WorkerStorage;
 import edu.uci.ics.sdcl.firefly.util.PathUtil;
@@ -47,7 +45,7 @@ public class FileUploadServlet extends HttpServlet {
 	public FileUploadServlet() {
 		super();
 		this.microtaskComplexityList=new ArrayList<String>();
-		this.microtaskComplexityList.add("fileName,ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
+		this.microtaskComplexityList.add("fileName,ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead, LOC, Trimmed_LOC");
 	}
 
 	/**
@@ -270,20 +268,24 @@ public class FileUploadServlet extends HttpServlet {
 		return results;
 	}
 	
-	private String printJavaMethodDetails(CodeSnippet codeSnippet) {
-	return (codeSnippet.getFileName()+","+
+	private void printJavaMethodDetails(CodeSnippet codeSnippet) {
+		System.out.println("fileName, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead, LOC, Trimmed_LOC");
+		System.out.println(
+			codeSnippet.getFileName()+","+
 			codeSnippet.getBodyStartingLine().toString()+","+
 			codeSnippet.getCharacterCount_metric()+", "+ 
 			codeSnippet.getCyclomaticComplexity_metric()+","+
 			codeSnippet.getLengthHalstead_metric()+","+
-			codeSnippet.getVolumeHalstead_metric()
+			codeSnippet.getVolumeHalstead_metric()+","+
+			codeSnippet.getLOC_metric()+","+
+			codeSnippet.getTrimmedLOC_metric()
 			);
 	}
 	
 	private void printMicrotasksDetails(Hashtable<Integer, Microtask> microtaskMap) {
 		
 		Iterator<Integer> iter = microtaskMap.keySet().iterator();
-		System.out.println("fileName, ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead");
+		System.out.println("fileName, ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead, LOC, Trimmed_LOC");
 		while(iter.hasNext()){
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
@@ -295,7 +297,9 @@ public class FileUploadServlet extends HttpServlet {
 								microtask.getCodeElement().getCharacterCount_metric()+","+
 								microtask.getCodeElement().getCyclomaticComplexity_metric()+","+
 								microtask.getCodeElement().getLengthHalstead_metric()+","+
-								microtask.getCodeElement().getVolumeHalstead_metric()
+								microtask.getCodeElement().getVolumeHalstead_metric()+","+
+								microtask.getCodeElement().getLOC_metric()+","+
+								microtask.getCodeElement().getTrimmedLOC_metric()
 								);
 			System.out.println(line);
 			this.microtaskComplexityList.add(line);
