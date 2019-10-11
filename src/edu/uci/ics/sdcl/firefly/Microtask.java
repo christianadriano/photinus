@@ -82,7 +82,7 @@ public class Microtask implements Serializable
 		results = computeHalsteadMetric(lineList);
 		this.codeElement.setLengthHalstead_metric(results[0]);
 		this.codeElement.setVolumeHalstead_metric(results[1]);
-		this.codeElement.setLOC_metric(this.endingLine - this.startingLine + 1);
+		this.codeElement.setLOC_metric(new Double(this.endingLine - this.startingLine + 1));
 		Double trimmedLOC = computeTrimmedLOC(lineList);
 		this.codeElement.setTrimmedLOC_metric(trimmedLOC);
 	}
