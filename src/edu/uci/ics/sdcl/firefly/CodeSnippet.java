@@ -47,7 +47,8 @@ public class CodeSnippet implements Serializable
 	private Double cyclomaticComplexity_metric; //McCabe's complexity - counts "if|else|for|while|case|catch|\\|\\|\\?|&&";
 	private Double lengthHalstead_metric;
 	private Double volumeHalstead_metric;
-	private Double TrimLOC_metric;
+	private Double TrimmedLOC_metric;
+	private Double LOC_metric;
 	
 	private final static String newline = System.getProperty("line.separator");	// Just to jump line @toString
 	
@@ -109,12 +110,20 @@ public class CodeSnippet implements Serializable
 
 	public void computeComplexityMetrics() {
 		this.codeSnippetLines = this.extractLines();
-		this.setCharacterCount_Metric(this.codeSnippetLines); 
+		//# of Characters
+		this.setCharacterCount_Metric(this.codeSnippetLines);
+		//Cyclomatic Complexity
 		Double results[] = computeCyclomaticComplexity();
 		this.cyclomaticComplexity_metric = results[0];
+		//Halstead
 		results = computeHalsteadMetric();
 		this.lengthHalstead_metric = results[0];
 		this.volumeHalstead_metric = results[1];
+		//LOC
+		this.LOC_metric = new Double(codeSnippetLines.size());
+		TrimmedLOCCounter counter =  new TrimmedLOCCounter();
+		counter.prepare(codeSnippetLines);
+		this.TrimmedLOC_metric = counter.compute()[0];
 	}
 	
 	private Double[] computeHalsteadMetric() {
@@ -267,11 +276,6 @@ public class CodeSnippet implements Serializable
 
 	public void setCodeSnippetFromFileContent(String codeSnippetFromFileContent) {
 		this.codeSnippetFromFileContent = codeSnippetFromFileContent;
-		String sourceLines[] = codeSnippetFromFileContent.split("\r\n|\r|\n");
-		TrimmedLOCCounter counter =  new TrimmedLOCCounter();
-		List<String> lineList = Arrays.asList(sourceLines);  
-		counter.prepare(lineList);
-		this.TrimLOC_metric = counter.compute()[0];
 	}
 	
 	public String getFileName() {
@@ -317,9 +321,6 @@ public class CodeSnippet implements Serializable
 		return CodeSnippet.isMethodCallee(calleeList, snippet.getMethodSignature().getName(), snippet.getMethodSignature().getParameterList().size());
 	}
 
-	public Double getLOC_metric() {
-		return this.TrimLOC_metric;
-	}
 	
 	public ArrayList<String> extractLines(){
 		String[] lineList = this.codeSnippetFromFileContent.split("\r\n|\r|\n");
@@ -359,5 +360,20 @@ public class CodeSnippet implements Serializable
 		return volumeHalstead_metric;
 	}	
 	
+	public void setTrimmedLOC_metric(Double lOC_metric) {
+		this.TrimmedLOC_metric = lOC_metric;
+	}
+
+	public Double getTrimmedLOC_metric() {
+		return this.TrimmedLOC_metric;
+	}
+	
+	public void setLOC_metric(Double lOC_metric) {
+		this.LOC_metric = lOC_metric;
+	}
+
+	public Double getLOC_metric() {
+		return this.LOC_metric;
+	}
 		
 }
