@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import complexity.metric.HalsteadComplexityCounter;
+import complexity.metric.TrimmedLOCCounter;
 import complexity.metric.CyclomaticComplexityCounter;
 
 
@@ -34,8 +35,6 @@ public class Microtask implements Serializable
 	private String callerFileContent;
 	private Integer callerLOCS;
 	protected String fileName;
-	private Integer LOC_Trimmed; //removed comments, closing curly brackets, isolated else statement 
-
 	private String questionType;
 	
 
@@ -70,7 +69,6 @@ public class Microtask implements Serializable
 		this.failureDescription = failureDescription;
 		this.testCase = testCase;
 		this.fileName = method.getFileName();
-		//this.cyclomaticComplexity = this.computeCyclomaticComplexity(method);
 		this.codeElement.setSourceCodeLines(this.extractLines(method));
 		this.computeComplexityMetrics();
 	}
@@ -85,6 +83,8 @@ public class Microtask implements Serializable
 		this.codeElement.setLengthHalstead_metric(results[0]);
 		this.codeElement.setVolumeHalstead_metric(results[1]);
 		this.codeElement.setLOC_metric(this.endingLine - this.startingLine + 1);
+		Double trimmedLOC = computeTrimmedLOC(lineList);
+		this.codeElement.setTrimmedLOC_metric(trimmedLOC);
 	}
 	
 	private Double[] computeHalsteadMetric(ArrayList<String> lineList) {
@@ -99,6 +99,12 @@ public class Microtask implements Serializable
 		return counter.compute();
 	}
 
+	private Double  computeTrimmedLOC(ArrayList<String> lineList) {
+		TrimmedLOCCounter counter =  new TrimmedLOCCounter();
+		counter.prepare(lineList);
+		return counter.compute()[0];
+	}
+	
 
 	/** Simplified version with only the data needed to write a Session Report */
 	public Microtask(String question, Integer ID, Vector<Answer> answerList, String fileName)	{
