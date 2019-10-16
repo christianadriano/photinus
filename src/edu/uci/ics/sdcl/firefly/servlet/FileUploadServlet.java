@@ -45,7 +45,9 @@ public class FileUploadServlet extends HttpServlet {
 	public FileUploadServlet() {
 		super();
 		this.microtaskComplexityList=new ArrayList<String>();
-		this.microtaskComplexityList.add("fileName,ID, line, type, charCount, Cyclomatic_Complexity, Length_Halstead, Volume_Halstead, LOC, Trimmed_LOC");
+		String codeElements_columnNames = "fileName,ID,line,type,char_count,cyclomatic_complexity,length_Halstead,volume_Halstead,LOC,trimmed_LOC";
+		String codeSnippet_columnNames = "s_char_count,s_cyclomatic_complexity,s_length_Halstead,s_volume_Halstead,s_LOC,s_trimmed_LOC";
+		this.microtaskComplexityList.add(codeElements_columnNames +","+codeSnippet_columnNames);
 	}
 
 	/**
@@ -290,16 +292,22 @@ public class FileUploadServlet extends HttpServlet {
 			Integer id = iter.next();
 			Microtask microtask = microtaskMap.get(id);
 			String line = new String(
-								microtask.getFileName().toString()+", "+
-								microtask.getID().toString()+", "+
-								microtask.getStartingLine()+", "+
-								microtask.getCodeElementType()+", "+
+								microtask.getFileName().toString()+","+
+								microtask.getID().toString()+","+
+								microtask.getStartingLine()+","+
+								microtask.getCodeElementType()+","+
 								microtask.getCodeElement().getCharacterCount_metric()+","+
 								microtask.getCodeElement().getCyclomaticComplexity_metric()+","+
 								microtask.getCodeElement().getLengthHalstead_metric()+","+
 								microtask.getCodeElement().getVolumeHalstead_metric()+","+
 								microtask.getCodeElement().getLOC_metric()+","+
-								microtask.getCodeElement().getTrimmedLOC_metric()
+								microtask.getCodeElement().getTrimmedLOC_metric()+","+
+								microtask.getCodeSnippet().getCharacterCount_metric()+","+
+								microtask.getCodeSnippet().getCyclomaticComplexity_metric()+","+
+								microtask.getCodeSnippet().getLengthHalstead_metric()+","+
+								microtask.getCodeSnippet().getVolumeHalstead_metric()+","+
+								microtask.getCodeSnippet().getLOC_metric()+","+
+								microtask.getCodeSnippet().getTrimmedLOC_metric()
 								);
 			System.out.println(line);
 			this.microtaskComplexityList.add(line);
@@ -474,8 +482,8 @@ public class FileUploadServlet extends HttpServlet {
 	
 	public void writeMetricsToFile() {
 		ReadWriteFile.writeBackToBuffer(this.microtaskComplexityList, 
-				"c://Users//Christian//Documents//GitHub//Complexity_Metrics//test//",
-				"microtaskComplexity.csv");
+				"c://Users//Christian//Documents//GitHub//Complexity_Metrics//output//",
+				"microtask_complexity_E2.csv");
 	}
 	
 	public static void main(String args[]){
