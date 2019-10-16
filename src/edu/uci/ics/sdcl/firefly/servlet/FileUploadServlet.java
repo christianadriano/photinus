@@ -45,7 +45,7 @@ public class FileUploadServlet extends HttpServlet {
 	public FileUploadServlet() {
 		super();
 		this.microtaskComplexityList=new ArrayList<String>();
-		String codeElements_columnNames = "fileName,ID,line,type,char_count,cyclomatic_complexity,length_Halstead,volume_Halstead,LOC,trimmed_LOC";
+		String codeElements_columnNames = "file_name,microtask_id,line,type,char_count,cyclomatic_complexity,length_Halstead,volume_Halstead,LOC,trimmed_LOC";
 		String codeSnippet_columnNames = "s_char_count,s_cyclomatic_complexity,s_length_Halstead,s_volume_Halstead,s_LOC,s_trimmed_LOC";
 		this.microtaskComplexityList.add(codeElements_columnNames +","+codeSnippet_columnNames);
 	}
