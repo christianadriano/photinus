@@ -7,10 +7,10 @@ public class WordFinder {
 		this.sentence = text;
 	}
 
-	public int wordPosition(String wordToBeFound){
-		String[] wordlist = this.sentence.split(" ");
+	public int wordPosition(String sentence, String wordToBeFound){
+		String[] wordlist = sentence.split(" ");
 		int found=-1;
-		for (int i=0; i<wordlist.length;i++) {
+		for (int i=0; i<wordlist.length-1;i++) {
 			if (wordlist[i].compareTo(wordToBeFound)==0)
 				found= i;
 		}
@@ -18,9 +18,9 @@ public class WordFinder {
 	}
 	
 	public static void main(String[] args) {
-		String mySentence = null;//"cogito ergo sum";
+		String mySentence = "cogito ergo sum";
 		WordFinder finder = new WordFinder(mySentence);
-		System.out.println(finder.wordPosition("cogito"));
+		System.out.println(finder.wordPosition("cogito ergo sum","sum"));
 	}
 }
 
